@@ -93,3 +93,27 @@ img {
     transform: translate3d(-50%, 0, 0);
   }
 }
+
+.analytics-panel :where(.bg-white\/5, .bg-white\/6, .bg-white\/8, .bg-white\/10, .bg-white\/12, .bg-white\/\[0\.04\], .bg-black\/20, .bg-black\/25, .bg-black\/30, .bg-black\/35, .bg-black\/40) {
+  background-color: rgba(var(--surface-soft) / 1) !important;
+}
+
+.analytics-panel :where(.border-white\/5, .border-white\/8, .border-white\/10, .border-white\/12) {
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+.analytics-panel :where(.text-white) {
+  color: rgb(var(--foreground)) !important;
+}
+
+.copilot-panel :where(.bg-white\/5, .bg-white\/6, .bg-white\/8, .bg-white\/\[0\.04\], .bg-black\/20, .bg-black\/25, .bg-black\/30, .bg-black\/35, .bg-black\/40) {
+  background-color: rgba(var(--surface-soft) / 1) !important;
+}
+
+.copilot-panel :where(.border-white\/5, .border-white\/8, .border-white\/10, .border-white\/12) {
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+.copilot-panel :where(.text-white) {
+  color: rgb(var(--foreground)) !important;
+}

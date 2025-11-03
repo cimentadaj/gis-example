@@ -327,17 +327,17 @@ export default function Home() {
                 <>
                   <section
                     id="digital-twin"
-                    className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_35px_90px_-65px_rgba(59,130,246,0.65)] backdrop-blur-2xl md:p-8"
+                    className="rounded-[26px] border border-slate-200/80 bg-white p-6 shadow-[0_30px_90px_-70px_rgba(15,23,42,0.25)] md:p-8"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                       <div>
-                        <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Citywide KPI Pulse</p>
-                        <h3 className="mt-1 text-lg font-semibold text-white">Live operations benchmark</h3>
-                        <p className="mt-1 text-sm text-foreground/60">
+                        <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Citywide KPI Pulse</p>
+                        <h3 className="mt-1 text-lg font-semibold text-slate-900">Live operations benchmark</h3>
+                        <p className="mt-1 text-sm text-slate-600">
                           Signals derived from Nexus telemetry and ML uplift vs baseline.
                         </p>
                       </div>
-                      <div className="hidden text-right text-xs uppercase tracking-[0.3em] text-foreground/45 sm:block">
+                      <div className="hidden text-right text-xs uppercase tracking-[0.3em] text-slate-400 sm:block">
                         Updated with scenario focus &middot; {syncTimestamp}
                       </div>
                     </div>
@@ -348,7 +348,7 @@ export default function Home() {
 
                   <section
                     aria-label="Digital twin module"
-                    className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-75px_rgba(79,70,229,0.65)] backdrop-blur-2xl md:p-8"
+                    className="rounded-[30px] border border-slate-200/80 bg-white p-6 shadow-[0_40px_110px_-72px_rgba(15,23,42,0.28)] md:p-8"
                   >
                     <DigitalTwinPanel
                       scenario={scenario}
@@ -364,7 +364,7 @@ export default function Home() {
                 <section
                   id="vlr-workbench"
                   aria-label="VLR automation module"
-                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(168,85,247,0.6)] backdrop-blur-2xl md:p-8"
+                  className="rounded-[30px] border border-slate-200/80 bg-white p-6 shadow-[0_40px_110px_-72px_rgba(15,23,42,0.28)] md:p-8"
                 >
                   <VlrPreviewPanel />
                 </section>
@@ -374,7 +374,7 @@ export default function Home() {
                 <section
                   id="analytics"
                   aria-label="Analytics module"
-                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(45,212,191,0.55)] backdrop-blur-2xl md:p-8"
+                  className="analytics-panel rounded-[30px] border border-slate-200/80 bg-white p-6 shadow-[0_40px_110px_-72px_rgba(15,23,42,0.28)] md:p-8"
                 >
                   <AnalyticsPreviewPanel scenario={scenario} />
                 </section>
@@ -384,7 +384,7 @@ export default function Home() {
                 <section
                   id="copilot"
                   aria-label="Copilot module"
-                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(251,113,133,0.58)] backdrop-blur-2xl md:p-8"
+                  className="copilot-panel rounded-[30px] border border-slate-200/80 bg-white p-6 shadow-[0_40px_110px_-72px_rgba(15,23,42,0.28)] md:p-8"
                 >
                   <CopilotPreviewPanel
                     scenario={scenario}
@@ -458,37 +458,37 @@ function DashboardTopBar({
   isCopilotRailOpen,
 }: DashboardTopBarProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(10,14,26,0.78)] backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-2.5 px-5 py-3 sm:px-8 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-lg">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-2 px-5 py-2.5 sm:px-8 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white shadow-[0_12px_32px_-18px_rgba(59,130,246,0.65)]">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-2xl border border-sky-100 bg-sky-50 text-sky-600 shadow-[0_12px_32px_-20px_rgba(59,130,246,0.45)]">
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.32em] text-foreground/50">Nexus Consulting</p>
-            <h1 className="text-base font-semibold text-white sm:text-lg">City Digital Twin Command</h1>
-            <p className="text-[10px] text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
+            <p className="text-[10px] uppercase tracking-[0.32em] text-slate-500">Nexus Consulting</p>
+            <h1 className="text-base font-semibold text-slate-900 sm:text-lg">City Digital Twin Command</h1>
+            <p className="text-[11px] text-slate-500">Automated VLR intelligence for Metropolitan Nexus</p>
           </div>
         </div>
 
         <div className="flex flex-1 flex-wrap items-center justify-end gap-2.5">
-          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-white/12 bg-white/[0.06] p-1.5">
+          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-slate-200/80 bg-[rgb(var(--surface-soft))] p-1.5">
             {scenarioSummaries.map((scenario) => (
               <button
                 key={scenario.key}
                 type="button"
                 onClick={() => onScenarioChange(scenario.key)}
                 className={cn(
-                  "min-w-[120px] rounded-[999px] px-3 py-1.5 text-left text-[11px] font-medium transition-all",
+                  "min-w-[120px] rounded-[999px] px-3 py-1.5 text-left text-[11px] font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
                   scenario.key === scenarioKey
-                    ? "bg-white text-slate-900 shadow-[0_18px_45px_-28px_rgba(14,165,233,0.65)]"
-                    : "text-foreground/60 hover:bg-white/12 hover:text-foreground",
+                    ? "bg-white text-slate-900 shadow-[0_18px_45px_-32px_rgba(14,165,233,0.45)]"
+                    : "text-slate-600 hover:bg-white hover:text-slate-900",
                 )}
               >
                 <span
                   className={cn(
                     "block text-[9px] uppercase tracking-[0.35em]",
-                    scenario.key === scenarioKey ? "text-slate-500" : "text-foreground/50",
+                    scenario.key === scenarioKey ? "text-slate-500" : "text-slate-400",
                   )}
                 >
                   Scenario
@@ -496,7 +496,7 @@ function DashboardTopBar({
                 <span
                   className={cn(
                     "mt-0.5 block text-sm leading-tight",
-                    scenario.key === scenarioKey ? "text-slate-900" : "text-foreground/65",
+                    scenario.key === scenarioKey ? "text-slate-900" : "text-slate-600",
                   )}
                 >
                   {scenario.name}
@@ -505,19 +505,19 @@ function DashboardTopBar({
             ))}
           </nav>
 
-          <div className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] text-foreground/55">
-            <MapPinned className="h-4 w-4 text-primary-200" />
+          <div className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] text-slate-500 shadow-[0_12px_35px_-25px_rgba(14,165,233,0.28)]">
+            <MapPinned className="h-4 w-4 text-sky-500" />
             <div className="flex flex-col">
               <span className="uppercase tracking-[0.32em]">Metro Focus</span>
-              <span className="mt-0.5 text-sm font-semibold text-white">Aurora District Twin</span>
+              <span className="mt-0.5 text-sm font-semibold text-slate-900">Aurora District Twin</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] text-foreground/55">
-            <Clock8 className="h-4 w-4 text-accent-400" />
+          <div className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] text-slate-500 shadow-[0_12px_35px_-25px_rgba(79,70,229,0.28)]">
+            <Clock8 className="h-4 w-4 text-violet-500" />
             <div className="flex flex-col">
               <span className="uppercase tracking-[0.32em]">Sync Checkpoint</span>
-              <span className="mt-0.5 text-sm font-semibold text-white">{syncTimestamp}</span>
+              <span className="mt-0.5 text-sm font-semibold text-slate-900">{syncTimestamp}</span>
             </div>
           </div>
 
@@ -525,15 +525,15 @@ function DashboardTopBar({
             <button
               type="button"
               onClick={onCopilotToggle}
-              className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
+              className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
             >
-              <Bot className="h-4 w-4 text-primary-200" />
+              <Bot className="h-4 w-4 text-sky-500" />
               {isCopilotRailOpen ? "Hide Copilot Dock" : "Show Copilot Dock"}
             </button>
             <button
               type="button"
               onClick={onCopilotSummon}
-              className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/10 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/20 xl:hidden"
+              className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
             >
               <Bot className="h-4 w-4" />
               Launch Copilot
@@ -552,16 +552,16 @@ type DashboardSidebarProps = {
 
 function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProps) {
   return (
-    <aside className="hidden w-[260px] border-r border-white/10 bg-[rgba(8,14,26,0.78)] px-5 py-5 lg:block">
+    <aside className="hidden w-[260px] border-r border-slate-200/70 bg-[rgb(var(--surface-soft))] px-5 py-6 lg:block">
       <div className="space-y-5">
-        <div className="rounded-[26px] border border-white/10 bg-white/[0.05] p-4 text-[10px] uppercase tracking-[0.32em] text-foreground/55 shadow-[0_18px_50px_-38px_rgba(59,130,246,0.5)]">
-          <p className="flex items-center gap-2 text-foreground/65">
-            <GaugeCircle className="h-4 w-4 text-primary-300" />
+        <div className="rounded-[26px] border border-slate-200 bg-white p-4 text-[10px] uppercase tracking-[0.32em] text-slate-500 shadow-[0_18px_45px_-32px_rgba(14,165,233,0.28)]">
+          <p className="flex items-center gap-2 text-slate-500">
+            <GaugeCircle className="h-4 w-4 text-sky-500" />
             Mission Status
           </p>
-          <span className="mt-2 flex items-baseline gap-2 text-2xl font-semibold text-white">
+          <span className="mt-2 flex items-baseline gap-2 text-2xl font-semibold text-slate-900">
             92%
-            <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-primary-200">Operational</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-sky-500">Operational</span>
           </span>
         </div>
 
@@ -573,39 +573,41 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
               aria-pressed={activeModule === item.id}
               onClick={() => onModuleChange(item.id)}
               className={cn(
-                "group rounded-[22px] border border-white/5 bg-white/[0.03] px-4 py-2.5 text-left transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.08]",
+                "group rounded-[22px] border border-slate-200 bg-white px-4 py-2.5 text-left transition-colors duration-200 hover:border-sky-200 hover:bg-sky-50/50",
                 activeModule === item.id
-                  ? "border-white/15 bg-white/[0.12] shadow-[0_16px_42px_-32px_rgba(59,130,246,0.5)]"
-                  : "text-foreground/70",
+                  ? "border-sky-200 bg-sky-50 shadow-[0_16px_42px_-32px_rgba(59,130,246,0.45)]"
+                  : "text-slate-600",
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-[18px] border border-white/10 text-primary-100 transition-all duration-200",
-                      activeModule === item.id ? "bg-white/[0.18]" : "bg-white/[0.08]",
+                      "flex h-9 w-9 items-center justify-center rounded-[18px] border text-sky-600 transition-all duration-200",
+                      activeModule === item.id
+                        ? "border-sky-200 bg-white"
+                        : "border-slate-200 bg-sky-50",
                     )}
                   >
                     <item.icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-white">{item.label}</p>
-                    <p className="text-[11px] text-foreground/55">{item.description}</p>
+                    <p className="text-sm font-semibold text-slate-900">{item.label}</p>
+                    <p className="text-[11px] text-slate-500">{item.description}</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-foreground/45 transition-transform group-hover:translate-x-1" />
+                <ChevronRight className="h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
           ))}
         </nav>
 
-        <div className="rounded-[26px] border border-white/10 bg-gradient-to-br from-primary-500/12 via-accent-500/10 to-rose-500/12 p-4 text-[10px] text-foreground/60">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
+        <div className="rounded-[26px] border border-slate-200 bg-gradient-to-br from-sky-100 via-violet-100 to-rose-100 p-4 text-[10px] text-slate-600">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-slate-500">
             <BrainCircuit className="h-4 w-4" />
             AI Warden
           </p>
-          <p className="mt-2 text-sm text-white/90">
+          <p className="mt-2 text-sm text-slate-700">
             Digital twin telemetry is clean. 3 proactive interventions queued with Nexus Copilot.
           </p>
         </div>
@@ -623,19 +625,19 @@ type ModuleSwitcherProps = {
 
 function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMeta }: ModuleSwitcherProps) {
   return (
-    <section className="rounded-[26px] border border-white/8 bg-white/[0.05] p-5 shadow-[0_22px_70px_-60px_rgba(59,130,246,0.55)] backdrop-blur-2xl">
+    <section className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_26px_80px_-70px_rgba(15,23,42,0.22)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.32em] text-foreground/55">Module Suite</p>
-          <h2 className="mt-1 text-lg font-semibold text-white sm:text-xl">{activeModuleMeta.label}</h2>
-          <p className="mt-1 text-sm text-foreground/60">{activeModuleMeta.description}</p>
+          <p className="text-[10px] uppercase tracking-[0.32em] text-slate-500">Module Suite</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">{activeModuleMeta.label}</h2>
+          <p className="mt-1 text-sm text-slate-600">{activeModuleMeta.description}</p>
         </div>
       </div>
 
       <div
         role="tablist"
         aria-label="Module navigation"
-        className="mt-4 flex flex-wrap gap-1.5 rounded-[999px] border border-white/10 bg-white/[0.04] p-1.5"
+        className="mt-4 flex flex-wrap gap-1.5 rounded-[999px] border border-slate-200/80 bg-[rgb(var(--surface-soft))] p-1.5"
       >
         {modules.map((module) => {
           const isActive = module.id === activeModule;
@@ -649,10 +651,10 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
               tabIndex={isActive ? 0 : -1}
               onClick={() => onModuleChange(module.id)}
               className={cn(
-                "group relative flex items-center gap-2 rounded-[999px] px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40",
+                "group relative flex items-center gap-2 rounded-[999px] px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
                 isActive
-                  ? "bg-white text-slate-900 shadow-[0_16px_40px_-28px_rgba(59,130,246,0.55)]"
-                  : "text-foreground/65 hover:bg-white/10 hover:text-white",
+                  ? "bg-white text-slate-900 shadow-[0_16px_40px_-30px_rgba(59,130,246,0.45)]"
+                  : "text-slate-600 hover:bg-white hover:text-slate-900",
               )}
             >
               <span
@@ -660,14 +662,14 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
                 className={cn(
                   "absolute inset-0 -z-10 rounded-[999px] bg-gradient-to-r opacity-0 transition-opacity duration-300",
                   module.accent ?? "",
-                  isActive ? "opacity-60" : "group-hover:opacity-50",
+                  isActive ? "opacity-50" : "group-hover:opacity-40",
                 )}
               />
               <span className="relative flex items-center gap-2">
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-[18px] border border-white/12 bg-white/[0.12] text-xs transition-colors duration-200",
-                    isActive ? "border-white/80 bg-white text-slate-900" : "text-foreground/70",
+                    "flex h-8 w-8 items-center justify-center rounded-[18px] border border-slate-200 bg-white text-xs transition-colors duration-200",
+                    isActive ? "border-sky-200 bg-sky-50 text-sky-600" : "text-slate-500",
                   )}
                 >
                   <module.icon className="h-4 w-4" />
@@ -715,12 +717,12 @@ function CopilotRail({
     <div className="relative hidden h-full xl:flex">
       <aside
         className={cn(
-          "flex h-full flex-col border-l border-white/10 bg-[rgba(6,12,28,0.92)] backdrop-blur-2xl transition-all duration-300 ease-out",
+          "flex h-full flex-col border-l border-slate-200/80 bg-white/95 backdrop-blur-lg transition-all duration-300 ease-out",
           open ? "w-[380px]" : "w-[84px]",
         )}
       >
         {open ? (
-          <div className="flex h-full flex-col overflow-hidden px-6 py-7">
+          <div className="copilot-panel flex h-full flex-col overflow-hidden px-6 py-7">
             <CopilotDockContent
               scenario={scenario}
               module={module}
@@ -739,9 +741,9 @@ function CopilotRail({
           <button
             type="button"
             onClick={onToggle}
-            className="group flex h-full w-full flex-col items-center justify-center gap-3 rounded-l-[32px] border-l border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.4em] text-foreground/60 transition hover:border-white/20 hover:text-white"
+            className="group flex h-full w-full flex-col items-center justify-center gap-3 rounded-l-[32px] border-l border-slate-200 bg-[rgb(var(--surface-soft))] text-[10px] uppercase tracking-[0.4em] text-foreground/60 transition hover:border-sky-200 hover:text-slate-900"
           >
-            <Bot className="h-6 w-6 text-primary-200 transition group-hover:scale-105" />
+            <Bot className="h-6 w-6 text-sky-600 transition group-hover:scale-105" />
             <span className="px-3 text-center">Copilot Dock</span>
             <span className="sr-only">Expand copilot dock</span>
           </button>
@@ -781,7 +783,7 @@ function CopilotOverlay({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/60 backdrop-blur-sm xl:hidden">
       <div role="presentation" className="flex-1" onClick={onClose} />
-      <div className="relative max-h-[88vh] w-full overflow-hidden rounded-t-[36px] border-t border-white/10 bg-[rgba(6,12,28,0.97)] px-5 py-6 shadow-[0_-25px_80px_rgba(15,23,42,0.65)] sm:px-6">
+      <div className="relative max-h-[88vh] w-full overflow-hidden rounded-t-[36px] border-t border-slate-200 bg-white px-5 py-6 shadow-[0_-25px_80px_rgba(15,23,42,0.35)] sm:px-6">
         <div className="mx-auto h-full max-w-[540px] overflow-y-auto pb-6">
           <CopilotDockContent
             scenario={scenario}
@@ -817,17 +819,17 @@ function KpiCard({ kpi }: { kpi: SystemKpi }) {
   const arrow = kpi.change.direction === "up" ? "▲" : "▼";
 
   return (
-    <div className="rounded-3xl border border-white/8 bg-white/5 p-5 shadow-[0_18px_60px_-50px_rgba(14,165,233,0.65)]">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_55px_-45px_rgba(15,23,42,0.22)]">
+      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{kpi.label}</p>
       <div className="mt-3 flex items-end justify-between">
-        <span className="text-2xl font-semibold text-white">
-          {kpi.value.toLocaleString()} <span className="text-sm text-foreground/50">{kpi.unit}</span>
+        <span className="text-2xl font-semibold text-slate-900">
+          {kpi.value.toLocaleString()} <span className="text-sm text-slate-500">{kpi.unit}</span>
         </span>
         <span className={cn("text-xs font-semibold", tone)}>
           {arrow} {kpi.change.percentage}%
         </span>
       </div>
-      <p className="mt-2 text-[11px] text-foreground/60">vs. last {kpi.change.period}</p>
+      <p className="mt-2 text-[11px] text-slate-500">vs. last {kpi.change.period}</p>
     </div>
   );
 }
@@ -1275,9 +1277,13 @@ function VlrPreviewPanel() {
     <div className="space-y-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
-          <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">Nexus Consulting · VLR Automation</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Voluntary Local Review Mission Board</h2>
-          <p className="mt-3 text-sm text-foreground/70">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-slate-500">
+            Nexus Consulting · VLR Automation
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
+            Voluntary Local Review Mission Board
+          </h2>
+          <p className="mt-3 text-sm text-slate-600">
             Nexus orchestrates the entire VLR pipeline with AI guardrails—every chapter is grounded in live digital twin
             evidence, policy compliance, and explainable scoring.
           </p>
@@ -1286,9 +1292,9 @@ function VlrPreviewPanel() {
           {vlrProcessSignals.map((signal) => (
             <span
               key={signal}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.3em] text-foreground/60"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] uppercase tracking-[0.3em] text-slate-500 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.22)]"
             >
-              <Sparkles className="h-3.5 w-3.5 text-primary-200" />
+              <Sparkles className="h-3.5 w-3.5 text-sky-500" />
               {signal}
             </span>
           ))}
@@ -1297,8 +1303,8 @@ function VlrPreviewPanel() {
 
       <div className="grid gap-6 xl:grid-cols-[340px_1fr]">
         <div className="flex flex-col gap-5">
-          <div className="rounded-[28px] border border-white/10 bg-white/6 p-4">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Pipeline Status</p>
+          <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.22)]">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Pipeline Status</p>
             <div className="mt-4 space-y-3">
               {vlrStages.map((stage, index) => {
                 const isActive = stage.id === selectedStageId;
@@ -1308,29 +1314,29 @@ function VlrPreviewPanel() {
                     key={stage.id}
                     onClick={() => setSelectedStageId(stage.id)}
                     className={cn(
-                      "w-full rounded-[24px] border border-white/8 bg-black/20 p-4 text-left transition-all duration-200 hover:border-white/20 hover:bg-black/25",
-                      isActive && "border-primary-400/60 bg-primary-500/15 shadow-[0_20px_65px_-45px_rgba(124,58,237,0.75)]"
+                      "w-full rounded-[24px] border border-slate-200 bg-white p-4 text-left transition-all duration-200 hover:border-sky-200 hover:bg-sky-50/60",
+                      isActive && "border-sky-300 bg-sky-50 shadow-[0_20px_65px_-48px_rgba(59,130,246,0.35)]"
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <StageStatusIcon status={stage.status} isActive={isActive} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/40">Stage {index + 1}</p>
-                        <p className="mt-1 truncate text-sm font-semibold text-white">{stage.title}</p>
+                        <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">Stage {index + 1}</p>
+                        <p className="mt-1 truncate text-sm font-semibold text-slate-900">{stage.title}</p>
                       </div>
-                      <div className="text-right text-xs text-foreground/60">
+                      <div className="text-right text-xs text-slate-500">
                         {stage.status === "active" && <span>ETA {stage.etaMinutes}m</span>}
                         {stage.status === "pending" && <span>{stage.completion}% primed</span>}
                         {stage.status === "complete" && <span>Ready</span>}
                       </div>
                     </div>
-                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
                       <div
                         className={cn(
                           "h-full rounded-full transition-all",
-                          stage.status === "complete" && "bg-primary-300/70",
-                          stage.status === "active" && "bg-accent-300/80",
-                          stage.status === "pending" && "bg-white/25"
+                          stage.status === "complete" && "bg-emerald-400",
+                          stage.status === "active" && "bg-violet-400",
+                          stage.status === "pending" && "bg-slate-300"
                         )}
                         style={{ width: `${Math.max(stage.completion, stage.status === "pending" ? 18 : 6)}%` }}
                       />
@@ -1341,28 +1347,28 @@ function VlrPreviewPanel() {
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-black/40 p-4">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_20px_60px_-48px_rgba(15,23,42,0.22)]">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Latest Export</p>
-                <p className="mt-2 text-sm font-semibold text-white">{vlrPdfPreview.period}</p>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Latest Export</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{vlrPdfPreview.period}</p>
               </div>
-              <FileText className="h-8 w-8 text-primary-200" />
+              <FileText className="h-8 w-8 text-sky-500" />
             </div>
-            <p className="mt-3 text-sm text-foreground/70">{vlrPdfPreview.summary}</p>
-            <ul className="mt-4 space-y-2 text-sm text-foreground/70">
+            <p className="mt-3 text-sm text-slate-600">{vlrPdfPreview.summary}</p>
+            <ul className="mt-4 space-y-2 text-sm text-slate-600">
               {vlrPdfPreview.chapters.map((chapter) => (
                 <li
                   key={chapter.id}
-                  className="flex items-center justify-between rounded-[18px] border border-white/10 bg-white/5 px-3 py-2"
+                  className="flex items-center justify-between rounded-[18px] border border-slate-200 bg-white px-3 py-2"
                 >
-                  <span className="text-foreground/70">{chapter.label}</span>
+                  <span className="text-slate-600">{chapter.label}</span>
                   <span
                     className={cn(
-                      "rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.35em]",
-                      chapter.status === "ready" && "bg-emerald-400/15 text-emerald-200",
-                      chapter.status === "in-review" && "bg-amber-400/15 text-amber-200",
-                      chapter.status === "draft" && "bg-rose-400/15 text-rose-200"
+                      "rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.35em]",
+                      chapter.status === "ready" && "border-emerald-200 bg-emerald-50 text-emerald-600",
+                      chapter.status === "in-review" && "border-amber-200 bg-amber-50 text-amber-600",
+                      chapter.status === "draft" && "border-rose-200 bg-rose-50 text-rose-600"
                     )}
                   >
                     {chapter.status.replace("-", " ")}
@@ -1370,13 +1376,13 @@ function VlrPreviewPanel() {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex items-center justify-between text-xs text-foreground/50">
+            <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
               <span>{vlrPdfPreview.filename}</span>
               <span>{vlrPdfPreview.size}</span>
             </div>
             <button
               type="button"
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-500/80 to-accent-500/80 px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01]"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
             >
               Download AI-authored VLR
               <ChevronRight className="h-4 w-4" />
@@ -1385,29 +1391,29 @@ function VlrPreviewPanel() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="rounded-[32px] border border-white/10 bg-black/35 p-6">
+          <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)]">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">
                   Stage {selectedIndex + 1} · {getStageStatusLabel(selectedStage.status)}
                 </p>
-                <h3 className="mt-2 text-xl font-semibold text-white">{selectedStage.title}</h3>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900">{selectedStage.title}</h3>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-foreground/60">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600 shadow-[0_12px_28px_-24px_rgba(14,165,233,0.18)]">
                 <StageStatusIcon status={selectedStage.status} isActive />
                 {selectedStage.status === "active"
                   ? `ETA ${selectedStage.etaMinutes} minutes`
                   : `Completion ${selectedStage.completion}%`}
               </div>
             </div>
-            <p className="mt-4 text-sm text-foreground/70">{selectedStage.summary}</p>
+            <p className="mt-4 text-sm text-slate-600">{selectedStage.summary}</p>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {selectedStage.insights.map((insight) => (
                 <div
                   key={insight}
-                  className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground/70"
+                  className="rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-slate-600"
                 >
-                  <Sparkles className="mb-2 h-4 w-4 text-primary-200" />
+                  <Sparkles className="mb-2 h-4 w-4 text-sky-500" />
                   {insight}
                 </div>
               ))}
@@ -1416,33 +1422,33 @@ function VlrPreviewPanel() {
               {selectedStage.kpis.map((kpi) => (
                 <div
                   key={kpi.id}
-                  className="rounded-[24px] border border-white/10 bg-gradient-to-br from-white/8 to-black/20 p-4"
+                  className="rounded-[24px] border border-slate-200 bg-white p-4"
                 >
-                  <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
-                  <p className="mt-2 text-2xl font-semibold text-white">{kpi.value}</p>
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{kpi.label}</p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-900">{kpi.value}</p>
                   <p
                     className={cn(
                       "mt-1 text-xs font-semibold uppercase tracking-[0.3em]",
-                      kpi.direction === "up" ? "text-emerald-200" : "text-rose-200"
+                      kpi.direction === "up" ? "text-emerald-600" : "text-rose-600"
                     )}
                   >
                     {kpi.deltaLabel}
                   </p>
-                  <p className="mt-3 text-sm text-foreground/70">{kpi.narrative}</p>
+                  <p className="mt-3 text-sm text-slate-600">{kpi.narrative}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[30px] border border-white/10 bg-white/6 p-5">
-              <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
-                <ShieldCheck className="h-4 w-4 text-primary-200" />
+            <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_24px_70px_-55px_rgba(15,23,42,0.2)]">
+              <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
+                <ShieldCheck className="h-4 w-4 text-sky-500" />
                 Compliance & Guardrails
               </p>
               <div className="mt-4 space-y-3">
                 {selectedStage.compliance.map((item) => (
-                  <div key={item.id} className="rounded-[22px] border border-white/10 bg-black/20 p-4">
+                  <div key={item.id} className="rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4">
                     <div className="flex items-center gap-3">
                       <span
                         className={cn(
@@ -1452,21 +1458,21 @@ function VlrPreviewPanel() {
                       >
                         {complianceBadgeTone(item.status).label}
                       </span>
-                      <p className="text-sm font-semibold text-white">{item.label}</p>
+                      <p className="text-sm font-semibold text-slate-900">{item.label}</p>
                     </div>
-                    <p className="mt-3 text-sm text-foreground/70">{item.description}</p>
+                    <p className="mt-3 text-sm text-slate-600">{item.description}</p>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 rounded-[22px] border border-white/10 bg-white/5 p-4">
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Artifacts ready</p>
-                <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+              <div className="mt-5 rounded-[22px] border border-slate-200 bg-white p-4">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Artifacts ready</p>
+                <ul className="mt-3 space-y-2 text-sm text-slate-600">
                   {selectedStage.artifacts.map((artifact) => (
                     <li key={artifact.id} className="flex items-start gap-3">
-                      <FileText className="mt-0.5 h-4 w-4 text-primary-200" />
+                      <FileText className="mt-0.5 h-4 w-4 text-sky-500" />
                       <div>
-                        <p className="font-medium text-white">{artifact.label}</p>
-                        <p className="text-foreground/60">{artifact.detail}</p>
+                        <p className="font-medium text-slate-900">{artifact.label}</p>
+                        <p className="text-slate-500">{artifact.detail}</p>
                       </div>
                     </li>
                   ))}
@@ -1475,44 +1481,44 @@ function VlrPreviewPanel() {
             </div>
 
             <div className="flex flex-col gap-5">
-              <div className="rounded-[30px] border border-white/10 bg-black/30 p-5">
-                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
-                  <ActivitySquare className="h-4 w-4 text-primary-200" />
+              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-55px_rgba(15,23,42,0.2)]">
+                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
+                  <ActivitySquare className="h-4 w-4 text-sky-500" />
                   Audit Trail
                 </p>
                 <ul className="mt-4 space-y-3">
                   {selectedStage.auditTrail.map((event) => (
                     <li
                       key={`${event.timestamp}-${event.actor}`}
-                      className="flex gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground/70"
+                      className="flex gap-3 rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-slate-600"
                     >
-                      <span className="flex h-8 w-16 items-center justify-center rounded-full bg-primary-500/15 text-[11px] font-semibold text-white">
+                      <span className="flex h-8 w-16 items-center justify-center rounded-full bg-sky-100 text-[11px] font-semibold text-sky-700">
                         {event.timestamp}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-white">{event.actor}</p>
-                        <p className="text-foreground/60">{event.message}</p>
+                        <p className="text-sm font-semibold text-slate-900">{event.actor}</p>
+                        <p className="text-slate-500">{event.message}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="rounded-[30px] border border-white/10 bg-white/8 p-5">
-                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+              <div className="rounded-[30px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-5">
+                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
                   <AlertTriangle className="h-4 w-4" />
                   Policy & Action Alerts
                 </p>
-                <ul className="mt-4 space-y-3 text-sm text-foreground/70">
+                <ul className="mt-4 space-y-3 text-sm text-slate-600">
                   {vlrAlerts.map((alert) => (
                     <li
                       key={alert.id}
-                      className="flex gap-3 rounded-[22px] border border-white/10 bg-black/25 px-4 py-3"
+                      className="flex gap-3 rounded-[22px] border border-slate-200 bg-white px-4 py-3"
                     >
-                      <span className={cn("mt-1 h-2 w-2 rounded-full", alertSeverityTone(alert.severity))} />
+                      <span className={cn("mt-1 h-2.5 w-2.5 rounded-full", alertSeverityTone(alert.severity))} />
                       <div className="min-w-0">
-                        <p className="font-medium text-white">{alert.message}</p>
-                        <p className="mt-1 text-xs uppercase tracking-[0.35em] text-foreground/50">
+                        <p className="font-medium text-slate-900">{alert.message}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.35em] text-slate-500">
                           {alert.suggestedAction}
                         </p>
                       </div>
@@ -1530,14 +1536,14 @@ function VlrPreviewPanel() {
 
 function StageStatusIcon({ status, isActive = false }: { status: VlrStageStatus; isActive?: boolean }) {
   if (status === "complete") {
-    return <CheckCircle2 className={cn("h-5 w-5 text-emerald-300", !isActive && "text-emerald-300/70")} />;
+    return <CheckCircle2 className={cn("h-5 w-5 text-emerald-500", !isActive && "text-emerald-400")} />;
   }
 
   if (status === "active") {
-    return <Loader2 className="h-5 w-5 animate-spin text-accent-200" />;
+    return <Loader2 className="h-5 w-5 animate-spin text-violet-500" />;
   }
 
-  return <CircleDashed className="h-5 w-5 text-foreground/35" />;
+  return <CircleDashed className="h-5 w-5 text-slate-400" />;
 }
 
 function getStageStatusLabel(status: VlrStageStatus) {
@@ -1554,11 +1560,11 @@ function getStageStatusLabel(status: VlrStageStatus) {
 function complianceBadgeTone(status: VlrComplianceBadge["status"]) {
   switch (status) {
     case "pass":
-      return { label: "Pass", badge: "bg-emerald-400/15 text-emerald-200 border border-emerald-400/20" };
+      return { label: "Pass", badge: "border border-emerald-200 bg-emerald-50 text-emerald-600" };
     case "attention":
-      return { label: "Attention", badge: "bg-amber-400/15 text-amber-200 border border-amber-400/20" };
+      return { label: "Attention", badge: "border border-amber-200 bg-amber-50 text-amber-600" };
     default:
-      return { label: "Review", badge: "bg-rose-400/15 text-rose-200 border border-rose-400/20" };
+      return { label: "Review", badge: "border border-rose-200 bg-rose-50 text-rose-600" };
   }
 }
 
@@ -1700,11 +1706,11 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
         const baselineGradientId = `forecast-baseline-${forecastScope}`;
 
         return (
-          <div className="space-y-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_70px_-45px_rgba(59,130,246,0.5)] lg:p-8">
+          <div className="space-y-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-xl space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{activeViewConfig.label}</p>
-                <h3 className="text-lg font-semibold text-white">Hyperlocal demand lift against baseline</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Hyperlocal demand lift against baseline</h3>
                 <p className="text-sm text-foreground/65">
                   Corridor orchestration keeps {scenario.name} on plan while AI exposes the interventions delivering{" "}
                   {forecastLift >= 0 ? "+" : ""}
@@ -1712,7 +1718,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                 </p>
               </div>
               <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/10 p-1">
+                <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1">
                   {forecastScopeOptions.map((option) => (
                     <button
                       key={option.id}
@@ -1721,17 +1727,17 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                       className={cn(
                         "rounded-full px-3 py-1.5 text-xs font-medium tracking-wide transition",
                         forecastScope === option.id
-                          ? "bg-white text-slate-900 shadow-[0_16px_45px_-30px_rgba(59,130,246,0.65)]"
-                          : "text-foreground/60 hover:text-white",
+                          ? "bg-sky-50 text-sky-700 shadow-[0_16px_45px_-30px_rgba(59,130,246,0.35)]"
+                          : "text-foreground/60 hover:bg-slate-50 hover:text-slate-900",
                       )}
                     >
                       {option.label}
                     </button>
                   ))}
                 </div>
-                <div className="rounded-2xl border border-primary-400/40 bg-primary-500/10 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-primary-100">
+                <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-sky-600 shadow-[0_16px_50px_-38px_rgba(56,189,248,0.35)]">
                   AI Lift
-                  <p className="mt-1 text-2xl font-semibold text-white">
+                  <p className="mt-1 text-2xl font-semibold text-sky-700">
                     {forecastLift >= 0 ? "+" : ""}
                     {forecastLift.toFixed(1)}%
                   </p>
@@ -1740,7 +1746,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[1.55fr_0.85fr]">
-              <div className="rounded-[26px] border border-white/10 bg-black/30 p-4 sm:p-6">
+              <div className="rounded-[26px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 sm:p-6">
                 <ResponsiveContainer width="100%" height={260}>
                   <AreaChart data={forecastSeries}>
                     <defs>
@@ -1753,21 +1759,21 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                         <stop offset="95%" stopColor="rgba(148,163,184,0)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} strokeDasharray="3 6" />
-                    <XAxis dataKey="hour" stroke="rgba(255,255,255,0.35)" tickLine={false} />
+                    <CartesianGrid stroke="rgba(148,163,184,0.25)" vertical={false} strokeDasharray="3 6" />
+                    <XAxis dataKey="hour" stroke="rgba(71,85,105,0.6)" tickLine={false} />
                     <YAxis
-                      stroke="rgba(255,255,255,0.35)"
+                      stroke="rgba(71,85,105,0.6)"
                       domain={[0.2, 1]}
                       tickFormatter={(value) => `${Math.round((value as number) * 100)}%`}
                       tickLine={false}
                     />
                     <Tooltip
-                      cursor={{ stroke: "rgba(255,255,255,0.2)", strokeDasharray: "4 4" }}
+                      cursor={{ stroke: "rgba(14,165,233,0.35)", strokeDasharray: "4 4" }}
                       contentStyle={{
-                        backgroundColor: "rgba(6,12,28,0.9)",
+                        backgroundColor: "rgba(255,255,255,0.95)",
                         borderRadius: "18px",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        color: "rgba(226,232,255,0.92)",
+                        border: "1px solid rgba(148,163,184,0.35)",
+                        color: "rgba(30,41,59,0.92)",
                         padding: "0.75rem 1rem",
                       }}
                     />
@@ -1790,31 +1796,30 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-
-              <div className="space-y-4">
-                <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4">
+              <div className="space-y-4 rounded-[26px] border border-slate-200 bg-white p-4">
+                <div>
                   <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scope</p>
-                  <p className="mt-1 text-lg font-semibold text-white">{scopeLabel}</p>
+                  <p className="mt-1 text-lg font-semibold text-slate-900">{scopeLabel}</p>
                   <p className="mt-2 text-sm text-foreground/65">
                     Nexus factors ride-hail feeds, curb sensors, and micromobility staging to stabilise demand.
                   </p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4">
+                  <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
                     <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Current AI Throughput</p>
-                    <p className="mt-1 text-2xl font-semibold text-white">{aiPercent}%</p>
-                    <p className="text-xs text-primary-200">Signal retiming + fleet balancing</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{aiPercent}%</p>
+                    <p className="text-xs text-sky-600">Signal retiming + fleet balancing</p>
                   </div>
-                  <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4">
+                  <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
                     <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Legacy Baseline</p>
-                    <p className="mt-1 text-2xl font-semibold text-white">{baselinePercent}%</p>
+                    <p className="mt-1 text-2xl font-semibold text-slate-900">{baselinePercent}%</p>
                     <p className="text-xs text-foreground/60">Pre-orchestration forecast</p>
                   </div>
                 </div>
 
-                <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4 text-sm text-foreground/70">
-                  <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-primary-200">
+                <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4 text-sm text-foreground/70">
+                  <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-sky-600">
                     <Sparkles className="h-4 w-4" />
                     Copilot Insight
                   </p>
@@ -1833,15 +1838,15 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
         const baselineGradientId = `resilience-baseline-${resilienceMode}`;
 
         return (
-          <div className="space-y-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_70px_-45px_rgba(34,197,94,0.5)] lg:p-8">
+          <div className="space-y-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-xl space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{activeViewConfig.label}</p>
-                <h3 className="text-lg font-semibold text-white">{resilienceModeLabel} resilience outlook</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{resilienceModeLabel} resilience outlook</h3>
                 <p className="text-sm text-foreground/65">{scenario.tagline}</p>
               </div>
               <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/10 p-1">
+                <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1">
                   {resilienceModes.map((mode) => (
                     <button
                       key={mode.id}
@@ -1850,17 +1855,17 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                       className={cn(
                         "rounded-full px-3 py-1.5 text-xs font-medium tracking-wide transition",
                         resilienceMode === mode.id
-                          ? "bg-white text-slate-900 shadow-[0_16px_45px_-30px_rgba(52,211,153,0.65)]"
-                          : "text-foreground/60 hover:text-white",
+                          ? "bg-emerald-50 text-emerald-600 shadow-[0_16px_45px_-30px_rgba(52,211,153,0.35)]"
+                          : "text-foreground/60 hover:bg-slate-50 hover:text-slate-900",
                       )}
                     >
                       {mode.label}
                     </button>
                   ))}
                 </div>
-                <div className="rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-emerald-100">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-emerald-600 shadow-[0_16px_50px_-38px_rgba(34,197,94,0.35)]">
                   Δ Lift
-                  <p className="mt-1 text-2xl font-semibold text-white">
+                  <p className="mt-1 text-2xl font-semibold text-emerald-700">
                     {resilienceLift}
                     {resilienceMode === "heat" ? "°C" : " pts"}
                   </p>
@@ -1869,7 +1874,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[1.45fr_0.55fr]">
-              <div className="rounded-[26px] border border-white/10 bg-black/30 p-4 sm:p-6">
+              <div className="rounded-[26px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 sm:p-6">
                 <ResponsiveContainer width="100%" height={260}>
                   <RechartsLineChart data={resilienceSeries}>
                     <defs>
@@ -1882,22 +1887,22 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                         <stop offset="95%" stopColor="rgba(148,163,184,0)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="3 6" />
-                    <XAxis dataKey="label" stroke="rgba(255,255,255,0.35)" tickLine={false} />
+                    <CartesianGrid stroke="rgba(148,163,184,0.25)" strokeDasharray="3 6" />
+                    <XAxis dataKey="label" stroke="rgba(71,85,105,0.6)" tickLine={false} />
                     <YAxis
-                      stroke="rgba(255,255,255,0.35)"
+                      stroke="rgba(71,85,105,0.6)"
                       tickLine={false}
                       tickFormatter={(value) =>
                         resilienceMode === "heat" ? `${Number(value).toFixed(0)}°C` : `${Math.round(Number(value))}`
                       }
                     />
                     <Tooltip
-                      cursor={{ stroke: "rgba(255,255,255,0.2)", strokeDasharray: "4 4" }}
+                      cursor={{ stroke: "rgba(52,211,153,0.35)", strokeDasharray: "4 4" }}
                       contentStyle={{
-                        backgroundColor: "rgba(6,12,28,0.9)",
+                        backgroundColor: "rgba(255,255,255,0.95)",
                         borderRadius: "18px",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        color: "rgba(226,232,255,0.92)",
+                        border: "1px solid rgba(148,163,184,0.35)",
+                        color: "rgba(30,41,59,0.92)",
                         padding: "0.75rem 1rem",
                       }}
                     />
@@ -1919,13 +1924,13 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                 </ResponsiveContainer>
               </div>
 
-              <div className="space-y-4">
-                <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4">
+              <div className="space-y-4 rounded-[26px] border border-slate-200 bg-white p-4">
+                <div>
                   <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scenario Playbooks</p>
                   <ul className="mt-3 space-y-3 text-sm text-foreground/70">
                     {(resiliencePlaybooks[scenario.key] ?? []).map((play, index) => (
                       <li key={play} className="flex items-start gap-3">
-                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-emerald-400/40 bg-emerald-500/10 text-[11px] font-semibold text-emerald-100">
+                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-[11px] font-semibold text-emerald-600">
                           {index + 1}
                         </span>
                         {play}
@@ -1936,10 +1941,10 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {modelPerformanceStats.slice(0, 2).map((stat) => (
-                    <div key={stat.id} className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4">
+                    <div key={stat.id} className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
                       <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">{stat.metric}</p>
-                      <p className="mt-1 text-2xl font-semibold text-white">{stat.value}</p>
-                      <p className="text-xs text-emerald-200">{stat.change}</p>
+                      <p className="mt-1 text-2xl font-semibold text-slate-900">{stat.value}</p>
+                      <p className="text-xs text-emerald-600">{stat.change}</p>
                     </div>
                   ))}
                 </div>
@@ -1958,10 +1963,10 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   <PolarAngleAxis dataKey="cluster" tick={{ fill: "rgba(226,232,255,0.65)", fontSize: 11 }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgba(6,12,28,0.9)",
+                      backgroundColor: "rgba(255,255,255,0.95)",
                       borderRadius: "18px",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      color: "rgba(226,232,255,0.92)",
+                      border: "1px solid rgba(148,163,184,0.35)",
+                      color: "rgba(30,41,59,0.92)",
                       padding: "0.75rem 1rem",
                     }}
                   />
@@ -2051,7 +2056,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
       }
       case "risk": {
         return (
-          <div className="grid gap-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_70px_-45px_rgba(79,70,229,0.45)] lg:grid-cols-[1.2fr_0.8fr] lg:p-8">
+          <div className="grid gap-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:grid-cols-[1.2fr_0.8fr] lg:p-8">
             <div className="rounded-[26px] border border-white/10 bg-black/30 p-4 sm:p-6">
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={riskQuadrantSeries}>
@@ -2061,10 +2066,10 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                       <stop offset="95%" stopColor="rgba(129,140,248,0.1)" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-                  <XAxis dataKey="quadrant" stroke="rgba(255,255,255,0.35)" tickLine={false} />
+                  <CartesianGrid stroke="rgba(148,163,184,0.25)" vertical={false} />
+                  <XAxis dataKey="quadrant" stroke="rgba(71,85,105,0.6)" tickLine={false} />
                   <YAxis
-                    stroke="rgba(255,255,255,0.35)"
+                    stroke="rgba(71,85,105,0.6)"
                     domain={[0.4, 1]}
                     tickFormatter={(value) => `${Math.round((value as number) * 100)}%`}
                     tickLine={false}
@@ -2072,10 +2077,10 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   <Tooltip
                     cursor={{ fill: "rgba(255,255,255,0.04)" }}
                     contentStyle={{
-                      backgroundColor: "rgba(6,12,28,0.9)",
+                      backgroundColor: "rgba(255,255,255,0.95)",
                       borderRadius: "18px",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      color: "rgba(226,232,255,0.92)",
+                      border: "1px solid rgba(148,163,184,0.35)",
+                      color: "rgba(30,41,59,0.92)",
                       padding: "0.75rem 1rem",
                     }}
                     formatter={(value: number | string) =>
@@ -2201,14 +2206,14 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
     <div className="space-y-8">
       <div>
         <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">AI Analytics</p>
-        <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Model telemetry and explainable lifts</h2>
+        <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">Model telemetry and explainable lifts</h2>
         <p className="mt-3 text-sm text-foreground/70">
           Forecast corridors, resilience trajectories, anomaly triage, and governance insight align live to the{" "}
           {scenario.name} mission.
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2 rounded-[28px] border border-white/10 bg-white/5 p-2">
+      <div className="flex flex-wrap gap-2 rounded-[28px] border border-slate-200 bg-white p-2">
         {analyticsViews.map((view) => {
           const isActive = view.id === activeView;
           return (
@@ -2219,18 +2224,18 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
               className={cn(
                 "group flex-1 min-w-[220px] rounded-[24px] px-4 py-3 text-left transition",
                 isActive
-                  ? "bg-white text-slate-900 shadow-[0_18px_50px_-35px_rgba(255,255,255,0.45)]"
-                  : "bg-transparent text-foreground/65 hover:bg-white/10 hover:text-white",
+                  ? "bg-sky-50 text-sky-700 shadow-[0_18px_50px_-35px_rgba(59,130,246,0.25)]"
+                  : "bg-transparent text-foreground/65 hover:bg-slate-50 hover:text-slate-900",
               )}
             >
               <div className="flex items-center gap-3">
                 <span
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white transition",
-                    isActive ? "border-transparent bg-slate-900 text-white" : "",
+                    "flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] text-slate-600 transition",
+                    isActive ? "border-sky-200 bg-white text-sky-600" : "",
                   )}
                 >
-                  <view.icon className={cn("h-4 w-4", isActive ? "text-white" : "text-foreground/60")} />
+                  <view.icon className={cn("h-4 w-4", isActive ? "text-sky-600" : "text-foreground/60")} />
                 </span>
                 <div>
                   <p className="text-sm font-semibold">{view.label}</p>
@@ -2302,11 +2307,11 @@ function CopilotPreviewPanel({
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
       <div className="space-y-5">
-        <div className="rounded-[30px] border border-white/10 bg-white/8 p-5 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.45)] sm:p-6">
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_-48px_rgba(59,130,246,0.25)] sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.4em] text-primary-200">Nexus Copilot</p>
-              <h3 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">
+              <p className="text-[11px] uppercase tracking-[0.4em] text-slate-500">Nexus Copilot</p>
+              <h3 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
                 Mission orchestration for {scenario.name}
               </h3>
               <p className="mt-2 text-sm text-foreground/65">{scenario.command}</p>
@@ -2316,15 +2321,15 @@ function CopilotPreviewPanel({
               <button
                 type="button"
                 onClick={onToggleRail}
-                className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
+                className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
               >
-                <Bot className="h-4 w-4 text-primary-200" />
+                <Bot className="h-4 w-4 text-sky-600" />
                 {isRailOpen ? "Collapse Dock" : "Pin Dock"}
               </button>
               <button
                 type="button"
                 onClick={onSummonDock}
-                className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/25 xl:hidden"
+                className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
               >
                 <Bot className="h-4 w-4" />
                 Launch Copilot
@@ -2342,10 +2347,10 @@ function CopilotPreviewPanel({
               {module.metrics.slice(0, 3).map((metric) => (
                 <div
                   key={metric.label}
-                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-foreground/70"
+                  className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
                 >
                   <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
-                  <p className="mt-2 text-lg font-semibold text-white">{metric.value}</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{metric.value}</p>
                   <p className="text-[11px] text-foreground/55">
                     {metric.delta} • {metric.detail}
                   </p>
@@ -2356,8 +2361,8 @@ function CopilotPreviewPanel({
         </div>
 
         {topPrompts.length ? (
-          <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.4)]">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.3)]">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
               <Sparkles className="h-4 w-4" />
               Quick prompts
             </p>
@@ -2365,7 +2370,7 @@ function CopilotPreviewPanel({
               {topPrompts.map((prompt) => (
                 <div
                   key={prompt.id}
-                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-foreground/70 shadow-[0_18px_50px_-40px_rgba(59,130,246,0.55)]"
+                  className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70 shadow-[0_18px_50px_-45px_rgba(59,130,246,0.3)]"
                 >
                   <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{prompt.label}</p>
                   <p className="mt-2">{prompt.prompt}</p>
@@ -2379,7 +2384,7 @@ function CopilotPreviewPanel({
           {missionSummary.map((card) => (
             <div
               key={card.label}
-              className="relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-foreground/70"
+              className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white px-4 py-4 text-sm text-foreground/70"
             >
               <div
                 aria-hidden
@@ -2390,7 +2395,7 @@ function CopilotPreviewPanel({
               />
               <div className="relative">
                 <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{card.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-white">{card.value}</p>
+                <p className="mt-3 text-3xl font-semibold text-slate-900">{card.value}</p>
                 <p className="mt-2 text-xs text-foreground/60">{card.detail}</p>
               </div>
             </div>
@@ -2398,9 +2403,9 @@ function CopilotPreviewPanel({
         </div>
       </div>
 
-        <div className="space-y-5">
-        <div className="rounded-[30px] border border-white/10 bg-black/30 p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-45px_rgba(236,72,153,0.42)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+      <div className="space-y-5">
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-48px_rgba(236,72,153,0.28)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
             <Bot className="h-4 w-4" />
             Recommended actions
           </p>
@@ -2408,36 +2413,36 @@ function CopilotPreviewPanel({
             {topRecommendations.map((recommendation) => (
               <li
                 key={recommendation.id}
-                className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-foreground/70"
+                className="rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-foreground/70"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
                   <span>{recommendation.channel}</span>
                   <span>{recommendation.impact}</span>
                 </div>
-                <p className="mt-2 text-sm font-semibold text-white">{recommendation.title}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{recommendation.title}</p>
                 <p className="mt-2 text-xs text-foreground/60">{recommendation.detail}</p>
               </li>
             ))}
           </ul>
 
-          <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
+          <div className="mt-5 rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
             Peek inside the dock for full mission queue & playbook.
           </div>
         </div>
 
-        <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-45px_rgba(125,211,252,0.35)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+        <div className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-48px_rgba(125,211,252,0.28)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
             <FileText className="h-4 w-4" />
             Audit ledger
           </p>
-          <div className="mt-4 space-y-3 border-l border-white/10 pl-5">
+          <div className="mt-4 space-y-3 border-l border-slate-200 pl-5">
             {highlightedAudit.map((entry, index) => (
               <div key={entry.id} className="relative">
-                <span className="absolute -left-[11px] top-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/10 bg-white/20 text-[9px] text-slate-900">
+                <span className="absolute -left-[11px] top-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-200 bg-white text-[9px] text-slate-900">
                   {index + 1}
                 </span>
                 <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{entry.time}</p>
-                <p className="mt-1 text-sm font-semibold text-white">{entry.label}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">{entry.label}</p>
                 <p className="mt-1 text-xs text-foreground/60">{entry.description}</p>
               </div>
             ))}
@@ -2445,7 +2450,7 @@ function CopilotPreviewPanel({
           <button
             type="button"
             onClick={onSummonDock}
-            className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/55 transition hover:border-white/20 hover:text-white"
+            className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900"
           >
             <MoveRight className="h-4 w-4" />
             Review full ledger
