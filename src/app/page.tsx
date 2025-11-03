@@ -105,24 +105,30 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <TopBar />
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-        <OverviewStrip />
+      <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <ModuleRail activeModule={activeModule} onSelect={setActiveModule} />
 
-        <ModuleTabs activeModule={activeModule} onSelect={setActiveModule} />
+          <div className="flex-1 space-y-8">
+            <OverviewStrip />
 
-        {activeModule === "digital-twin" ? (
-          <DigitalTwinView
-            scenario={scenario}
-            insights={insights}
-            focus={focus}
-            onFocusChange={setFocus}
-            highlights={mapHighlights}
-          />
-        ) : null}
+            <ModuleTabs activeModule={activeModule} onSelect={setActiveModule} className="lg:hidden" />
 
-        {activeModule === "vlr" ? <VlrAutomationView scenario={scenario} /> : null}
+            {activeModule === "digital-twin" ? (
+              <DigitalTwinView
+                scenario={scenario}
+                insights={insights}
+                focus={focus}
+                onFocusChange={setFocus}
+                highlights={mapHighlights}
+              />
+            ) : null}
 
-        {activeModule === "pipelines" ? <PipelinesView /> : null}
+            {activeModule === "vlr" ? <VlrAutomationView scenario={scenario} /> : null}
+
+            {activeModule === "pipelines" ? <PipelinesView /> : null}
+          </div>
+        </div>
       </main>
     </div>
   );
@@ -130,12 +136,12 @@ export default function Home() {
 
 function TopBar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-2 sm:px-6">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
-          <Sparkles className="h-4 w-4" />
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-1.5 sm:px-6">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+          <Sparkles className="h-3 w-3" />
         </span>
-        <span className="text-sm font-semibold text-slate-700">Nexus Consulting</span>
+        <span className="text-sm font-semibold tracking-tight text-slate-700">Nexus Consulting</span>
       </div>
     </header>
   );
@@ -173,12 +179,14 @@ function OverviewStrip() {
 function ModuleTabs({
   activeModule,
   onSelect,
+  className,
 }: {
   activeModule: ModuleId;
   onSelect: (moduleId: ModuleId) => void;
+  className?: string;
 }) {
   return (
-    <nav className="mb-8 flex flex-wrap gap-2">
+    <nav className={cn("mb-6 flex flex-wrap gap-2", className)}>
       {moduleNavigation.map((module) => {
         const isActive = activeModule === module.id;
 
@@ -210,6 +218,54 @@ function ModuleTabs({
         );
       })}
     </nav>
+  );
+}
+
+function ModuleRail({
+  activeModule,
+  onSelect,
+}: {
+  activeModule: ModuleId;
+  onSelect: (moduleId: ModuleId) => void;
+}) {
+  return (
+    <aside className="hidden shrink-0 lg:block lg:w-60 xl:w-64">
+      <nav className="sticky top-24 flex flex-col gap-1 rounded-3xl border border-slate-200 bg-white px-3 py-4 shadow-sm">
+        <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Modules</p>
+        {moduleNavigation.map((module) => {
+          const isActive = activeModule === module.id;
+          return (
+            <button
+              type="button"
+              key={module.id}
+              onClick={() => onSelect(module.id)}
+              className={cn(
+                "flex items-start gap-3 rounded-2xl px-3 py-3 text-left transition-colors",
+                isActive
+                  ? "bg-sky-50 text-slate-900 shadow-[0_12px_32px_-24px_rgba(14,165,233,0.65)]"
+                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
+              )}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <span
+                className={cn(
+                  "mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border text-sky-600",
+                  isActive
+                    ? "border-sky-200 bg-white"
+                    : "border-transparent bg-slate-200/60 text-slate-500",
+                )}
+              >
+                <module.icon className="h-4 w-4" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-sm font-semibold">{module.label}</span>
+                <span className="mt-1 block text-xs text-slate-400">{module.description}</span>
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+    </aside>
   );
 }
 

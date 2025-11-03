@@ -6,22 +6,28 @@
 - Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
-1. **Light-Theme GIS Canvas Refresh** _(✅ Completed)_
-   - Rebuilt the dashboard shell with a compact top bar, light Notion-inspired surface, and a single tab rail to keep navigation minimal.
-   - Restored the map canvas with generous height, gentle borders, and clean marker overlays so the spatial story reads instantly.
-   - Trimmed each module to focused cards and plain-language summaries, keeping the three core scenarios breathable and easy to scan.
+1. **Navigation & Layout Realignment** _(✅ Completed)_
+   - Introduced a slim vertical navigation rail that keeps module access persistent while preserving the minimal top logo bar.
+   - Reduced the top bar height, limited it to the Nexus wordmark lockup, and matched container widths so the rail and content align.
+   - Refactored the page grid with a left rail + content column pattern to keep modules airy across breakpoints.
 
-2. **Scenario Content Simplification** _(✅ Completed)_
-   - Rewrote module copy, signal chips, and actions in plain language centered on SDG localization, VLR automation, and city profiling.
-   - Renamed charts and pared back controls so each tab spotlights the highest-value analytics without clutter.
-   - Tuned the compact top bar and MapLibre canvas (resize handling, clarity pass) so the GIS layers load cleanly in the light theme.
+2. **GIS Map Reliability & Spatial Storytelling** _(⏳ Pending)_
+   - Resolve the blank/grey MapLibre canvas by auditing style loading, container sizing, and client-side initialization.
+   - Refresh basemap, overlays, and marker theming so points and corridors remain clear against the light palette.
+   - Tune highlight cards and hover states to emphasise AI-driven insights without visual noise.
 
-3. **QA & Build Validation** _(⏳ Pending)_
-   - Cross-browser smoke test the simplified layout for responsive behaviour and map interactivity.
-   - Run `npm run lint` and `npm run build` to ensure the Next.js bundle succeeds with the refreshed UI.
-   - Capture demo notes highlighting the key workflows after the simplification pass.
+3. **Module Content & Visual Polish** _(⏳ Pending)_
+   - Simplify KPI summaries and scenario copy to plain, high-value language that matches each real use case.
+   - Align charts, alerts, and next-step cards with the lighter design system, trimming any redundant elements.
+   - Ensure each module communicates a grounded Nexus workflow (SDG twin, VLR automation, AI pipelines) with minimal jargon.
+
+4. **QA & Build Validation** _(⏳ Pending)_
+   - Cross-browser smoke test the refined layout for responsive behaviour and map interactivity.
+   - Run `npm run lint` and `npm run build` to confirm the Next.js bundle succeeds after the redesign.
+   - Capture demo-ready usage notes highlighting the key workflows once polish is complete.
 
 ## Progress Log
+- **2025-11-09**: Added a sticky left navigation rail, tightened the logo-only top bar, and reflowed the layout grid so the dashboard reads as a calm two-column experience with persistent module access.
 - **2025-11-08**: Simplified the three scenario tabs with plain-language copy, friendlier KPI labels, a compact logo-only top bar, and MapLibre resize handling so the light-theme GIS canvas renders markers and layers reliably.
 - **2025-11-03**: Tuned the top chrome and navigation controls—reduced header height, unified status chips via a shared component, simplified module tabs, and spot-checked responsive behaviour to match the refined GIS brief.
 - **2025-11-03**: Curated the AI Pipelines and Data Fabric modules into concise, plain-language cards with refreshed charts, connector summaries, and simplified automation playbooks aligned to the latest light-theme spec.
