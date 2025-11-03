@@ -49,3 +49,11 @@ clean up clutter and over definition of kpi boxes and cluttered stuff. Keep the 
 Keep only the top bar for the nexus logo, remove everything else and make the height much smaller (we keep the menu on the left as it is right now).
 
 Make sure all maps and GIS are working as I can see the square of the map only grey nothing inside.
+
+---
+
+Latest:
+
+GIS map still not visible. Figure out a way to make this work. Two additional things:
+
+Make the GIS map bigger and occupying more space andd sort of indicators next to it as if it's a map of a city with many dots showing some AI/ML prediction but also include seveal plots / indicatores around it to showcase the fulls status of a city. KEEP THE SAME DESIGN WE HAVe NOW which is very minimal an nice looking. Also, in the SDG, make it a bit more interactive meaning we can click in the different VLR automation steps and can see plots, indicators and text summarizing each step so they can see what is being composed. AGAIN, keep evrything  in the same design, MINIMAL and adding this thing with world class product design in mind

@@ -11,14 +11,16 @@
    - Reduced the top bar height, limited it to the Nexus wordmark lockup, and matched container widths so the rail and content align.
    - Refactored the page grid with a left rail + content column pattern to keep modules airy across breakpoints.
 
-2. **GIS Map Reliability & Spatial Storytelling** _(⏳ Pending)_
-   - Resolve the blank/grey MapLibre canvas by auditing style loading, container sizing, and client-side initialization.
-   - Refresh basemap, overlays, and marker theming so points and corridors remain clear against the light palette.
-   - Tune highlight cards and hover states to emphasise AI-driven insights without visual noise.
+2. **GIS Map Reliability & Spatial Storytelling** _(✅ Completed)_
+   - Hardened MapLibre bootstrapping with load/error guards, resize observers, and scenario-aware bounds fitting so the basemap always renders.
+   - Brightened the light basemap, tuned point halos and strokes, and refreshed marker callouts for crisp AI hotspot legibility.
+   - Added inline loading/error overlays that replace the grey canvas with purposeful status messaging.
 
 3. **Module Content & Visual Polish** _(⏳ Pending)_
    - Simplify KPI summaries and scenario copy to plain, high-value language that matches each real use case.
    - Align charts, alerts, and next-step cards with the lighter design system, trimming any redundant elements.
+   - Widen the digital twin canvas, framing the map with concise indicator tiles so the city view feels like an intelligent operations board.
+   - Enrich the VLR stage drill-in with clickable steps that reveal context cards (plots, indicators, narrative) while keeping the minimal briefing style.
    - Ensure each module communicates a grounded Nexus workflow (SDG twin, VLR automation, AI pipelines) with minimal jargon.
 
 4. **QA & Build Validation** _(⏳ Pending)_
@@ -27,6 +29,7 @@
    - Capture demo-ready usage notes highlighting the key workflows once polish is complete.
 
 ## Progress Log
+- **2025-11-10**: Stabilised the MapLibre canvas with load/error fallbacks, auto-fit bounds, and refreshed hotspot styling so the digital twin map never renders as a blank panel.
 - **2025-11-09**: Added a sticky left navigation rail, tightened the logo-only top bar, and reflowed the layout grid so the dashboard reads as a calm two-column experience with persistent module access.
 - **2025-11-08**: Simplified the three scenario tabs with plain-language copy, friendlier KPI labels, a compact logo-only top bar, and MapLibre resize handling so the light-theme GIS canvas renders markers and layers reliably.
 - **2025-11-03**: Tuned the top chrome and navigation controls—reduced header height, unified status chips via a shared component, simplified module tabs, and spot-checked responsive behaviour to match the refined GIS brief.
