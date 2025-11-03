@@ -21,8 +21,8 @@ async function ensureMapLibreWorker() {
   if (workerAttached || typeof window === "undefined") {
     return;
   }
-  const module = await import("maplibre-gl/dist/maplibre-gl-csp-worker");
-  const WorkerClass = module.default as unknown as MapLibreWorkerClass;
+  const workerModule = await import("maplibre-gl/dist/maplibre-gl-csp-worker");
+  const WorkerClass = workerModule.default as unknown as MapLibreWorkerClass;
   (maplibregl as typeof maplibregl & { workerClass?: MapLibreWorkerClass }).workerClass = WorkerClass;
   workerAttached = true;
 }
@@ -89,8 +89,8 @@ const BASE_STYLE: StyleSpecification = {
         "raster-opacity": 0.98,
         "raster-saturation": -0.05,
         "raster-contrast": 0.05,
-        "raster-brightness-min": 1.03,
-        "raster-brightness-max": 1.24,
+        "raster-brightness-min": 0.88,
+        "raster-brightness-max": 1,
       },
     },
   ],
