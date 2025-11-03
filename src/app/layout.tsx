@@ -16,22 +16,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AetherCity Intelligence | AI-Driven Smart City GIS Command Center",
+  title: "Nexus Consulting | Smart City Digital Twin Command",
   description:
-    "Experience an immersive smart-city GIS platform that fuses AI, ML, and digital twins to orchestrate mobility, energy, climate resilience, and public safety in real time.",
+    "Explore Nexus Consulting’s AI-driven smart city dashboard: spatial digital twins, automated VLR workflows, and mission-ready analytics presented in a single command environment.",
   keywords: [
+    "Nexus Consulting",
     "Smart City",
-    "GIS",
     "Digital Twin",
-    "Urban Analytics",
-    "Artificial Intelligence",
-    "Mobility Optimization",
-    "Energy Management",
+    "GIS Dashboard",
+    "AI Analytics",
+    "VLR Automation",
+    "Urban Operations",
   ],
   openGraph: {
-    title: "AetherCity Intelligence | AI-Driven Smart City GIS Command Center",
+    title: "Nexus Consulting | Smart City Digital Twin Command",
     description:
-      "A flagship GIS experience demonstrating AI-powered insights, predictive analytics, and city-scale digital twin storytelling.",
+      "A world-class GIS dashboard showcasing how Nexus Consulting fuses AI, data science, and digital twins to orchestrate modern cities.",
   },
 };
 

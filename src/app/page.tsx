@@ -1,688 +1,668 @@
-import { AnchorButton } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { Section } from "@/components/ui/section";
-import { Reveal } from "@/components/ui/reveal";
-import { cn } from "@/lib/utils";
+"use client";
+
+import { useMemo, useState } from "react";
 import {
-  heroContent,
-  platformPillars,
-  signalBadges,
-  narrativeSections,
-  successStories,
-  credibilitySignals,
-  testimonialVoices,
-  callToActionContent,
-} from "@/data/content";
+  AlertTriangle,
+  Bot,
+  BrainCircuit,
+  ChevronRight,
+  Clock8,
+  GaugeCircle,
+  LineChart,
+  Map,
+  MapPinned,
+  Radar,
+  Sparkles,
+  Workflow,
+} from "lucide-react";
+import {
+  citywideKpis,
+  demandForecast,
+  modelPerformanceStats,
+  resilienceForecast,
+  type SystemKpi,
+} from "@/data/metrics";
 import {
   defaultScenarioKey,
   getScenarioConfig,
+  listScenarioInsights,
+  listScenarioSummaries,
   type ScenarioDefinition,
-  type ScenarioSignal,
+  type ScenarioKey,
 } from "@/lib/scenarios";
-import { CommandCenterSection } from "@/components/command-center/command-center-section";
-import { AiAnalyticsSection } from "@/components/analytics/ai-analytics-section";
-import { AiCopilotSection } from "@/components/copilot/ai-copilot-section";
-import type { LucideIcon } from "lucide-react";
-import {
-  Activity,
-  ArrowUpRight,
-  BrainCircuit,
-  CheckCircle2,
-  Globe2,
-  MapPinned,
-  Radar,
-  Quote,
-  Sparkles,
-} from "lucide-react";
+import { CommandCenterMap } from "@/components/command-center/command-center-map";
+import { cn } from "@/lib/utils";
+
+const moduleNavigation = [
+  {
+    id: "digital-twin",
+    label: "Digital Twin Canvas",
+    description: "Live city operations and anomaly scanning in the spatial twin.",
+    icon: Map,
+  },
+  {
+    id: "vlr-workbench",
+    label: "VLR Automation",
+    description: "AI-automated voluntary local review pipelines and compliance scoring.",
+    icon: Workflow,
+  },
+  {
+    id: "analytics",
+    label: "AI Analytics",
+    description: "Forecasts, risk posture, and performance lifts across scenarios.",
+    icon: LineChart,
+  },
+  {
+    id: "copilot",
+    label: "Copilot Orchestration",
+    description: "Conversational mission control and coordinated action queues.",
+    icon: Bot,
+  },
+];
 
 export default function Home() {
-  const defaultScenario = getScenarioConfig(defaultScenarioKey);
+  const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>(defaultScenarioKey);
+  const [focus, setFocus] = useState(52);
+  const [activeModule, setActiveModule] = useState("digital-twin");
 
-  if (!defaultScenario) {
-    throw new Error(`Scenario configuration missing for key: ${defaultScenarioKey}`);
+  const scenario = getScenarioConfig(activeScenarioKey);
+  const scenarioSummaries = useMemo(() => listScenarioSummaries(), []);
+  const scenarioInsights = useMemo(() => listScenarioInsights(activeScenarioKey), [activeScenarioKey]);
+
+  if (!scenario) {
+    throw new Error(`Scenario configuration missing for key: ${activeScenarioKey}`);
   }
 
+  const syncTimestamp = new Intl.DateTimeFormat("en", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZoneName: "short",
+  }).format(new Date());
+
   return (
-    <div className="space-y-6 pb-12">
-      <HeroSection hero={heroContent} scenario={defaultScenario} />
-      <SignalsMarquee badges={signalBadges} />
-      <PillarsSection pillars={platformPillars} />
-      <CommandCenterSection />
-      <AiAnalyticsSection />
-      <AiCopilotSection />
-      <NarrativeFlowSection narrative={narrativeSections} />
-      <ImpactStoriesSection stories={successStories} />
-      <TestimonialsSection voices={testimonialVoices} />
-      <CredibilitySection credibility={credibilitySignals} />
-      <FinalCtaSection cta={callToActionContent} />
-    </div>
-  );
-}
+    <div className="flex min-h-screen flex-col">
+      <DashboardTopBar
+        scenarioKey={activeScenarioKey}
+        scenarioSummaries={scenarioSummaries}
+        onScenarioChange={setActiveScenarioKey}
+        syncTimestamp={syncTimestamp}
+      />
 
-type HeroContent = typeof heroContent;
+      <div className="flex flex-1 overflow-hidden">
+        <DashboardSidebar activeModule={activeModule} onModuleChange={setActiveModule} />
 
-function HeroSection({ hero, scenario }: { hero: HeroContent; scenario: ScenarioDefinition }) {
-  return (
-    <Section className="pt-24 sm:pt-28 lg:pt-32" id="platform">
-      <Container className="relative grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-        <Reveal className="max-w-xl space-y-8" offset={36}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
-            {hero.eyebrow}
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </span>
+        <main className="flex-1 overflow-y-auto px-6 py-10 sm:px-10">
+          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 pb-16">
+            <KpiPulseStrip kpis={citywideKpis} />
 
-          <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {hero.headline}
-          </h1>
-          <p className="text-base leading-7 text-foreground/70 sm:text-lg">{hero.subheadline}</p>
-
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <AnchorButton href={hero.primaryCta.href} className="w-full sm:w-auto">
-              {hero.primaryCta.label}
-            </AnchorButton>
-            <AnchorButton href={hero.secondaryCta.href} variant="secondary" className="w-full sm:w-auto">
-              {hero.secondaryCta.label}
-            </AnchorButton>
-          </div>
-
-          <dl className="grid gap-4 sm:grid-cols-3">
-            {hero.stats.map((stat, index) => (
-              <Reveal
-                key={stat.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4"
-                delay={0.18 + index * 0.08}
-                offset={28}
-              >
-                <dt className="text-xs uppercase tracking-[0.25em] text-foreground/60">{stat.label}</dt>
-                <dd className="mt-2 text-3xl font-semibold text-white">{stat.value}</dd>
-                <p className="text-xs text-foreground/60">{stat.detail}</p>
-              </Reveal>
-            ))}
-          </dl>
-        </Reveal>
-
-        <Reveal className="relative" delay={0.12} offset={40}>
-          <div className="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-[0_45px_120px_-50px_rgba(14,165,233,0.45)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.2),transparent_55%),radial-gradient(circle_at_80%_30%,rgba(168,85,247,0.25),transparent_65%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(15,118,110,0.15),transparent_45%)]" />
-            <div className="relative z-10 flex h-full flex-col justify-between p-8">
-              <div>
-                <CitySignalCard scenario={scenario} />
-              </div>
-              <div className="grid gap-4">
-                <Reveal delay={0.28} amount={0.2} offset={18}>
-                  <InsightChip
-                    icon={MapPinned}
-                    title="Mobility density heatmaps refresh every 60s"
-                    tone="primary"
-                  />
-                </Reveal>
-                <Reveal delay={0.36} amount={0.2} offset={18}>
-                  <InsightChip
-                    icon={Radar}
-                    title="Edge sensors flag anomaly clusters in near real time"
-                    tone="accent"
-                  />
-                </Reveal>
-                <Reveal delay={0.44} amount={0.2} offset={18}>
-                  <InsightChip icon={Activity} title="Predictive load balancing keeps energy resilient" tone="glow" />
-                </Reveal>
-              </div>
-            </div>
-          </div>
-          <div className="absolute -bottom-8 left-1/2 hidden w-[85%] -translate-x-1/2 rounded-full bg-gradient-to-r from-primary-500/0 via-primary-500/40 to-primary-500/0 py-3 text-center text-xs font-medium uppercase tracking-[0.35em] text-primary-200 shadow-[0_30px_90px_-45px_rgba(59,130,246,0.7)] sm:block">
-            Trusted by digital twin taskforces across 12 global metros
-          </div>
-        </Reveal>
-      </Container>
-    </Section>
-  );
-}
-
-function SignalsMarquee({ badges }: { badges: string[] }) {
-  return (
-    <div className="overflow-hidden">
-      <div className="flex animate-[marquee_18s_linear_infinite] gap-6 whitespace-nowrap border-y border-white/5 bg-white/5 py-4 text-xs uppercase tracking-[0.35em] text-foreground/60">
-        {[...badges, ...badges].map((signal, index) => (
-          <span key={`${signal}-${index}`} className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-primary-400" />
-            {signal}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
-  return (
-    <Section id="platform-architecture">
-      <Container className="grid gap-12 lg:grid-cols-[0.75fr_1fr] lg:gap-16">
-        <Reveal className="space-y-6" offset={32}>
-          <p className="text-sm font-semibold uppercase tracking-[0.45em] text-primary-200">Platform Stack</p>
-          <h2 className="text-3xl font-semibold text-white sm:text-4xl">
-            Built for orchestration, explainability, and measurable city outcomes.
-          </h2>
-          <p className="text-base leading-7 text-foreground/70">
-            From edge sensors to policy command rooms, every layer is stitched together. Each module exposes
-            open APIs, transparent models, and governance-ready audit trails.
-          </p>
-          <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.25em] text-foreground/50">
-            <span className="rounded-full border border-white/10 px-4 py-2">Interoperable Twins</span>
-            <span className="rounded-full border border-white/10 px-4 py-2">Explainable AI</span>
-            <span className="rounded-full border border-white/10 px-4 py-2">Mission Control</span>
-          </div>
-        </Reveal>
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          {pillars.map(({ title, description, icon: Icon }, index) => (
-            <Reveal
-              key={title}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/70 p-6 shadow-[0_35px_80px_-45px_rgba(15,118,110,0.45)] transition hover:-translate-y-1 hover:border-primary-400/40 hover:bg-surface/90"
-              delay={index * 0.08}
-              offset={30}
-              role="article"
+            <section
+              id="digital-twin"
+              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/70 p-6 shadow-[0_25px_80px_-40px_rgba(59,130,246,0.55)] backdrop-blur-3xl md:p-8"
             >
-              <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-400/15 via-transparent to-accent-500/15" />
-              </div>
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-primary-200">
-                <Icon className="h-6 w-6" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-white">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-foreground/70">{description}</p>
-            </Reveal>
-          ))}
-        </div>
-      </Container>
-    </Section>
-  );
-}
+              <DigitalTwinPanel
+                scenario={scenario}
+                focus={focus}
+                onFocusChange={setFocus}
+                insights={scenarioInsights}
+              />
+            </section>
 
-type NarrativeBlock = (typeof narrativeSections)[number];
+            <section
+              id="vlr-workbench"
+              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/60 p-6 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.45)] backdrop-blur-3xl md:p-8"
+            >
+              <VlrPreviewPanel />
+            </section>
 
-function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSections }) {
-  return (
-    <Section id="ai-narrative" className="pt-10">
-      <Container className="space-y-12">
-        <Reveal className="max-w-2xl space-y-4" offset={32}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
-            <BrainCircuit className="h-3.5 w-3.5" />
-            AI Narrative Engine
-          </span>
-          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-            Explainable intelligence orchestrates every layer of the digital twin.
-          </h2>
-          <p className="text-base leading-7 text-foreground/70">
-            Our scenario playbooks walk operations, planners, and executives through the same shared source of
-            truth. Each storyline blends live telemetry, simulations, and policy guardrails so decisions stay
-            transparent and defensible.
-          </p>
-        </Reveal>
+            <section
+              id="analytics"
+              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/65 p-6 shadow-[0_25px_80px_-45px_rgba(14,165,233,0.48)] backdrop-blur-3xl md:p-8"
+            >
+              <AnalyticsPreviewPanel />
+            </section>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {narrative.map((block, index) => (
-            <NarrativeCard key={block.headline} block={block} step={index + 1} order={index} />
-          ))}
-        </div>
-      </Container>
-    </Section>
-  );
-}
-
-function NarrativeCard({ block, step, order = 0 }: { block: NarrativeBlock; step: number; order?: number }) {
-  return (
-    <Reveal
-      className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/80 shadow-[0_45px_120px_-60px_rgba(56,189,248,0.65)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40"
-      delay={order * 0.1}
-      offset={32}
-      role="article"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-400/10 via-transparent to-accent-500/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      <div className="relative flex items-center justify-between text-xs font-semibold uppercase tracking-[0.35em]">
-        <span className="inline-flex items-center gap-2 text-primary-200">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm text-white">
-            {String(step).padStart(2, "0")}
-          </span>
-          {block.eyebrow}
-        </span>
-        <span className="rounded-full bg-white/5 px-3 py-1 text-[10px] tracking-[0.35em] text-foreground/50">
-          Scenario Playbook
-        </span>
-      </div>
-      <div className="relative space-y-3">
-        <h3 className="text-lg font-semibold text-white">{block.headline}</h3>
-        <p className="leading-6 text-foreground/70">{block.body}</p>
-      </div>
-      <ul className="relative grid gap-2 text-sm leading-6">
-        {block.highlights.map((highlight) => (
-          <li key={highlight} className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-primary-300">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-            </span>
-            <span className="text-foreground/70">{highlight}</span>
-          </li>
-        ))}
-      </ul>
-    </Reveal>
-  );
-}
-
-type SuccessStory = (typeof successStories)[number];
-
-function ImpactStoriesSection({ stories }: { stories: typeof successStories }) {
-  const highlightPoints = [
-    "Deployable in under six weeks with turnkey data onboarding and governance baselines.",
-    "Scenario twins mix mobility, climate, and grid levers into one briefing-ready canvas.",
-    "AI co-pilots coach field teams with explainable actions and compliance safeguards.",
-  ];
-
-  return (
-    <Section id="use-cases" className="pt-10">
-      <Container className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-        <Reveal className="space-y-6" offset={32}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-accent-200">
-            <Globe2 className="h-3.5 w-3.5" />
-            City Impact Library
-          </span>
-          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-            Proven across waterfronts, innovation corridors, and resilient districts.
-          </h2>
-          <p className="text-base leading-7 text-foreground/70">
-            Every deployment blends live operations with predictive simulations so leadership can orchestrate
-            mobility, energy, and climate decisions in lockstep. Here is how urban innovators are already scaling
-            the playbooks.
-          </p>
-          <ul className="grid gap-3 text-sm text-foreground/70">
-            {highlightPoints.map((point, index) => (
-              <li key={point}>
-                <Reveal className="flex items-start gap-3" delay={index * 0.08} offset={24}>
-                  <span className="mt-0.5 h-2 w-2 rounded-full bg-accent-500" />
-                  {point}
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          {stories.map((story, index) => (
-            <SuccessStoryCard key={story.city} story={story} accentIndex={index} />
-          ))}
-        </div>
-      </Container>
-    </Section>
-  );
-}
-
-function SuccessStoryCard({ story, accentIndex }: { story: SuccessStory; accentIndex: number }) {
-  const accentPalette = [
-    "from-primary-400/40 to-primary-500/10",
-    "from-emerald-400/35 to-teal-500/10",
-    "from-fuchsia-400/35 to-purple-500/10",
-  ];
-
-  return (
-    <Reveal
-      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/75 p-6 shadow-[0_45px_120px_-50px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-accent-500/40"
-      delay={accentIndex * 0.08}
-      offset={32}
-      role="article"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/40" />
-      <div className={`absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]}`} />
-      <div className="relative flex flex-col gap-4 text-sm text-foreground/75">
-        <div className="flex items-center justify-between">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/60">
-            {story.city}
-          </span>
-          <span className="text-xs uppercase tracking-[0.3em] text-primary-200">{story.metric}</span>
-        </div>
-        <p className="text-base font-semibold leading-6 text-white">{story.outcome}</p>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Impact Vector</p>
-          <p className="mt-2 text-sm font-medium text-foreground/80">{story.impact}</p>
-        </div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Digital Twin in Action</p>
-        <p className="text-sm leading-6 text-foreground/70">
-          Coordinated AI copilots, map intelligence, and command room workflows to keep stakeholders aligned in
-          minutes.
-        </p>
-      </div>
-    </Reveal>
-  );
-}
-
-type TestimonialVoice = (typeof testimonialVoices)[number];
-
-function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
-  const marqueeVoices = [...voices, ...voices];
-
-  return (
-    <Section id="testimonials" className="pt-6">
-      <Container className="space-y-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <Reveal className="max-w-xl space-y-4" offset={32}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
-              <Sparkles className="h-3.5 w-3.5" />
-              Civic Innovators
-            </span>
-            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-              Voices from the frontlines of urban intelligence orchestration.
-            </h2>
-            <p className="text-base leading-7 text-foreground/70">
-              Executives and lab directors rely on AetherCity to fuse digital twins, AI guardrails, and mission control
-              workflows into one canvas that de-risks every activation sprint.
-            </p>
-          </Reveal>
-          <Reveal className="flex flex-wrap items-center gap-5 text-sm text-foreground/60 sm:flex-nowrap" delay={0.12} offset={24}>
-            <div className="flex flex-col">
-              <span className="text-xs uppercase tracking-[0.35em]">Customer Insight</span>
-              <span className="text-lg font-semibold text-white">Net Promoter 74</span>
-            </div>
-            <div className="h-10 w-px bg-white/10" />
-            <div className="flex flex-col">
-              <span className="text-xs uppercase tracking-[0.35em]">Global Reach</span>
-              <span className="text-lg font-semibold text-white">12 countries</span>
-            </div>
-          </Reveal>
-        </div>
-
-        <div className="grid gap-6 md:hidden">
-          {voices.map((voice, index) => (
-            <TestimonialCard key={voice.name} voice={voice} accentIndex={index} />
-          ))}
-        </div>
-
-        <Reveal
-          className="relative hidden overflow-hidden rounded-[3rem] border border-white/10 bg-surface/70 p-8 shadow-[0_45px_120px_-65px_rgba(14,165,233,0.45)] md:block"
-          delay={0.18}
-          offset={36}
-        >
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background via-background/60 to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background via-background/60 to-transparent" />
-          <div className="space-y-8">
-            <div className="flex min-w-[200%] gap-6" style={{ animation: "marquee 34s linear infinite" }}>
-              {marqueeVoices.map((voice, index) => (
-                <TestimonialCard key={`marquee-top-${index}-${voice.name}`} voice={voice} accentIndex={index} />
-              ))}
-            </div>
-            <div className="flex min-w-[200%] gap-6" style={{ animation: "marquee 38s linear infinite reverse" }}>
-              {marqueeVoices.map((voice, index) => (
-                <TestimonialCard key={`marquee-bottom-${index}-${voice.name}`} voice={voice} accentIndex={index + 1} />
-              ))}
-            </div>
+            <section
+              id="copilot"
+              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/65 p-6 shadow-[0_25px_80px_-45px_rgba(236,72,153,0.42)] backdrop-blur-3xl md:p-8"
+            >
+              <CopilotPreviewPanel scenarioName={scenario.name} />
+            </section>
           </div>
-        </Reveal>
-      </Container>
-    </Section>
+        </main>
+      </div>
+    </div>
   );
 }
 
-function TestimonialCard({ voice, accentIndex }: { voice: TestimonialVoice; accentIndex: number }) {
-  const accentPalette = [
-    "from-primary-500/20 via-transparent to-white/5",
-    "from-emerald-400/20 via-transparent to-primary-500/10",
-    "from-fuchsia-500/15 via-transparent to-purple-500/10",
-  ];
+type DashboardTopBarProps = {
+  scenarioKey: ScenarioKey;
+  scenarioSummaries: ReturnType<typeof listScenarioSummaries>;
+  onScenarioChange: (key: ScenarioKey) => void;
+  syncTimestamp: string;
+};
 
+function DashboardTopBar({ scenarioKey, scenarioSummaries, onScenarioChange, syncTimestamp }: DashboardTopBarProps) {
   return (
-    <Reveal
-      className="group relative flex w-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/75 shadow-[0_35px_120px_-65px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40 sm:min-w-[19rem] sm:max-w-[22rem] md:min-w-[22rem] md:max-w-[22rem] md:w-auto"
-      delay={(accentIndex % 6) * 0.06}
-      offset={28}
-      role="article"
-    >
-      <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-60`} />
-      <div className="relative flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-sm font-semibold uppercase text-white">
-            {voice.avatarInitials}
-          </span>
-          <div className="space-y-0.5">
-            <p className="text-base font-semibold text-white">{voice.name}</p>
-            <p className="text-xs uppercase tracking-[0.25em] text-foreground/50">{voice.title}</p>
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(8,16,38,0.88)]">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-4 px-6 py-5 sm:px-10 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-accent-500 to-indigo-500 text-white shadow-[0_0_30px_rgba(59,130,246,0.45)]">
+            <Sparkles className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-foreground/50">Nexus Consulting</p>
+            <h1 className="text-xl font-semibold text-white sm:text-2xl">City Digital Twin Command</h1>
+            <p className="text-xs text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
           </div>
         </div>
-        <Quote className="h-8 w-8 text-primary-300/50 transition group-hover:text-primary-100/80" />
-      </div>
-      <p className="relative text-sm leading-6 text-foreground/70">“{voice.quote}”</p>
-      <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-foreground/50">
-        <span>{voice.organization}</span>
-        <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] text-primary-200">{voice.cityFocus}</span>
-      </div>
-    </Reveal>
-  );
-}
 
-type CtaContent = typeof callToActionContent;
-type CtaMetric = CtaContent["metrics"][number];
-
-type Credibility = typeof credibilitySignals;
-
-function CredibilitySection({ credibility }: { credibility: Credibility }) {
-  const { badges, partners } = credibility;
-
-  return (
-    <Section id="why-us" className="pt-10">
-      <Container className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <Reveal className="space-y-6" offset={32}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60">
-            Mission-Grade Assurance
-          </span>
-          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-            Built for civic trust, regulatory confidence, and operational resilience.
-          </h2>
-          <p className="text-base leading-7 text-foreground/70">
-            Every rollout is hardened with privacy-by-design, AI governance accelerators, and cybersecurity
-            playbooks so you can scale innovation without compromising compliance.
-          </p>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {badges.map((badge, index) => (
-              <Reveal
-                key={badge}
-                className="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-foreground/70"
-                delay={index * 0.06}
-                offset={24}
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-4">
+          <nav className="flex flex-wrap gap-2 rounded-[999px] border border-white/10 bg-white/5 p-1.5">
+            {scenarioSummaries.map((scenario) => (
+              <button
+                key={scenario.key}
+                type="button"
+                onClick={() => onScenarioChange(scenario.key)}
+                className={cn(
+                  "min-w-[150px] rounded-[999px] px-4 py-2 text-left text-xs font-medium transition-all",
+                  scenario.key === scenarioKey
+                    ? "bg-primary-500/80 text-white shadow-[0_15px_40px_-25px_rgba(14,165,233,0.85)]"
+                    : "text-foreground/60 hover:bg-white/10 hover:text-foreground",
+                )}
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500/15 text-primary-200">
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-                <span>{badge}</span>
-              </Reveal>
+                <span className="block text-[10px] uppercase tracking-[0.35em] text-white/60">Scenario</span>
+                <span className="mt-0.5 block text-sm leading-tight">{scenario.name}</span>
+              </button>
             ))}
-          </div>
+          </nav>
 
-          <div className="flex flex-wrap gap-4 pt-2">
-            <AnchorButton href="#contact" variant="primary">
-              Engage the Taskforce
-            </AnchorButton>
-            <AnchorButton href="#demo" variant="secondary">
-              Download Capabilities Deck
-            </AnchorButton>
-          </div>
-        </Reveal>
-
-        <Reveal
-          className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[0_45px_120px_-50px_rgba(59,130,246,0.55)]"
-          delay={0.18}
-          offset={36}
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-accent-500/15" />
-          <div className="relative space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50">Strategic Alliances</p>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {partners.map(({ name, logo: Logo }, index) => (
-                <Reveal
-                  key={name}
-                  className="flex flex-col items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4 text-center text-xs text-foreground/60 transition hover:border-primary-400/30 hover:bg-primary-400/10"
-                  delay={index * 0.08}
-                  offset={24}
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-primary-200">
-                    <Logo className="h-6 w-6" />
-                  </span>
-                  <span className="uppercase tracking-[0.25em]">{name}</span>
-                </Reveal>
-              ))}
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-foreground/60">
+            <MapPinned className="h-4 w-4 text-primary-200" />
+            <div className="flex flex-col">
+              <span className="uppercase tracking-[0.35em]">Metro Focus</span>
+              <span className="mt-0.5 text-sm font-semibold text-white">Aurora District Twin</span>
             </div>
-            <p className="text-sm leading-6 text-foreground/70">
-              We collaborate with innovation labs, utilities, and global standards bodies to ensure every feature
-              aligns with smart city mandates and ethical AI frameworks.
-            </p>
           </div>
-        </Reveal>
-      </Container>
-    </Section>
-  );
-}
 
-function FinalCtaSection({ cta }: { cta: CtaContent }) {
-  return (
-    <Section id="contact" className="pt-0 pb-24">
-      <Container className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-surface/80 p-10 shadow-[0_55px_140px_-70px_rgba(14,165,233,0.55)] sm:p-16">
-        <div className="absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rotate-6 rounded-full bg-primary-500/20 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-72 w-72 translate-x-1/4 translate-y-1/4 rounded-full bg-fuchsia-500/15 blur-[160px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),_transparent_60%)]" />
-        <Reveal className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start" offset={36}>
-          <Reveal className="space-y-6" offset={32}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100">
-              <Sparkles className="h-3.5 w-3.5" />
-              {cta.eyebrow}
-            </span>
-            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">{cta.headline}</h2>
-            <p className="text-base leading-7 text-foreground/70">{cta.body}</p>
-            <ul className="grid gap-3 text-sm text-foreground/70">
-              {cta.bullets.map((bullet, index) => (
-                <li key={bullet}>
-                  <Reveal className="flex items-start gap-3" delay={index * 0.08} offset={24}>
-                    <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-200">
-                      <BrainCircuit className="h-4 w-4" />
-                    </span>
-                    {bullet}
-                  </Reveal>
-                </li>
-              ))}
-            </ul>
-            <div className="flex flex-col gap-4 pt-2 sm:flex-row">
-              <AnchorButton href={cta.primaryCta.href} variant="primary" className="w-full sm:w-auto">
-                {cta.primaryCta.label}
-              </AnchorButton>
-              <AnchorButton href={cta.secondaryCta.href} variant="secondary" className="w-full sm:w-auto">
-                {cta.secondaryCta.label}
-              </AnchorButton>
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-foreground/60">
+            <Clock8 className="h-4 w-4 text-accent-400" />
+            <div className="flex flex-col">
+              <span className="uppercase tracking-[0.35em]">Sync Checkpoint</span>
+              <span className="mt-0.5 text-sm font-semibold text-white">{syncTimestamp}</span>
             </div>
-          </Reveal>
-
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            {cta.metrics.map((metric, index) => (
-              <MetricCard key={metric.label} metric={metric} accentIndex={index} />
-            ))}
           </div>
-        </Reveal>
-      </Container>
-    </Section>
-  );
-}
-
-function MetricCard({ metric, accentIndex }: { metric: CtaMetric; accentIndex: number }) {
-  const accentPalette = [
-    "from-primary-500/25 via-transparent to-white/5",
-    "from-emerald-400/25 via-transparent to-primary-500/10",
-    "from-fuchsia-500/25 via-transparent to-purple-500/10",
-  ];
-  const offsetClasses = ["lg:-mt-4", "lg:translate-x-4", "lg:-mb-4 lg:translate-x-8"];
-
-  return (
-    <Reveal
-      className={cn(
-        "glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-6 text-sm text-foreground/70 shadow-[0_35px_120px_-65px_rgba(59,130,246,0.55)] transition duration-500 hover:-translate-y-1",
-        offsetClasses[accentIndex % offsetClasses.length],
-      )}
-      delay={accentIndex * 0.08}
-      offset={28}
-    >
-      <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-70`} />
-      <div className="relative space-y-3">
-        <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
-        <p className="text-4xl font-semibold text-white">{metric.value}</p>
-        <p>{metric.detail}</p>
-      </div>
-    </Reveal>
-  );
-}
-
-function CitySignalCard({ scenario }: { scenario: ScenarioDefinition }) {
-  return (
-    <div className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-6 text-sm text-foreground/80">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_55%)]" />
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22 fill=%22none%22%3E%3Cpath d=%22M40 0H0V40%22 stroke=%22rgba(255,255,255,0.08)%22/%3E%3C/svg%3E')] opacity-30" />
-      <div className="relative flex items-start justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-primary-200">Live Signals</p>
-          <h3 className="mt-2 text-lg font-semibold text-white">{scenario.name}</h3>
         </div>
-        <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-foreground/60">
-          AI-Co-Pilot
+      </div>
+    </header>
+  );
+}
+
+type DashboardSidebarProps = {
+  activeModule: string;
+  onModuleChange: (moduleId: string) => void;
+};
+
+function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProps) {
+  return (
+    <aside className="hidden w-[280px] border-r border-white/10 bg-[rgba(6,12,28,0.88)] px-5 py-8 lg:block">
+      <div className="space-y-6">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-5 text-xs uppercase tracking-[0.35em] text-foreground/60 shadow-[0_18px_50px_-35px_rgba(59,130,246,0.65)]">
+          <p className="flex items-center gap-2 text-foreground/60">
+            <GaugeCircle className="h-4 w-4 text-primary-300" />
+            Mission Status
+          </p>
+          <span className="mt-2 flex items-baseline gap-2 text-2xl font-semibold text-white">
+            92%
+            <span className="text-[11px] font-medium uppercase tracking-[0.4em] text-primary-200">Operational</span>
+          </span>
+        </div>
+
+        <nav className="flex flex-col gap-2">
+          {moduleNavigation.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={() => onModuleChange(item.id)}
+              className={cn(
+                "group rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 transition-all duration-200 hover:border-white/20 hover:bg-white/10",
+                activeModule === item.id ? "border-primary-400 bg-primary-500/15" : "text-foreground/70",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-5 w-5 text-primary-200" />
+                  <div>
+                    <p className="text-sm font-semibold text-white">{item.label}</p>
+                    <p className="text-[11px] text-foreground/60">{item.description}</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-foreground/50 transition-transform group-hover:translate-x-1" />
+              </div>
+            </a>
+          ))}
+        </nav>
+
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary-500/10 via-accent-500/10 to-rose-500/10 p-5 text-xs text-foreground/60">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-primary-200">
+            <BrainCircuit className="h-4 w-4" />
+            AI Warden
+          </p>
+          <p className="mt-3 text-sm text-white">
+            Digital twin telemetry is clean. 3 proactive interventions queued with Nexus Copilot.
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function KpiPulseStrip({ kpis }: { kpis: SystemKpi[] }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {kpis.map((kpi) => (
+        <KpiCard key={kpi.id} kpi={kpi} />
+      ))}
+    </div>
+  );
+}
+
+function KpiCard({ kpi }: { kpi: SystemKpi }) {
+  const tone = kpi.change.direction === "up" ? "text-success-500" : "text-danger-500";
+  const arrow = kpi.change.direction === "up" ? "▲" : "▼";
+
+  return (
+    <div className="rounded-3xl border border-white/8 bg-white/5 p-5 shadow-[0_18px_60px_-50px_rgba(14,165,233,0.65)]">
+      <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
+      <div className="mt-3 flex items-end justify-between">
+        <span className="text-2xl font-semibold text-white">
+          {kpi.value.toLocaleString()} <span className="text-sm text-foreground/50">{kpi.unit}</span>
+        </span>
+        <span className={cn("text-xs font-semibold", tone)}>
+          {arrow} {kpi.change.percentage}%
         </span>
       </div>
-
-      <div className="mt-6 grid gap-3">
-        {scenario.liveSignals.map((signal) => (
-          <SignalRow key={signal.label} signal={signal} />
-        ))}
-      </div>
+      <p className="mt-2 text-[11px] text-foreground/60">vs. last {kpi.change.period}</p>
     </div>
   );
 }
 
-function SignalRow({ signal }: { signal: ScenarioSignal }) {
-  const deltaClasses = cn(
-    "rounded-full px-3 py-1 text-[11px] font-medium",
-    signal.tone === "positive" && "bg-success-500/15 text-success-500",
-    signal.tone === "warning" && "bg-warning-500/15 text-warning-500",
-    signal.tone === "neutral" && "bg-white/10 text-foreground/70",
-  );
+type DigitalTwinPanelProps = {
+  scenario: ScenarioDefinition;
+  focus: number;
+  onFocusChange: (value: number) => void;
+  insights: ReturnType<typeof listScenarioInsights>;
+};
+
+function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalTwinPanelProps) {
+  const confidence = insights.aiInsights.at(0)?.confidence ?? 0;
+  const confidenceLabel = `${Math.round(confidence * 100)}% confidence`;
 
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-      <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">{signal.label}</p>
-        <p className="mt-1 text-sm font-semibold text-white">{signal.value}</p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.4em] text-primary-200">Digital Twin Command</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{scenario.name}</h2>
+          <p className="mt-2 text-sm text-foreground/70">{scenario.tagline}</p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-foreground/60">
+            <Radar className="h-4 w-4 text-primary-200" />
+            {scenario.command}
+          </div>
+        </div>
+
+        <div className="w-full rounded-3xl border border-white/10 bg-white/10 px-5 py-4 text-sm text-foreground/70 sm:w-auto">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Focus Horizon</span>
+            <span className="text-base font-semibold text-white">{Math.round((focus / 100) * 60)} min</span>
+          </div>
+          <input
+            type="range"
+            value={focus}
+            onChange={(event) => onFocusChange(Number(event.target.value))}
+            min={0}
+            max={100}
+            className="mt-3 h-2 w-full appearance-none rounded-full bg-white/10 accent-primary-400"
+          />
+        </div>
       </div>
-      <span className={deltaClasses}>{signal.delta}</span>
+
+      <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
+        <div className="space-y-5">
+          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-black/40 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.55)]">
+            <CommandCenterMap scenario={scenario} focus={focus} />
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/5 bg-black/30 px-6 py-4 text-xs text-foreground/60">
+              <div className="flex items-center gap-3">
+                <Map className="h-4 w-4 text-primary-200" />
+                <span>Spatial overlays synced · {scenario.layers.length} active layers</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <BrainCircuit className="h-4 w-4 text-accent-400" />
+                <span>{confidenceLabel}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {insights.signals.map((signal) => (
+              <SignalBadge key={signal.label} signal={signal} />
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div className="rounded-[28px] border border-white/10 bg-white/8 p-5 shadow-[0_25px_80px_-45px_rgba(14,165,233,0.55)]">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+              <Sparkles className="h-4 w-4" />
+              AI Insight Pulse
+            </p>
+            <div className="mt-4 space-y-4">
+              {insights.aiInsights.map((insight, index) => (
+                <InsightCard key={insight.title} insight={insight} index={index} />
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {scenario.kpis.map((kpi) => (
+              <div
+                key={kpi.id}
+                className="rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 text-sm text-foreground/70"
+              >
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-white">
+                  {kpi.value} <span className="text-sm text-foreground/50">{kpi.unit}</span>
+                </p>
+                <p className="mt-1 text-[11px] text-primary-200">
+                  Δ {kpi.change.percentage}% {kpi.change.direction === "up" ? "improvement" : "reduction"}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <ActionQueueCard actions={insights.actions} />
+        </div>
+      </div>
     </div>
   );
 }
 
-function InsightChip({
-  icon: Icon,
-  title,
-  tone,
-}: {
-  icon: LucideIcon;
-  title: string;
-  tone: "primary" | "accent" | "glow";
-}) {
-  const toneClass =
-    tone === "primary"
-      ? "from-primary-400/20 to-primary-500/10"
-      : tone === "accent"
-        ? "from-accent-400/20 to-accent-500/10"
-        : "from-emerald-400/20 to-emerald-500/10";
+function SignalBadge({ signal }: { signal: ReturnType<typeof listScenarioInsights>["signals"][number] }) {
+  const tone =
+    signal.tone === "positive"
+      ? "border-primary-400/40 bg-primary-500/10 text-primary-100"
+      : signal.tone === "warning"
+        ? "border-warning-500/40 bg-warning-500/10 text-warning-500"
+        : "border-white/10 bg-white/5 text-foreground/70";
 
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r p-4 transition duration-300 hover:-translate-y-1 hover:border-primary-400/40 hover:shadow-[0_25px_60px_-35px_rgba(56,189,248,0.8)]",
-        toneClass,
+        "rounded-[24px] border px-5 py-4 text-sm shadow-[0_18px_60px_-50px_rgba(59,130,246,0.55)]",
+        tone,
       )}
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-primary-100">
-        <Icon className="h-5 w-5" />
-      </span>
-      <p className="text-sm leading-6 text-foreground/80">{title}</p>
+      <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{signal.label}</p>
+      <p className="mt-2 text-lg font-semibold">{signal.value}</p>
+      <p className="text-[11px] text-foreground/60">Δ {signal.delta}</p>
+    </div>
+  );
+}
+
+function InsightCard({
+  insight,
+  index,
+}: {
+  insight: ReturnType<typeof listScenarioInsights>["aiInsights"][number];
+  index: number;
+}) {
+  return (
+    <div className="rounded-[22px] border border-white/10 bg-black/30 px-4 py-3">
+      <p className="text-xs font-semibold text-white">{insight.title}</p>
+      <p className="mt-2 text-sm text-foreground/70">{insight.detail}</p>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+        {Math.round(insight.confidence * 100)}% confidence · Insight #{index + 1}
+      </p>
+    </div>
+  );
+}
+
+function ActionQueueCard({ actions }: { actions: string[] }) {
+  return (
+    <div className="rounded-[26px] border border-white/10 bg-black/40 p-5 text-sm text-foreground/70">
+      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+        <Workflow className="h-4 w-4" />
+        Orchestration Queue
+      </p>
+      <ul className="mt-3 space-y-2">
+        {actions.map((action, index) => (
+          <li key={action} className="flex gap-3 rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-foreground/80">
+            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-xs font-semibold text-primary-200">
+              {index + 1}
+            </span>
+            <span>{action}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function VlrPreviewPanel() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="space-y-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">VLR Automation</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Voluntary Local Review Mission Board</h2>
+          <p className="mt-3 text-sm text-foreground/70">
+            Nexus Consulting ingests mobility, energy, and climate telemetry to author full VLR chapters in minutes.
+            Every step is auditable and tied back to digital twin evidence.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {["Ingestion", "Classification", "KPI Scoring", "Narrative Generation"].map((stage, index) => (
+            <div key={stage} className="rounded-[24px] border border-white/10 bg-white/8 p-4">
+              <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Stage {index + 1}</p>
+              <p className="mt-1 text-lg font-semibold text-white">{stage}</p>
+              <p className="mt-2 text-xs text-foreground/60">
+                {index === 0 && "Harvesting 64 live data feeds, cleansing anomalies in under 90 seconds."}
+                {index === 1 && "AI tags Sustainable Development Goal metrics with 97% accuracy."}
+                {index === 2 && "Automated KPI deltas benchmark against baseline year for rapid validation."}
+                {index === 3 && "Narratives translate outputs into executive-ready PDF chapters instantly."}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-black/40 p-5">
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
+          VLR Snapshot · 2025 Q3
+        </div>
+
+        <div className="flex flex-1 flex-col justify-between gap-4">
+          <div className="space-y-3">
+            <p className="text-sm text-foreground/70">
+              <strong className="text-white">Climate Resilience Chapter:</strong> AI drafted in 4m 28s with targeted
+              adaptation projects for Harbor District and Innovation Basin.
+            </p>
+            <p className="text-sm text-foreground/70">
+              <strong className="text-white">Social Equity Chapter:</strong> Trip abandonment dropped 12%, enabling a
+              green-light on expanded subsidy programs.
+            </p>
+          </div>
+
+          <div className="rounded-[24px] border border-white/10 bg-white/10 p-4 text-sm text-foreground/70">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+              <AlertTriangle className="h-4 w-4" />
+              Policy Gaps flagged
+            </p>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 h-2 w-2 rounded-full bg-warning-500" />
+                Formal heat resilience strategy pending for two waterfront schools.
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 h-2 w-2 rounded-full bg-rose-500" />
+                DER incentives need City Council review before Q4 budget vote.
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-2 rounded-[999px] bg-gradient-to-r from-primary-500/80 to-accent-500/80 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-35px_rgba(124,58,237,0.68)] transition-transform hover:scale-[1.01]"
+          >
+            Download latest AI-authored VLR
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsPreviewPanel() {
+  const mobilityLift = demandForecast.points.at(-1)?.value ?? 0;
+  const resilienceLift = resilienceForecast.points.at(-1)?.value ?? 0;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">AI Analytics</p>
+        <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Model telemetry and explainable lifts</h2>
+        <p className="mt-3 text-sm text-foreground/70">
+          Forecast corridors, climate resilience trajectories, and model governance metrics align to the active
+          scenario. Nexus dashboards blend data-science fidelity with executive storytelling.
+        </p>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-[28px] border border-white/10 bg-white/8 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Mobility Forecast Horizon</p>
+              <h3 className="mt-2 text-lg font-semibold text-white">Adaptive signal retiming + curb balancing</h3>
+            </div>
+            <div className="rounded-2xl border border-primary-400/40 bg-primary-500/10 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-primary-100">
+              AI Lift
+              <p className="mt-1 text-2xl font-semibold text-white">{Math.round(mobilityLift * 100)}%</p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-foreground/70">
+            Nexus models project corridor efficiency staying above 90% during the evening peak by orchestrating freight
+            staging, micromobility swaps, and signal retiming simultaneously.
+          </p>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {modelPerformanceStats.map((stat) => (
+              <div key={stat.id} className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-3 text-sm">
+                <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">{stat.metric}</p>
+                <p className="mt-2 text-xl font-semibold text-white">{stat.value}</p>
+                <p className="text-[11px] text-primary-200">{stat.change}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[28px] border border-white/10 bg-black/35 p-5 text-sm text-foreground/70">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+            <BrainCircuit className="h-4 w-4" />
+            Resilience Trajectory
+          </p>
+          <p className="mt-2 text-xl font-semibold text-white">Heat index leveling after 7-day surge</p>
+          <p className="mt-3">
+            Automated cooling center activation and microgrid dispatch should keep heat index below {resilienceLift}°C
+            by end of week while maintaining hospital uptime.
+          </p>
+
+          <div className="mt-4 rounded-[20px] border border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
+            Scenario Insights
+          </div>
+
+          <ul className="mt-3 space-y-3 text-sm">
+            <li className="flex items-start gap-3">
+              <span className="mt-1 h-2 w-2 rounded-full bg-primary-200" />
+              Dynamic cooling center routing reduced emergency calls by 18% in the last 24 hours.
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1 h-2 w-2 rounded-full bg-accent-400" />
+              DER flex alert keeps carbon intensity under 280 gCO₂/kWh through peak load events.
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1 h-2 w-2 rounded-full bg-rose-400" />
+              Environmental sensors flagged two coastal clusters for rapid flood barrier deployment.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CopilotPreviewPanel({ scenarioName }: { scenarioName: string }) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
+      <div className="rounded-[28px] border border-white/10 bg-white/8 p-5">
+        <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Nexus Copilot</p>
+        <h3 className="mt-2 text-xl font-semibold text-white">Mission threads aligned to {scenarioName}</h3>
+        <p className="mt-3 text-sm text-foreground/70">
+          Operators can investigate anomalies, request forecasts, and deploy field actions through a secure copilot
+          interface. Every recommendation is grounded in digital twin evidence.
+        </p>
+
+        <div className="mt-5 space-y-3 text-sm">
+          <div className="rounded-[20px] border border-white/10 bg-white/5 px-4 py-3">
+            <p className="text-xs uppercase tracking-[0.35em] text-primary-200">Live Prompt</p>
+            <p className="mt-2 text-foreground/80">
+              “Summarize the top three climate resilience risks for Harbor District and prep a briefing for emergency
+              services.”
+            </p>
+          </div>
+          <div className="rounded-[20px] border border-white/10 bg-black/30 px-4 py-3 text-foreground/70">
+            Copilot cross-checks energy, mobility, and sentiment feeds before suggesting actions and writes the
+            executive-ready response in under 8 seconds.
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-[28px] border border-white/10 bg-black/35 p-5">
+        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+          <Bot className="h-4 w-4" />
+          Recommended Actions
+        </p>
+        <ul className="mt-4 space-y-3 text-sm text-foreground/70">
+          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
+            Dispatch “Cooling Surge Kit” to Innovation Basin shelters and notify resilience desk.
+          </li>
+          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
+            Trigger congestion-aware freight reprioritization along Harbor Connector for next 45 minutes.
+          </li>
+          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
+            Publish governance log to City Council portal summarizing AI interventions in last 24 hours.
+          </li>
+        </ul>
+
+        <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
+          Audit Trail
+        </div>
+
+        <ul className="mt-3 space-y-2 text-xs text-foreground/60">
+          <li className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-primary-300" />
+            16:42 · Mobility anomaly explanation archived for compliance.
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-accent-400" />
+            16:40 · Nexus Copilot posted VLR chapter summary to mission channel.
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-rose-400" />
+            16:37 · Edge sensor escalation resolved via automated script.
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

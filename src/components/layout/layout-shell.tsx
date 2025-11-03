@@ -1,17 +1,14 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import type { ReactNode } from "react";
 
 type LayoutShellProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function LayoutShell({ children }: LayoutShellProps) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
+    <div className="relative min-h-screen bg-background text-foreground">
       <BackgroundDecor />
-      <Header />
-      <main className="relative z-10 flex-1">{children}</main>
-      <Footer />
+      <main className="relative z-10 min-h-screen">{children}</main>
     </div>
   );
 }

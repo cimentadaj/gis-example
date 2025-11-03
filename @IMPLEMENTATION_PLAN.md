@@ -1,61 +1,38 @@
-# Implementation Plan – Smart City GIS AI Frontend
+# Implementation Plan – Nexus Consulting Smart City Dashboard
 
 ## Objectives
-- Present a world-class, wow-factor GIS experience that highlights AI/ML-driven insights for smart cities.
-- Keep the solution frontend-only while showcasing sophisticated analytics, immersive mapping, and data storytelling.
-- Ensure the codebase is clean, modular, and ready for extension.
+- Deliver a production-grade GIS dashboard that convinces smart-city executives Nexus Consulting already operates a full AI/ML command center.
+- Showcase digital twin interactions, automated VLR workflows, citywide KPIs, and explainable AI insights inside an immersive, responsive canvas.
+- Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
-1. **AI Copilot Orchestration Studio** _(✅ Completed)_
-   - Expand content taxonomy for copilot modules, conversational transcripts, and mission board signals.
-   - Design and implement the `AiCopilotSection` with mode selector, conversational panel, and mission console.
-   - Integrate the copilot experience into the homepage flow with reveal animations and theming alignment.
+1. **Dashboard Shell & Navigation** _(✅ Completed)_
+   - Replace the marketing layout with a Nexus-branded dashboard chrome: top intelligence bar, module navigation, and responsive grid system.
+   - Surface global state (city, sync timestamp, alert badges) and quick AI status indicators.
+   - Ensure the shell accommodates the command map, analytics stack, VLR pipelines, and copilot panes without overflow.
 
-2. **Project Foundation** _(✅ Completed)_
-   - Scaffold a Next.js (App Router) project with TypeScript and strict mode enabled.
-   - Install and configure core dependencies (Tailwind CSS, Mapbox GL, deck.gl or similar, charting library, icon set, animation helpers).
-   - Establish global theme: typography, color system, spacing scale, glassmorphism gradient system, and dark-friendly palette.
-   - Implement base layout components (`Layout`, `Header`, `Footer`, `Section` wrappers) with responsive handling.
+2. **Digital Twin Operations Canvas** _(⬜ Pending)_
+   - Embed the MapLibre command center into the new shell with adaptive sizing, layer legends, and focus controls.
+   - Pair the map with live KPI badges, AI insight overlays, and timeline focus dial.
+   - Optimize for 1440px desktop while staying functional on tablets.
 
-3. **Data & Content Preparation** _(✅ Completed)_
-   - Curate representative static datasets (GeoJSON layers, AI prediction metrics, KPI summaries) stored locally.
-   - Create utility functions for scenario toggles (e.g., congestion, energy, resilience).
-   - Collect/define copywriting content (taglines, section blurbs, client logos/testimonials) to avoid lorem ipsum.
+3. **VLR Automation Workbench** _(⬜ Pending)_
+   - Build a VLR pipeline board highlighting ingestion, classification, scoring, and AI narrative summaries.
+   - Provide interactive step selection with progress signals, sample KPI deltas, and policy compliance badges.
+   - Include PDF preview placeholder and export CTA for stakeholders.
 
-4. **Landing & Narrative Flow** _(✅ Completed)_
-   - Build hero section with immersive city visualization, animated stats, and strong CTA.
-   - Add narrative sections explaining AI/ML capabilities, digital twin insights, and workflow steps.
-   - Integrate client impact metrics and success highlights with stylized cards.
+4. **AI Insight Modules** _(⬜ Pending)_
+   - Recompose forecast, anomaly, risk, and explainability widgets into a cohesive analytics strip tied to active scenarios.
+   - Add hover states, filters, and at-a-glance AI lift metrics tailored for operations leaders.
+   - Harmonize color scales and typography with the new dashboard chrome.
 
-5. **Interactive GIS Command Center** _(✅ Completed)_
-   - Implement full-screen interactive map with MapLibre basemap and layered mobility/energy/climate visualizations.
-   - Add overlay control panel for toggling scenarios, time slider, and layer legend.
-   - Display contextual KPIs alongside the map (e.g., anomaly detection, forecasted impact).
+5. **Copilot & Action Orchestration** _(⬜ Pending)_
+   - Integrate the AI copilot studio as a collapsible right-rail with mission threads, recommended actions, and audit trace.
+   - Wire up sample prompts/responses and align to the city’s active scenario context.
 
-6. **AI/ML Analytics Dashboards** _(✅ Completed)_
-   - Create modular dashboard cards with charts (forecast trends, anomaly radar, risk scoring heatmap).
-   - Emphasize AI narrative with explainability snippets and model performance badges.
-   - Include scenario comparisons and “what-if” mini simulations using prepared data.
-
-7. **Stories, Testimonials & CTA** _(✅ Completed)_
-   - Add carousel or grid of smart city success stories with visuals.
-   - Provide enterprise credibility section (logos, certifications, partnerships).
-   - Close with compelling CTA section and contact prompt.
-   - Layer in marquee-style testimonial voices with executive quotes.
-   - Showcase final activation CTA with quantified impact metrics.
-
-8. **Polish & Quality** _(✅ Completed)_
-   - Apply motion design (scroll-triggered animations, microinteractions) ensuring performance.
-   - Verify responsive behavior for desktop/tablet/mobile breakpoints.
-   - Run linting and any available tests; ensure no TypeScript or build errors.
-   - Prepare README updates/screenshots (optional) describing the experience.
+6. **Experience Polish & QA** _(⬜ Pending)_
+   - Sweep for responsive tweaks, motion cues, and accessibility contrast.
+   - Run linting / type checks; capture suggested walkthrough steps for sales teams.
 
 ## Progress Log
-- **2025-11-03**: Completed Project Foundation — scaffolded Next.js app, added mapping/charting/animation deps, established global theming, and introduced layout skeleton (Header, Footer, Section, layout shell, hero scaffolding).
-- **2025-11-04**: Curated demo datasets (geo layers, KPI + forecast metrics), authored scenario utilities for mobility/energy/climate/safety toggles, and centralized copywriting assets for storytelling modules.
-- **2025-11-05**: Delivered full landing narrative flow with AI storyline cards, success-case grid, and credibility panel reinforcing the smart city GIS value proposition.
-- **2025-11-06**: Activated the interactive command center with MapLibre map overlays, scenario toggles, KPI panels, and AI insight/action overlays for the GIS experience.
-- **2025-11-07**: Crafted the AI Analytics Studio with responsive charting suite (forecast, radar, heatmap), explainable AI storytelling, and what-if scenario simulator powered by curated metrics.
-- **2025-11-08**: Elevated customer storytelling with animated testimonial marquee, refined credibility wall, and finale CTA capsule with executive-ready impact metrics and activation workflow bullets.
-- **2025-11-09**: Layered viewport-triggered reveal animations across hero, narrative, analytics, and testimonial experiences, refined mobile spacing for the command console and testimonial insights, and validated linting to keep the build impeccable.
-- **2025-11-10**: Introduced the AI Copilot Orchestration Studio featuring mission-focused module selector, conversational assistant panel, and mission console backed by new copilot datasets for a flagship wow moment.
+- **2025-11-03**: Replaced the marketing layout with a Nexus-branded dashboard shell featuring top intelligence bar, module sidebar, global KPI pulse strip, and reorganized sections for digital twin, VLR, analytics, and copilot experiences.
