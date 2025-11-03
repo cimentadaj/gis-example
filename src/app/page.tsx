@@ -1,6 +1,7 @@
 import { AnchorButton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
+import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
 import {
   heroContent,
@@ -60,9 +61,9 @@ type HeroContent = typeof heroContent;
 
 function HeroSection({ hero, scenario }: { hero: HeroContent; scenario: ScenarioDefinition }) {
   return (
-    <Section className="pt-32" id="platform">
+    <Section className="pt-24 sm:pt-28 lg:pt-32" id="platform">
       <Container className="relative grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-        <div className="max-w-xl space-y-8">
+        <Reveal className="max-w-xl space-y-8" offset={36}>
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
             {hero.eyebrow}
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -83,17 +84,22 @@ function HeroSection({ hero, scenario }: { hero: HeroContent; scenario: Scenario
           </div>
 
           <dl className="grid gap-4 sm:grid-cols-3">
-            {hero.stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            {hero.stats.map((stat, index) => (
+              <Reveal
+                key={stat.label}
+                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                delay={0.18 + index * 0.08}
+                offset={28}
+              >
                 <dt className="text-xs uppercase tracking-[0.25em] text-foreground/60">{stat.label}</dt>
                 <dd className="mt-2 text-3xl font-semibold text-white">{stat.value}</dd>
                 <p className="text-xs text-foreground/60">{stat.detail}</p>
-              </div>
+              </Reveal>
             ))}
           </dl>
-        </div>
+        </Reveal>
 
-        <div className="relative">
+        <Reveal className="relative" delay={0.12} offset={40}>
           <div className="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-[0_45px_120px_-50px_rgba(14,165,233,0.45)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.2),transparent_55%),radial-gradient(circle_at_80%_30%,rgba(168,85,247,0.25),transparent_65%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(15,118,110,0.15),transparent_45%)]" />
@@ -102,24 +108,30 @@ function HeroSection({ hero, scenario }: { hero: HeroContent; scenario: Scenario
                 <CitySignalCard scenario={scenario} />
               </div>
               <div className="grid gap-4">
-                <InsightChip
-                  icon={MapPinned}
-                  title="Mobility density heatmaps refresh every 60s"
-                  tone="primary"
-                />
-                <InsightChip
-                  icon={Radar}
-                  title="Edge sensors flag anomaly clusters in near real time"
-                  tone="accent"
-                />
-                <InsightChip icon={Activity} title="Predictive load balancing keeps energy resilient" tone="glow" />
+                <Reveal delay={0.28} amount={0.2} offset={18}>
+                  <InsightChip
+                    icon={MapPinned}
+                    title="Mobility density heatmaps refresh every 60s"
+                    tone="primary"
+                  />
+                </Reveal>
+                <Reveal delay={0.36} amount={0.2} offset={18}>
+                  <InsightChip
+                    icon={Radar}
+                    title="Edge sensors flag anomaly clusters in near real time"
+                    tone="accent"
+                  />
+                </Reveal>
+                <Reveal delay={0.44} amount={0.2} offset={18}>
+                  <InsightChip icon={Activity} title="Predictive load balancing keeps energy resilient" tone="glow" />
+                </Reveal>
               </div>
             </div>
           </div>
           <div className="absolute -bottom-8 left-1/2 hidden w-[85%] -translate-x-1/2 rounded-full bg-gradient-to-r from-primary-500/0 via-primary-500/40 to-primary-500/0 py-3 text-center text-xs font-medium uppercase tracking-[0.35em] text-primary-200 shadow-[0_30px_90px_-45px_rgba(59,130,246,0.7)] sm:block">
             Trusted by digital twin taskforces across 12 global metros
           </div>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );
@@ -144,7 +156,7 @@ function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
   return (
     <Section id="platform-architecture">
       <Container className="grid gap-12 lg:grid-cols-[0.75fr_1fr] lg:gap-16">
-        <div className="space-y-6">
+        <Reveal className="space-y-6" offset={32}>
           <p className="text-sm font-semibold uppercase tracking-[0.45em] text-primary-200">Platform Stack</p>
           <h2 className="text-3xl font-semibold text-white sm:text-4xl">
             Built for orchestration, explainability, and measurable city outcomes.
@@ -158,13 +170,16 @@ function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
             <span className="rounded-full border border-white/10 px-4 py-2">Explainable AI</span>
             <span className="rounded-full border border-white/10 px-4 py-2">Mission Control</span>
           </div>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          {pillars.map(({ title, description, icon: Icon }) => (
-            <div
+          {pillars.map(({ title, description, icon: Icon }, index) => (
+            <Reveal
               key={title}
               className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/70 p-6 shadow-[0_35px_80px_-45px_rgba(15,118,110,0.45)] transition hover:-translate-y-1 hover:border-primary-400/40 hover:bg-surface/90"
+              delay={index * 0.08}
+              offset={30}
+              role="article"
             >
               <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-400/15 via-transparent to-accent-500/15" />
@@ -174,7 +189,7 @@ function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
               </div>
               <h3 className="mt-4 text-lg font-semibold text-white">{title}</h3>
               <p className="mt-2 text-sm leading-6 text-foreground/70">{description}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Container>
@@ -188,7 +203,7 @@ function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSectio
   return (
     <Section id="ai-narrative" className="pt-10">
       <Container className="space-y-12">
-        <div className="max-w-2xl space-y-4">
+        <Reveal className="max-w-2xl space-y-4" offset={32}>
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
             <BrainCircuit className="h-3.5 w-3.5" />
             AI Narrative Engine
@@ -201,11 +216,11 @@ function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSectio
             truth. Each storyline blends live telemetry, simulations, and policy guardrails so decisions stay
             transparent and defensible.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 lg:grid-cols-3">
           {narrative.map((block, index) => (
-            <NarrativeCard key={block.headline} block={block} step={index + 1} />
+            <NarrativeCard key={block.headline} block={block} step={index + 1} order={index} />
           ))}
         </div>
       </Container>
@@ -213,9 +228,14 @@ function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSectio
   );
 }
 
-function NarrativeCard({ block, step }: { block: NarrativeBlock; step: number }) {
+function NarrativeCard({ block, step, order = 0 }: { block: NarrativeBlock; step: number; order?: number }) {
   return (
-    <article className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/80 shadow-[0_45px_120px_-60px_rgba(56,189,248,0.65)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40">
+    <Reveal
+      className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/80 shadow-[0_45px_120px_-60px_rgba(56,189,248,0.65)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40"
+      delay={order * 0.1}
+      offset={32}
+      role="article"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-primary-400/10 via-transparent to-accent-500/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <div className="relative flex items-center justify-between text-xs font-semibold uppercase tracking-[0.35em]">
         <span className="inline-flex items-center gap-2 text-primary-200">
@@ -242,7 +262,7 @@ function NarrativeCard({ block, step }: { block: NarrativeBlock; step: number })
           </li>
         ))}
       </ul>
-    </article>
+    </Reveal>
   );
 }
 
@@ -258,7 +278,7 @@ function ImpactStoriesSection({ stories }: { stories: typeof successStories }) {
   return (
     <Section id="use-cases" className="pt-10">
       <Container className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-        <div className="space-y-6">
+        <Reveal className="space-y-6" offset={32}>
           <span className="inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-accent-200">
             <Globe2 className="h-3.5 w-3.5" />
             City Impact Library
@@ -272,14 +292,16 @@ function ImpactStoriesSection({ stories }: { stories: typeof successStories }) {
             the playbooks.
           </p>
           <ul className="grid gap-3 text-sm text-foreground/70">
-            {highlightPoints.map((point) => (
-              <li key={point} className="flex items-start gap-3">
-                <span className="mt-0.5 h-2 w-2 rounded-full bg-accent-500" />
-                {point}
+            {highlightPoints.map((point, index) => (
+              <li key={point}>
+                <Reveal className="flex items-start gap-3" delay={index * 0.08} offset={24}>
+                  <span className="mt-0.5 h-2 w-2 rounded-full bg-accent-500" />
+                  {point}
+                </Reveal>
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 sm:grid-cols-2">
           {stories.map((story, index) => (
@@ -299,7 +321,12 @@ function SuccessStoryCard({ story, accentIndex }: { story: SuccessStory; accentI
   ];
 
   return (
-    <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/75 p-6 shadow-[0_45px_120px_-50px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-accent-500/40">
+    <Reveal
+      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/75 p-6 shadow-[0_45px_120px_-50px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-accent-500/40"
+      delay={accentIndex * 0.08}
+      offset={32}
+      role="article"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/40" />
       <div className={`absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]}`} />
       <div className="relative flex flex-col gap-4 text-sm text-foreground/75">
@@ -320,7 +347,7 @@ function SuccessStoryCard({ story, accentIndex }: { story: SuccessStory; accentI
           minutes.
         </p>
       </div>
-    </article>
+    </Reveal>
   );
 }
 
@@ -333,7 +360,7 @@ function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
     <Section id="testimonials" className="pt-6">
       <Container className="space-y-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-xl space-y-4">
+          <Reveal className="max-w-xl space-y-4" offset={32}>
             <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
               <Sparkles className="h-3.5 w-3.5" />
               Civic Innovators
@@ -345,8 +372,8 @@ function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
               Executives and lab directors rely on AetherCity to fuse digital twins, AI guardrails, and mission control
               workflows into one canvas that de-risks every activation sprint.
             </p>
-          </div>
-          <div className="flex items-center gap-5 text-sm text-foreground/60">
+          </Reveal>
+          <Reveal className="flex flex-wrap items-center gap-5 text-sm text-foreground/60 sm:flex-nowrap" delay={0.12} offset={24}>
             <div className="flex flex-col">
               <span className="text-xs uppercase tracking-[0.35em]">Customer Insight</span>
               <span className="text-lg font-semibold text-white">Net Promoter 74</span>
@@ -356,7 +383,7 @@ function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
               <span className="text-xs uppercase tracking-[0.35em]">Global Reach</span>
               <span className="text-lg font-semibold text-white">12 countries</span>
             </div>
-          </div>
+          </Reveal>
         </div>
 
         <div className="grid gap-6 md:hidden">
@@ -365,7 +392,11 @@ function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
           ))}
         </div>
 
-        <div className="relative hidden overflow-hidden rounded-[3rem] border border-white/10 bg-surface/70 p-8 shadow-[0_45px_120px_-65px_rgba(14,165,233,0.45)] md:block">
+        <Reveal
+          className="relative hidden overflow-hidden rounded-[3rem] border border-white/10 bg-surface/70 p-8 shadow-[0_45px_120px_-65px_rgba(14,165,233,0.45)] md:block"
+          delay={0.18}
+          offset={36}
+        >
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background via-background/60 to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background via-background/60 to-transparent" />
           <div className="space-y-8">
@@ -380,7 +411,7 @@ function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );
@@ -394,7 +425,12 @@ function TestimonialCard({ voice, accentIndex }: { voice: TestimonialVoice; acce
   ];
 
   return (
-    <article className="group relative flex min-w-[19rem] max-w-[22rem] flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/75 shadow-[0_35px_120px_-65px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40 md:min-w-[22rem]">
+    <Reveal
+      className="group relative flex w-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/75 shadow-[0_35px_120px_-65px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40 sm:min-w-[19rem] sm:max-w-[22rem] md:min-w-[22rem] md:max-w-[22rem] md:w-auto"
+      delay={(accentIndex % 6) * 0.06}
+      offset={28}
+      role="article"
+    >
       <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-60`} />
       <div className="relative flex items-start justify-between">
         <div className="flex items-center gap-3">
@@ -413,7 +449,7 @@ function TestimonialCard({ voice, accentIndex }: { voice: TestimonialVoice; acce
         <span>{voice.organization}</span>
         <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] text-primary-200">{voice.cityFocus}</span>
       </div>
-    </article>
+    </Reveal>
   );
 }
 
@@ -428,7 +464,7 @@ function CredibilitySection({ credibility }: { credibility: Credibility }) {
   return (
     <Section id="why-us" className="pt-10">
       <Container className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="space-y-6">
+        <Reveal className="space-y-6" offset={32}>
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60">
             Mission-Grade Assurance
           </span>
@@ -441,13 +477,18 @@ function CredibilitySection({ credibility }: { credibility: Credibility }) {
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            {badges.map((badge) => (
-              <div key={badge} className="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-foreground/70">
+            {badges.map((badge, index) => (
+              <Reveal
+                key={badge}
+                className="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-foreground/70"
+                delay={index * 0.06}
+                offset={24}
+              >
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500/15 text-primary-200">
                   <CheckCircle2 className="h-4 w-4" />
                 </span>
                 <span>{badge}</span>
-              </div>
+              </Reveal>
             ))}
           </div>
 
@@ -459,20 +500,29 @@ function CredibilitySection({ credibility }: { credibility: Credibility }) {
               Download Capabilities Deck
             </AnchorButton>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[0_45px_120px_-50px_rgba(59,130,246,0.55)]">
+        <Reveal
+          className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[0_45px_120px_-50px_rgba(59,130,246,0.55)]"
+          delay={0.18}
+          offset={36}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-accent-500/15" />
           <div className="relative space-y-6">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50">Strategic Alliances</p>
             <div className="grid gap-6 sm:grid-cols-3">
-              {partners.map(({ name, logo: Logo }) => (
-                <div key={name} className="flex flex-col items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4 text-center text-xs text-foreground/60 transition hover:border-primary-400/30 hover:bg-primary-400/10">
+              {partners.map(({ name, logo: Logo }, index) => (
+                <Reveal
+                  key={name}
+                  className="flex flex-col items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4 text-center text-xs text-foreground/60 transition hover:border-primary-400/30 hover:bg-primary-400/10"
+                  delay={index * 0.08}
+                  offset={24}
+                >
                   <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-primary-200">
                     <Logo className="h-6 w-6" />
                   </span>
                   <span className="uppercase tracking-[0.25em]">{name}</span>
-                </div>
+                </Reveal>
               ))}
             </div>
             <p className="text-sm leading-6 text-foreground/70">
@@ -480,7 +530,7 @@ function CredibilitySection({ credibility }: { credibility: Credibility }) {
               aligns with smart city mandates and ethical AI frameworks.
             </p>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );
@@ -493,8 +543,8 @@ function FinalCtaSection({ cta }: { cta: CtaContent }) {
         <div className="absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rotate-6 rounded-full bg-primary-500/20 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-72 w-72 translate-x-1/4 translate-y-1/4 rounded-full bg-fuchsia-500/15 blur-[160px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),_transparent_60%)]" />
-        <div className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-          <div className="space-y-6">
+        <Reveal className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start" offset={36}>
+          <Reveal className="space-y-6" offset={32}>
             <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100">
               <Sparkles className="h-3.5 w-3.5" />
               {cta.eyebrow}
@@ -502,12 +552,14 @@ function FinalCtaSection({ cta }: { cta: CtaContent }) {
             <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">{cta.headline}</h2>
             <p className="text-base leading-7 text-foreground/70">{cta.body}</p>
             <ul className="grid gap-3 text-sm text-foreground/70">
-              {cta.bullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-200">
-                    <BrainCircuit className="h-4 w-4" />
-                  </span>
-                  {bullet}
+              {cta.bullets.map((bullet, index) => (
+                <li key={bullet}>
+                  <Reveal className="flex items-start gap-3" delay={index * 0.08} offset={24}>
+                    <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-200">
+                      <BrainCircuit className="h-4 w-4" />
+                    </span>
+                    {bullet}
+                  </Reveal>
                 </li>
               ))}
             </ul>
@@ -519,14 +571,14 @@ function FinalCtaSection({ cta }: { cta: CtaContent }) {
                 {cta.secondaryCta.label}
               </AnchorButton>
             </div>
-          </div>
+          </Reveal>
 
           <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
             {cta.metrics.map((metric, index) => (
               <MetricCard key={metric.label} metric={metric} accentIndex={index} />
             ))}
           </div>
-        </div>
+        </Reveal>
       </Container>
     </Section>
   );
@@ -541,11 +593,13 @@ function MetricCard({ metric, accentIndex }: { metric: CtaMetric; accentIndex: n
   const offsetClasses = ["lg:-mt-4", "lg:translate-x-4", "lg:-mb-4 lg:translate-x-8"];
 
   return (
-    <div
+    <Reveal
       className={cn(
         "glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-6 text-sm text-foreground/70 shadow-[0_35px_120px_-65px_rgba(59,130,246,0.55)] transition duration-500 hover:-translate-y-1",
         offsetClasses[accentIndex % offsetClasses.length],
       )}
+      delay={accentIndex * 0.08}
+      offset={28}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-70`} />
       <div className="relative space-y-3">
@@ -553,7 +607,7 @@ function MetricCard({ metric, accentIndex }: { metric: CtaMetric; accentIndex: n
         <p className="text-4xl font-semibold text-white">{metric.value}</p>
         <p>{metric.detail}</p>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
@@ -617,7 +671,12 @@ function InsightChip({
         : "from-emerald-400/20 to-emerald-500/10";
 
   return (
-    <div className={cn("flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r p-4", toneClass)}>
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r p-4 transition duration-300 hover:-translate-y-1 hover:border-primary-400/40 hover:shadow-[0_25px_60px_-35px_rgba(56,189,248,0.8)]",
+        toneClass,
+      )}
+    >
       <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-primary-100">
         <Icon className="h-5 w-5" />
       </span>

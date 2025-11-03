@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Section } from "@/components/ui/section";
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 import {
   anomalyClusters,
   demandForecast,
@@ -103,7 +104,7 @@ export function AiAnalyticsSection() {
   return (
     <Section id="ai-insights" className="pt-10">
       <Container className="space-y-12">
-        <div className="max-w-3xl space-y-4">
+        <Reveal className="max-w-3xl space-y-4" offset={32}>
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
             <BrainCircuit className="h-3.5 w-3.5" />
             AI Analytics Studio
@@ -115,20 +116,21 @@ export function AiAnalyticsSection() {
             Forecasts, anomaly radars, and risk heatmaps converge into an interactive cockpit. Every insight
             is explainable, governance-ready, and tuned for mission-critical city operations.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 lg:grid-cols-12">
-          <ForecastCard className="lg:col-span-7" data={demandSeries} horizon={demandForecast.horizon} />
-          <AnomalyRadarCard className="lg:col-span-5" data={anomalySeries} />
+          <ForecastCard className="lg:col-span-7" data={demandSeries} horizon={demandForecast.horizon} revealDelay={0} />
+          <AnomalyRadarCard className="lg:col-span-5" data={anomalySeries} revealDelay={0.08} />
           <ResilienceCard
             className="lg:col-span-5"
             data={resilienceSeries}
             stats={modelPerformanceStats}
             horizon={resilienceForecast.horizon}
+            revealDelay={0.16}
           />
-          <RiskHeatmapCard className="lg:col-span-4" cells={riskCells} />
-          <ExplainabilityCard className="lg:col-span-3" snippets={explainabilitySnippets} />
-          <ScenarioSimulatorCard className="lg:col-span-12" comparisons={scenarioComparisons} />
+          <RiskHeatmapCard className="lg:col-span-4" cells={riskCells} revealDelay={0.24} />
+          <ExplainabilityCard className="lg:col-span-3" snippets={explainabilitySnippets} revealDelay={0.32} />
+          <ScenarioSimulatorCard className="lg:col-span-12" comparisons={scenarioComparisons} revealDelay={0.4} />
         </div>
       </Container>
     </Section>
@@ -139,10 +141,12 @@ function ForecastCard({
   data,
   horizon,
   className,
+  revealDelay = 0,
 }: {
   data: ForecastPointShape[];
   horizon: string;
   className?: string;
+  revealDelay?: number;
 }) {
   const latest = data.at(-1);
   const improvement =
@@ -156,7 +160,7 @@ function ForecastCard({
   };
 
   return (
-    <CardShell className={className}>
+    <CardShell className={className} revealDelay={revealDelay}>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
@@ -221,9 +225,21 @@ function ForecastCard({
   );
 }
 
-function AnomalyRadarCard({ data, className }: { data: AnomalyPointShape[]; className?: string }) {
+function AnomalyRadarCard({
+  data,
+  className,
+  revealDelay = 0,
+}: {
+  data: AnomalyPointShape[];
+  className?: string;
+  revealDelay?: number;
+}) {
   return (
-    <CardShell className={className} backgroundGlow="radial-gradient(circle at 20% 20%, rgba(124,58,237,0.25), transparent 60%)">
+    <CardShell
+      className={className}
+      backgroundGlow="radial-gradient(circle at 20% 20%, rgba(124,58,237,0.25), transparent 60%)"
+      revealDelay={revealDelay}
+    >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
@@ -287,11 +303,13 @@ function ResilienceCard({
   stats,
   horizon,
   className,
+  revealDelay = 0,
 }: {
   data: ResiliencePointShape[];
   stats: ModelPerformanceStat[];
   horizon: string;
   className?: string;
+  revealDelay?: number;
 }) {
   const tooltipStyle: CSSProperties = {
     backgroundColor: "rgba(6, 18, 36, 0.92)",
@@ -301,7 +319,11 @@ function ResilienceCard({
   };
 
   return (
-    <CardShell className={className} backgroundGlow="radial-gradient(circle at 80% -10%, rgba(20,184,166,0.25), transparent 65%)">
+    <CardShell
+      className={className}
+      backgroundGlow="radial-gradient(circle at 80% -10%, rgba(20,184,166,0.25), transparent 65%)"
+      revealDelay={revealDelay}
+    >
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -384,9 +406,17 @@ function ResilienceCard({
   );
 }
 
-function RiskHeatmapCard({ cells, className }: { cells: RiskCell[]; className?: string }) {
+function RiskHeatmapCard({
+  cells,
+  className,
+  revealDelay = 0,
+}: {
+  cells: RiskCell[];
+  className?: string;
+  revealDelay?: number;
+}) {
   return (
-    <CardShell className={className}>
+    <CardShell className={className} revealDelay={revealDelay}>
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
           <Sparkles className="h-3.5 w-3.5 text-primary-200" />
@@ -427,12 +457,18 @@ function RiskHeatmapCard({ cells, className }: { cells: RiskCell[]; className?: 
 function ExplainabilityCard({
   snippets,
   className,
+  revealDelay = 0,
 }: {
   snippets: ExplainabilitySnippet[];
   className?: string;
+  revealDelay?: number;
 }) {
   return (
-    <CardShell className={className} backgroundGlow="radial-gradient(circle at 10% 90%, rgba(59,130,246,0.28), transparent 65%)">
+    <CardShell
+      className={className}
+      backgroundGlow="radial-gradient(circle at 10% 90%, rgba(59,130,246,0.28), transparent 65%)"
+      revealDelay={revealDelay}
+    >
       <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
         <ArrowUpRight className="h-3.5 w-3.5 text-primary-200" />
         Explainability Stack
@@ -457,9 +493,11 @@ function ExplainabilityCard({
 function ScenarioSimulatorCard({
   comparisons,
   className,
+  revealDelay = 0,
 }: {
   comparisons: ScenarioComparison[];
   className?: string;
+  revealDelay?: number;
 }) {
   const [adoption, setAdoption] = useState(68);
 
@@ -494,7 +532,11 @@ function ScenarioSimulatorCard({
   );
 
   return (
-    <CardShell className={className} backgroundGlow="radial-gradient(circle at 50% -20%, rgba(59,130,246,0.25), transparent 70%)">
+    <CardShell
+      className={className}
+      backgroundGlow="radial-gradient(circle at 50% -20%, rgba(59,130,246,0.25), transparent 70%)"
+      revealDelay={revealDelay}
+    >
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
@@ -594,17 +636,23 @@ function CardShell({
   children,
   className,
   backgroundGlow,
+  revealDelay = 0,
+  revealOffset = 28,
 }: {
   children: React.ReactNode;
   className?: string;
   backgroundGlow?: string;
+  revealDelay?: number;
+  revealOffset?: number;
 }) {
   return (
-    <div
+    <Reveal
       className={cn(
         "glass-panel group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/80 shadow-[0_45px_120px_-65px_rgba(59,130,246,0.65)] transition duration-500 hover:-translate-y-0.5",
         className,
       )}
+      delay={revealDelay}
+      offset={revealOffset}
     >
       {backgroundGlow ? (
         <div
@@ -614,7 +662,7 @@ function CardShell({
         />
       ) : null}
       <div className="relative">{children}</div>
-    </div>
+    </Reveal>
   );
 }
 

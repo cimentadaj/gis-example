@@ -44,7 +44,7 @@ export function CommandCenterPanel({
   }, [focus]);
 
   return (
-    <div className="glass-panel relative flex h-full w-full flex-col gap-8 rounded-[2rem] border border-white/10 p-8 text-foreground/80 shadow-[0_45px_120px_-65px_rgba(59,130,246,0.75)]">
+    <div className="glass-panel relative flex h-full w-full flex-col gap-6 rounded-[2rem] border border-white/10 p-6 text-foreground/80 shadow-[0_45px_120px_-65px_rgba(59,130,246,0.75)] sm:gap-8 sm:p-8">
       <PanelHeader
         scenario={scenario}
         scenarios={scenarioSummaries}
@@ -73,13 +73,13 @@ function PanelHeader({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-primary-200">
             Scenario Command Center
           </p>
-          <h3 className="mt-3 text-xl font-semibold text-white">{scenario.name}</h3>
-          <p className="mt-2 text-sm leading-6 text-foreground/70">{scenario.tagline}</p>
+          <h3 className="text-xl font-semibold text-white">{scenario.name}</h3>
+          <p className="text-sm leading-6 text-foreground/70">{scenario.tagline}</p>
         </div>
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-500/15 text-primary-200 shadow-inner">
           <Sparkles className="h-6 w-6" />
@@ -107,7 +107,7 @@ function PanelHeader({
         })}
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
         <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Mission Objective</p>
         <p className="mt-2 text-sm leading-6 text-foreground/70">{scenario.command}</p>
       </div>
