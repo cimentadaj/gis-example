@@ -458,60 +458,74 @@ function DashboardTopBar({
   isCopilotRailOpen,
 }: DashboardTopBarProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(8,16,28,0.82)] backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-5 py-4 sm:px-8 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(10,14,26,0.78)] backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-2.5 px-5 py-3 sm:px-8 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-accent-500 to-indigo-500 text-white shadow-[0_0_25px_rgba(59,130,246,0.4)]">
-            <Sparkles className="h-5 w-5" />
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white shadow-[0_12px_32px_-18px_rgba(59,130,246,0.65)]">
+            <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Nexus Consulting</p>
-            <h1 className="text-lg font-semibold text-white sm:text-xl">City Digital Twin Command</h1>
-            <p className="text-[11px] text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
+            <p className="text-[10px] uppercase tracking-[0.32em] text-foreground/50">Nexus Consulting</p>
+            <h1 className="text-base font-semibold text-white sm:text-lg">City Digital Twin Command</h1>
+            <p className="text-[10px] text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
           </div>
         </div>
 
-        <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
-          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-white/10 bg-white/5 p-1">
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-2.5">
+          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-white/12 bg-white/[0.06] p-1.5">
             {scenarioSummaries.map((scenario) => (
               <button
                 key={scenario.key}
                 type="button"
                 onClick={() => onScenarioChange(scenario.key)}
                 className={cn(
-                  "min-w-[132px] rounded-[999px] px-3.5 py-2 text-left text-[11px] font-medium transition-all",
+                  "min-w-[120px] rounded-[999px] px-3 py-1.5 text-left text-[11px] font-medium transition-all",
                   scenario.key === scenarioKey
-                    ? "bg-primary-500/80 text-white shadow-[0_15px_40px_-25px_rgba(14,165,233,0.85)]"
-                    : "text-foreground/60 hover:bg-white/10 hover:text-foreground",
+                    ? "bg-white text-slate-900 shadow-[0_18px_45px_-28px_rgba(14,165,233,0.65)]"
+                    : "text-foreground/60 hover:bg-white/12 hover:text-foreground",
                 )}
               >
-                <span className="block text-[9px] uppercase tracking-[0.35em] text-white/60">Scenario</span>
-                <span className="mt-0.5 block text-sm leading-tight">{scenario.name}</span>
+                <span
+                  className={cn(
+                    "block text-[9px] uppercase tracking-[0.35em]",
+                    scenario.key === scenarioKey ? "text-slate-500" : "text-foreground/50",
+                  )}
+                >
+                  Scenario
+                </span>
+                <span
+                  className={cn(
+                    "mt-0.5 block text-sm leading-tight",
+                    scenario.key === scenarioKey ? "text-slate-900" : "text-foreground/65",
+                  )}
+                >
+                  {scenario.name}
+                </span>
               </button>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-3 py-2 text-[11px] text-foreground/60">
+          <div className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] text-foreground/55">
             <MapPinned className="h-4 w-4 text-primary-200" />
             <div className="flex flex-col">
-              <span className="uppercase tracking-[0.35em]">Metro Focus</span>
+              <span className="uppercase tracking-[0.32em]">Metro Focus</span>
               <span className="mt-0.5 text-sm font-semibold text-white">Aurora District Twin</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-3 py-2 text-[11px] text-foreground/60">
+          <div className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] text-foreground/55">
             <Clock8 className="h-4 w-4 text-accent-400" />
             <div className="flex flex-col">
-              <span className="uppercase tracking-[0.35em]">Sync Checkpoint</span>
+              <span className="uppercase tracking-[0.32em]">Sync Checkpoint</span>
               <span className="mt-0.5 text-sm font-semibold text-white">{syncTimestamp}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={onCopilotToggle}
-              className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
+              className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
             >
               <Bot className="h-4 w-4 text-primary-200" />
               {isCopilotRailOpen ? "Hide Copilot Dock" : "Show Copilot Dock"}
@@ -519,7 +533,7 @@ function DashboardTopBar({
             <button
               type="button"
               onClick={onCopilotSummon}
-              className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/20 xl:hidden"
+              className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/10 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/20 xl:hidden"
             >
               <Bot className="h-4 w-4" />
               Launch Copilot
@@ -538,16 +552,16 @@ type DashboardSidebarProps = {
 
 function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProps) {
   return (
-    <aside className="hidden w-[260px] border-r border-white/10 bg-[rgba(6,12,28,0.82)] px-5 py-6 lg:block">
-      <div className="space-y-6">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-5 text-[11px] uppercase tracking-[0.32em] text-foreground/55 shadow-[0_18px_50px_-38px_rgba(59,130,246,0.6)]">
+    <aside className="hidden w-[260px] border-r border-white/10 bg-[rgba(8,14,26,0.78)] px-5 py-5 lg:block">
+      <div className="space-y-5">
+        <div className="rounded-[26px] border border-white/10 bg-white/[0.05] p-4 text-[10px] uppercase tracking-[0.32em] text-foreground/55 shadow-[0_18px_50px_-38px_rgba(59,130,246,0.5)]">
           <p className="flex items-center gap-2 text-foreground/65">
             <GaugeCircle className="h-4 w-4 text-primary-300" />
             Mission Status
           </p>
           <span className="mt-2 flex items-baseline gap-2 text-2xl font-semibold text-white">
             92%
-            <span className="text-[11px] font-medium uppercase tracking-[0.4em] text-primary-200">Operational</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-primary-200">Operational</span>
           </span>
         </div>
 
@@ -559,9 +573,9 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
               aria-pressed={activeModule === item.id}
               onClick={() => onModuleChange(item.id)}
               className={cn(
-                "group rounded-[22px] border border-white/5 bg-white/[0.03] px-4 py-3 text-left transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.08]",
+                "group rounded-[22px] border border-white/5 bg-white/[0.03] px-4 py-2.5 text-left transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.08]",
                 activeModule === item.id
-                  ? "border-white/15 bg-white/[0.12] shadow-[0_18px_45px_-35px_rgba(59,130,246,0.55)]"
+                  ? "border-white/15 bg-white/[0.12] shadow-[0_16px_42px_-32px_rgba(59,130,246,0.5)]"
                   : "text-foreground/70",
               )}
             >
@@ -569,8 +583,8 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 text-primary-100 transition-all duration-200",
-                      activeModule === item.id ? "bg-white/[0.15]" : "bg-white/[0.08]",
+                      "flex h-9 w-9 items-center justify-center rounded-[18px] border border-white/10 text-primary-100 transition-all duration-200",
+                      activeModule === item.id ? "bg-white/[0.18]" : "bg-white/[0.08]",
                     )}
                   >
                     <item.icon className="h-5 w-5" />
@@ -586,12 +600,12 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
           ))}
         </nav>
 
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary-500/12 via-accent-500/10 to-rose-500/12 p-5 text-[11px] text-foreground/60">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+        <div className="rounded-[26px] border border-white/10 bg-gradient-to-br from-primary-500/12 via-accent-500/10 to-rose-500/12 p-4 text-[10px] text-foreground/60">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
             <BrainCircuit className="h-4 w-4" />
             AI Warden
           </p>
-          <p className="mt-3 text-sm text-white/90">
+          <p className="mt-2 text-sm text-white/90">
             Digital twin telemetry is clean. 3 proactive interventions queued with Nexus Copilot.
           </p>
         </div>
@@ -609,16 +623,20 @@ type ModuleSwitcherProps = {
 
 function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMeta }: ModuleSwitcherProps) {
   return (
-    <section className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_25px_80px_-70px_rgba(59,130,246,0.6)] backdrop-blur-2xl">
+    <section className="rounded-[26px] border border-white/8 bg-white/[0.05] p-5 shadow-[0_22px_70px_-60px_rgba(59,130,246,0.55)] backdrop-blur-2xl">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Module Suite</p>
-          <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">{activeModuleMeta.label}</h2>
+          <p className="text-[10px] uppercase tracking-[0.32em] text-foreground/55">Module Suite</p>
+          <h2 className="mt-1 text-lg font-semibold text-white sm:text-xl">{activeModuleMeta.label}</h2>
           <p className="mt-1 text-sm text-foreground/60">{activeModuleMeta.description}</p>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div
+        role="tablist"
+        aria-label="Module navigation"
+        className="mt-4 flex flex-wrap gap-1.5 rounded-[999px] border border-white/10 bg-white/[0.04] p-1.5"
+      >
         {modules.map((module) => {
           const isActive = module.id === activeModule;
 
@@ -626,11 +644,15 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
             <button
               key={module.id}
               type="button"
-              aria-pressed={isActive}
+              role="tab"
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
               onClick={() => onModuleChange(module.id)}
               className={cn(
-                "group relative overflow-hidden rounded-[999px] border border-white/10 px-3.5 py-2 text-sm font-medium text-foreground/65 transition-colors duration-200 hover:text-white",
-                isActive ? "text-white shadow-[0_18px_45px_-28px_rgba(59,130,246,0.6)]" : "",
+                "group relative flex items-center gap-2 rounded-[999px] px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40",
+                isActive
+                  ? "bg-white text-slate-900 shadow-[0_16px_40px_-28px_rgba(59,130,246,0.55)]"
+                  : "text-foreground/65 hover:bg-white/10 hover:text-white",
               )}
             >
               <span
@@ -638,14 +660,14 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
                 className={cn(
                   "absolute inset-0 -z-10 rounded-[999px] bg-gradient-to-r opacity-0 transition-opacity duration-300",
                   module.accent ?? "",
-                  isActive ? "opacity-100" : "group-hover:opacity-60",
+                  isActive ? "opacity-60" : "group-hover:opacity-50",
                 )}
               />
               <span className="relative flex items-center gap-2">
                 <span
                   className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-xs transition-colors duration-200",
-                    isActive ? "border-white/30 bg-white/[0.18] text-primary-100" : "",
+                    "flex h-8 w-8 items-center justify-center rounded-[18px] border border-white/12 bg-white/[0.12] text-xs transition-colors duration-200",
+                    isActive ? "border-white/80 bg-white text-slate-900" : "text-foreground/70",
                   )}
                 >
                   <module.icon className="h-4 w-4" />

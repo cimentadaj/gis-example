@@ -6,36 +6,52 @@
 - Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
-1. **Dashboard Shell & Navigation** _(✅ Completed)_
+1. **Spec Refresh – Command Bar & Tabs** _(✅ Completed)_
+   - Tighten the intelligence top bar height, spacing, and typography to match the latest spec update.
+   - Rebalance module switcher into crisp tab treatment with lighter, Notion/Apple-inspired surfaces.
+   - Audit sidebar/footer spacing to preserve the airy, elegant hierarchy after the adjustments.
+
+2. **Spec Refresh – Spatial Storytelling** _(⏳ Pending)_
+   - Enrich the map overlays with clearer point emphasis and contextual analysis callouts per spec.
+   - Surface focused scenario narratives directly adjacent to the map to keep insights tangible.
+   - Ensure layer legends, spotlight, and KPI copy stay concise and real-world grounded.
+
+3. **Experience Polish & QA** _(⏳ Pending)_
+   - Sweep typography, gradients, and muted backgrounds for a cleaner aesthetic aligned to Notion/Apple cues.
+   - Validate responsive breakpoints after refinements and remove any redundant visual noise.
+   - Re-run lint/build checks to guarantee a production-ready handoff.
+
+4. **Dashboard Shell & Navigation** _(✅ Completed)_
    - Replace the marketing layout with a Nexus-branded dashboard chrome: top intelligence bar, module navigation, and responsive grid system.
    - Surface global state (city, sync timestamp, alert badges) and quick AI status indicators.
    - Ensure the shell accommodates the command map, analytics stack, VLR pipelines, and copilot panes without overflow.
 
-2. **Digital Twin Operations Canvas** _(✅ Completed)_
+5. **Digital Twin Operations Canvas** _(✅ Completed)_
    - Embed the MapLibre command center into the new shell with adaptive sizing, layer legends, and focus controls.
    - Pair the map with live KPI badges, AI insight overlays, and timeline focus dial.
    - Optimize for 1440px desktop while staying functional on tablets.
 
-3. **VLR Automation Workbench** _(✅ Completed)_
+6. **VLR Automation Workbench** _(✅ Completed)_
    - Build a VLR pipeline board highlighting ingestion, classification, scoring, and AI narrative summaries.
    - Provide interactive step selection with progress signals, sample KPI deltas, and policy compliance badges.
    - Include PDF preview placeholder and export CTA for stakeholders.
 
-4. **AI Insight Modules** _(✅ Completed)_
+7. **AI Insight Modules** _(✅ Completed)_
    - Rebuilt forecast, resilience, anomaly, risk, and explainability widgets into a tabbed analytics studio synced to active scenarios.
    - Layered hover states, scoped filters, and AI lift callouts with gradients and clean Notion-like surfaces.
    - Wove scenario narratives, playbooks, and transparency queues directly into each module stream.
 
-5. **Copilot & Action Orchestration** _(✅ Completed)_
+8. **Copilot & Action Orchestration** _(✅ Completed)_
   - Integrate the AI copilot studio as a collapsible right-rail with mission threads, recommended actions, and audit trace.
   - Wire up sample prompts/responses and align to the city’s active scenario context.
 
-6. **Experience Polish & QA** _(✅ Completed)_
+9. **Experience Polish & QA (Initial)** _(✅ Completed)_
    - Tightened dashboard chrome with a slimmer intelligence bar, refined sidebar pacing, and Notion-inspired surfaces.
    - Streamlined module layout into tabbed experiences, elevated spatial storytelling with sensor spotlights, and refreshed map context.
    - Ran lint/build checks to validate the production bundle and preserve the walkthrough narrative for sales teams.
 
 ## Progress Log
+- **2025-11-03**: Slimmed the intelligence bar, refreshed the module tab rail, and re-balanced sidebar spacing for the Notion-inspired spec refresh.
 - **2025-11-03**: Replaced the marketing layout with a Nexus-branded dashboard shell featuring top intelligence bar, module sidebar, global KPI pulse strip, and reorganized sections for digital twin, VLR, analytics, and copilot experiences.
 - **2025-11-03**: Elevated the digital twin operations canvas with MapLibre overlays, dynamic layer legends, focus-driven telemetry, and expanded responsive breakpoints for large-format command displays.
 - **2025-11-03**: Shipped the interactive VLR automation workbench with stage-aware pipeline board, compliance badges, AI KPI deltas, export queue preview, and policy alerts wired to the Nexus scenario context.
