@@ -35,3 +35,11 @@ Data Integration and Automation: Systems that harmonize data across departments,
 
 
 Urban Simulation and Digital Twins: Tools that allow cities to model demographic, spatial, and environmental scenarios for better planning.
+
+
+--- 
+MOST NEW UPDATE:
+
+fix the gis map, not visible.
+
+clean up clutter and over definition of kpi boxes and cluttered stuff. Keep the bare minimum to have a robust analysis in tht three scenarios. Remove all jargon in faovur of short/simple text. Less is more but the less is high quality.

@@ -65,7 +65,6 @@ import {
   type DataFabricMetric,
   type DataQualityAlertSeverity,
 } from "@/data/integration";
-import { capabilityPillars, type CapabilityPillar } from "@/data/capabilities";
 import {
   copilotAuditLog,
   copilotMissionDeck,
@@ -843,7 +842,6 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
   const topSignals = insights.signals.slice(0, 3);
   const topKpis = scenario.kpis.slice(0, 2);
   const priorityActions = insights.actions.slice(0, 3);
-  const capabilityCards = capabilityPillars[scenario.key] ?? [];
   const spatialHighlights = useMemo<SpatialHighlight[]>(() => {
     const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
     const highlights: SpatialHighlight[] = [];
@@ -944,11 +942,9 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
         <p className="mt-3 text-slate-700">{scenario.narrative}</p>
       </div>
 
-      <CapabilityGrid pillars={capabilityCards} />
-
       <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
         <div className="space-y-5">
-          <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_55px_-38px_rgba(15,23,42,0.2)]">
+          <div className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_12px_32px_-20px_rgba(15,23,42,0.18)]">
             <CommandCenterMap scenario={scenario} focus={focus} highlights={spatialHighlights} />
             <MapHud scenario={scenario} insights={insights} focus={focus} />
           </div>
@@ -1001,59 +997,6 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
   );
 }
 
-const capabilityIconMeta: Record<
-  CapabilityPillar["kind"],
-  { icon: LucideIcon; accent: string }
-> = {
-  ai: { icon: BrainCircuit, accent: "border-sky-200 bg-sky-50 text-sky-600" },
-  gis: { icon: MapIcon, accent: "border-emerald-200 bg-emerald-50 text-emerald-600" },
-  fabric: { icon: Layers, accent: "border-violet-200 bg-violet-50 text-violet-600" },
-  twin: { icon: Workflow, accent: "border-amber-200 bg-amber-50 text-amber-600" },
-};
-
-function CapabilityGrid({ pillars }: { pillars: CapabilityPillar[] }) {
-  if (!pillars.length) {
-    return null;
-  }
-
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {pillars.map((pillar) => (
-        <CapabilityCard key={pillar.id} pillar={pillar} />
-      ))}
-    </div>
-  );
-}
-
-function CapabilityCard({ pillar }: { pillar: CapabilityPillar }) {
-  const meta = capabilityIconMeta[pillar.kind];
-  const Icon = meta.icon;
-
-  return (
-    <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_16px_48px_-36px_rgba(15,23,42,0.18)] transition-shadow">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{pillar.label}</p>
-          <p className="mt-2 text-sm font-semibold text-slate-900">{pillar.title}</p>
-        </div>
-        <span
-          className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-2xl border text-slate-600",
-            meta.accent,
-          )}
-        >
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-      <div className="mt-4 flex items-baseline gap-3">
-        <p className="text-2xl font-semibold text-slate-900">{pillar.metric}</p>
-        <p className="text-xs text-slate-500">{pillar.metricLabel}</p>
-      </div>
-      <p className="mt-4 text-sm leading-6 text-slate-600">{pillar.narrative}</p>
-    </div>
-  );
-}
-
 function MapHud({
   scenario,
   insights,
@@ -1069,48 +1012,42 @@ function MapHud({
   const confidence = primaryInsight ? Math.round(primaryInsight.confidence * 100) : null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-5">
-      <div className="flex flex-wrap items-start gap-4">
-        <div className="rounded-[24px] border border-slate-200 bg-white/85 px-5 py-4 text-xs uppercase tracking-[0.32em] text-slate-500 shadow-[0_16px_50px_-32px_rgba(15,23,42,0.2)] backdrop-blur-xl">
-          <p className="flex items-center gap-2 text-slate-500">
-            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-            Scenario
-          </p>
-          <p className="mt-2 text-sm font-semibold tracking-[0.18em] text-slate-900">{scenario.name}</p>
-          <p className="mt-1 text-[11px] normal-case tracking-wide text-slate-500">{scenario.tagline}</p>
+    <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5">
+      <div className="flex flex-wrap items-start gap-3">
+        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-xs uppercase tracking-[0.3em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)] backdrop-blur-md">
+          <Sparkles className="h-3.5 w-3.5 text-sky-500" />
+          <div className="pointer-events-auto text-left normal-case">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500">Scenario</p>
+            <p className="mt-1 text-sm font-semibold tracking-[0.05em] text-slate-900">{scenario.name}</p>
+          </div>
         </div>
 
         {primaryInsight ? (
-          <div className="max-w-sm rounded-[24px] border border-sky-100 bg-sky-50/85 px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_18px_60px_-36px_rgba(59,130,246,0.28)] backdrop-blur-xl">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-sky-600">
-              <ActivitySquare className="h-3.5 w-3.5" />
-              Insight Pulse{confidence !== null ? ` · ${confidence}%` : ""}
+          <div className="pointer-events-auto max-w-xs rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_-24px_rgba(59,130,246,0.28)] backdrop-blur-md">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-sky-600">
+              Insight{confidence !== null ? ` · ${confidence}%` : ""}
             </p>
-            <p className="mt-2 font-medium text-slate-900">{primaryInsight.title}</p>
-            <p className="mt-1 text-xs text-slate-600">{primaryInsight.detail}</p>
+            <p className="mt-1 font-medium leading-5 text-slate-900">{primaryInsight.title}</p>
           </div>
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         {primaryAction ? (
-          <div className="max-w-xl rounded-[24px] border border-slate-200 bg-white/88 px-5 py-4 text-sm text-slate-600 shadow-[0_20px_60px_-38px_rgba(15,23,42,0.22)] backdrop-blur-xl">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-slate-500">
-              <MoveRight className="h-3.5 w-3.5" />
-              Next Orchestration
-            </p>
-            <p className="mt-2 leading-6 text-slate-700">{primaryAction}</p>
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.2)] backdrop-blur-md">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">Next Step</p>
+            <p className="mt-1 text-sm leading-5 text-slate-700">{primaryAction}</p>
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="rounded-full border border-slate-200 bg-white/92 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.2)]">
-            <p>Focus Horizon</p>
-            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-slate-900">{focusMinutes}m</p>
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="pointer-events-auto rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-right text-[10px] uppercase tracking-[0.32em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)]">
+            <p>Focus</p>
+            <p className="mt-1 text-lg font-semibold tracking-[0.18em] text-slate-900">{focusMinutes}m</p>
           </div>
-          <div className="rounded-full border border-slate-200 bg-white/92 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.2)]">
-            <p>Active Layers</p>
-            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-slate-900">{scenario.layers.length}</p>
+          <div className="pointer-events-auto rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-right text-[10px] uppercase tracking-[0.32em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)]">
+            <p>Layers</p>
+            <p className="mt-1 text-lg font-semibold tracking-[0.18em] text-slate-900">{scenario.layers.length}</p>
           </div>
         </div>
       </div>

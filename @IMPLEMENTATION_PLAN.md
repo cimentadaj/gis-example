@@ -6,6 +6,16 @@
 - Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
+1. **GIS Canvas Clarity & Map Visibility** _(✅ Completed)_
+   - Softened the digital twin map container and overlays so spatial layers are visible at first glance.
+   - Removed the capability grid clutter and centered the layout around the canvas with calmer spacing.
+   - Reworked the HUD chips to surface insight and focus data without covering the markers.
+
+2. **Signal & Copy Simplification** _(🚧 Pending)_
+   - Reduce KPI, signal, and narrative blocks to the most essential insights per scenario.
+   - Rewrite on-screen copy into clear, plain language that explains real actions succinctly.
+   - Harmonize spacing and color accents to keep the dashboard calm and aligned with the Notion-like palette.
+
 1. **Capability Pillar Spotlight** _(✅ Completed)_
    - Crafted scenario-aware capability descriptors covering AI pipelines, GIS telemetry, data fabric automation, and digital-twin simulation.
    - Surfaced a clean 2×2 capability grid inside the digital twin module with Notion-like cards and grounded metrics.
@@ -71,6 +81,7 @@
    - Ran lint/build checks to validate the production bundle and preserve the walkthrough narrative for sales teams.
 
 ## Progress Log
+- **2025-11-03**: Softened the digital twin map overlays, removed the capability grid, and centered the canvas layout so the GIS view loads cleanly with minimal visual clutter.
 - **2025-11-06**: Introduced a capability spotlight grid with scenario-specific AI, GIS, data fabric, and digital twin summaries so the digital twin module instantly communicates Nexus’ four solution pillars.
 - **2025-11-05**: Reoriented the scenario registry, geo datasets, analytics copy, and copilot workspace around SDG localization, VLR automation, and city profiling; refreshed map highlights, data fabric content, and light-theme storytelling to match the latest spec.
 - **2025-11-04**: Reframed the Copilot module into a Data Fabric automation dashboard with connector health, automation cadence, and guardrail reporting backed by new integration datasets.
