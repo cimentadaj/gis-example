@@ -7,6 +7,9 @@
   --surface: 255 255 255;
   --surface-soft: 243 246 250;
   --muted: 100 116 139;
+  --font-geist-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-geist-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 @theme inline {

@@ -44,11 +44,11 @@ export const capabilityPillars: Record<ScenarioKey, CapabilityPillar[]> = {
     {
       id: "sdg-twin",
       kind: "twin",
-      label: "Digital Twin",
+      label: "GIS City Analysis",
       title: "Scenario refresh horizon",
       metric: "38 min",
       metricLabel: "Full SDG loop replay",
-      narrative: "City twin replays district outcomes on every dataset drop, logging counterfactuals for council briefs.",
+      narrative: "GIS City Analysis replays district outcomes on every dataset drop, logging counterfactuals for council briefs.",
     },
   ],
   "vlr-automation": [
@@ -82,11 +82,11 @@ export const capabilityPillars: Record<ScenarioKey, CapabilityPillar[]> = {
     {
       id: "vlr-twin",
       kind: "twin",
-      label: "Digital Twin",
+      label: "GIS City Analysis",
       title: "Submission readiness",
       metric: "7 / 9",
       metricLabel: "Sections drafted",
-      narrative: "Digital twin playback previews downstream impact of pending attestations before exporting the PDF.",
+      narrative: "GIS City Analysis playback previews downstream impact of pending attestations before exporting the PDF.",
     },
   ],
   "city-profiling": [
@@ -120,11 +120,11 @@ export const capabilityPillars: Record<ScenarioKey, CapabilityPillar[]> = {
     {
       id: "profile-twin",
       kind: "twin",
-      label: "Digital Twin",
+      label: "GIS City Analysis",
       title: "Planning horizon",
       metric: "5 yrs",
       metricLabel: "Scenario forecast",
-      narrative: "Digital twin animates multi-year investment pathways with sensitivity bands for policy debate.",
+      narrative: "GIS City Analysis animates multi-year investment pathways with sensitivity bands for policy debate.",
     },
   ],
 };

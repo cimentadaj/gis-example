@@ -57,9 +57,9 @@ export function CommandCenterSection() {
             Immersive GIS fused with AI copilots for mission-grade city operations.
           </h2>
           <p className="text-base leading-7 text-foreground/70">
-            Dive into a live command environment where digital twins, predictive forecasts, and anomaly monitors
-            converge. Toggle between mobility, energy, climate, and safety scenarios while orchestration logic
-            keeps every agency aligned.
+            Dive into a live command environment where GIS City Analysis, predictive forecasts, and anomaly monitors
+            converge. Toggle between mobility, energy, climate, and safety scenarios while orchestration logic keeps
+            every agency aligned.
           </p>
         </div>
 

@@ -16,7 +16,16 @@ import {
 } from "recharts";
 
 import { CommandCenterMap, type SpatialHighlight } from "@/components/command-center/command-center-map";
-import { anomalyClusters, citywideKpis, demandForecast, resilienceForecast } from "@/data/metrics";
+import {
+  anomalyClusters,
+  citywideKpis,
+  demandForecast,
+  resilienceForecast,
+  modelPerformanceStats,
+  scenarioComparisons,
+  riskCells,
+  explainabilitySnippets,
+} from "@/data/metrics";
 import { vlrAlerts, vlrStages, type VlrStageStatus } from "@/data/vlr";
 import {
   getScenarioConfig,
@@ -29,7 +38,7 @@ import { cn } from "@/lib/utils";
 const moduleNavigation = [
   {
     id: "digital-twin",
-    label: "Digital Twin",
+    label: "GIS City Analysis",
     description: "City map with SDG signals.",
     icon: MapIcon,
   },
@@ -137,11 +146,13 @@ export default function Home() {
 function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-0.5 sm:px-6">
-        <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
-          <Sparkles className="h-3 w-3" />
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-4 sm:px-6">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600 shadow-sm">
+          <Sparkles className="h-6 w-6" />
         </span>
-        <span className="text-xs font-semibold tracking-tight text-slate-700">Nexus Consulting</span>
+        <span className="text-xl font-semibold tracking-tight text-slate-700 sm:text-[1.6rem]">
+          Nexus Consulting
+        </span>
       </div>
     </header>
   );
@@ -274,18 +285,17 @@ type DigitalTwinViewProps = {
   scenario: ScenarioDefinition;
   insights: ScenarioInsightsPayload;
   focus: number;
-  onFocusChange: (value: number) => void;
   highlights: SpatialHighlight[];
 };
 
-function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights }: DigitalTwinViewProps) {
+function DigitalTwinView({ scenario, insights, focus, highlights }: DigitalTwinViewProps) {
   const signals = insights.signals.slice(0, 3);
   const aiNote = insights.aiInsights[0];
   const actions = insights.actions.slice(0, 2);
   const scenarioKpis = insights.kpis.slice(0, 2);
   const topHighlights = highlights.slice(0, 3);
   const readinessSpark = demandForecast.points.slice(0, 6).map((point) => ({
-    hourLabel: formatShortTime(point.timestamp),
+    periodLabel: formatMonthLabel(point.timestamp),
     percentage: Math.round(point.value * 100),
   }));
   const currentOutlook =
@@ -331,23 +341,6 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
             </div>
           </div>
           <aside className="space-y-4">
-            <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-sm font-semibold text-slate-700">Next sweep</p>
-              <p className="mt-1 text-xs text-slate-400">Set how far ahead the AI skims the districts.</p>
-              <div className="mt-4 flex items-center gap-3">
-                <span className="text-sm font-medium text-slate-500">{Math.round((focus / 100) * 60)} min</span>
-                <input
-                  type="range"
-                  value={focus}
-                  onChange={(event) => onFocusChange(Number(event.target.value))}
-                  min={0}
-                  max={100}
-                  className="h-1.5 w-full flex-1 appearance-none rounded-full bg-slate-200 accent-sky-500"
-                  aria-label="Next sweep window"
-                />
-              </div>
-            </article>
-
             {topHighlights.length ? (
               <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
                 <p className="text-sm font-semibold text-slate-700">Active hotspots</p>
@@ -401,21 +394,21 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
 
             {readinessSpark.length ? (
               <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-700">Readiness outlook</p>
+                <p className="text-sm font-semibold text-slate-700">Gender parity outlook</p>
                 <div className="mt-2 flex items-baseline gap-2">
                   <span className="text-2xl font-semibold text-slate-900">
-                    {currentOutlook !== null ? `${currentOutlook.toFixed(0)}% ready` : "—"}
+                    {currentOutlook !== null ? `${currentOutlook.toFixed(0)}% SDG 5 achieved` : "—"}
                   </span>
                   {outlookChangeLabel ? (
                     <span className={cn("text-xs font-medium", outlookTone)}>{outlookChangeLabel}</span>
                   ) : null}
                 </div>
-                <p className="mt-1 text-xs text-slate-400">Forecast every two hours</p>
+                <p className="mt-1 text-xs text-slate-400">Updated monthly from the gender equity index</p>
                 <div className="mt-4 h-24 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsLineChart data={readinessSpark}>
                       <YAxis hide />
-                      <XAxis dataKey="hourLabel" hide />
+                      <XAxis dataKey="periodLabel" hide />
                       <RechartsLine type="monotone" dataKey="percentage" stroke="#0ea5e9" strokeWidth={2} dot={false} />
                     </RechartsLineChart>
                   </ResponsiveContainer>
@@ -763,36 +756,101 @@ function ProgressBadge({ completion }: { completion: number }) {
 }
 
 function PipelinesView() {
+  const [activeScenarioId, setActiveScenarioId] = useState(scenarioComparisons[0]?.id ?? "");
+
   const demandData = demandForecast.points.map((point) => ({
     ...point,
-    hourLabel: formatShortTime(point.timestamp),
+    periodLabel: formatMonthLabel(point.timestamp),
     percentage: Number((point.value * 100).toFixed(1)),
   }));
 
   const resilienceData = resilienceForecast.points.map((point) => ({
     ...point,
-    weekLabel: formatDayLabel(point.timestamp),
+    quarterLabel: formatQuarterLabel(point.timestamp),
   }));
 
-  const hotspots = anomalyClusters.slice(0, 3);
+  const scenarioOptions = scenarioComparisons;
+  const activeScenario =
+    scenarioOptions.find((scenario) => scenario.id === activeScenarioId) ?? scenarioOptions[0];
+  const scenarioUnit = activeScenario?.unit ?? "";
+  const optimizedGain = activeScenario ? activeScenario.optimized - activeScenario.baseline : 0;
+  const scenarioMaxValue = scenarioOptions.reduce(
+    (accumulator, scenario) => Math.max(accumulator, scenario.optimized),
+    0,
+  );
+  const scenarioMax = scenarioMaxValue > 0 ? scenarioMaxValue : 1;
+
+  const upliftPeak = demandData.length ? Math.max(...demandData.map((point) => point.percentage)) : 0;
+  const upliftFloor = demandData.length ? Math.min(...demandData.map((point) => point.percentage)) : 0;
+  const upliftChange =
+    demandData.length > 1
+      ? demandData[demandData.length - 1].percentage - demandData[0].percentage
+      : 0;
+  const upliftChangeTone =
+    upliftChange > 0 ? "text-emerald-600" : upliftChange < 0 ? "text-rose-600" : "text-slate-500";
+
+  const watchlist = riskCells.slice(0, 4).map((cell) => ({
+    ...cell,
+    percentage: Math.round(cell.score * 100),
+  }));
+  const automationQueue = anomalyClusters.slice(0, 3);
+  const explainability = explainabilitySnippets.slice(0, 3);
+  const lastForecastLabel = demandData.length ? demandData[demandData.length - 1].periodLabel : null;
+
+  const resilienceStart = resilienceData.length ? resilienceData[0].value : null;
+  const resilienceLatest = resilienceData.length ? resilienceData[resilienceData.length - 1].value : null;
+  const resilienceChange =
+    resilienceStart !== null && resilienceLatest !== null ? resilienceLatest - resilienceStart : null;
+  const resilienceChangeTone =
+    typeof resilienceChange === "number" && resilienceChange !== 0
+      ? resilienceChange > 0
+        ? "text-emerald-600"
+        : "text-rose-600"
+      : "text-slate-500";
 
   return (
     <section className="space-y-6">
+      <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:p-7">
+        <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">SDG & VLR progress board</h2>
+            <p className="text-sm text-slate-500">
+              Monthly and quarterly indicators show how planners are closing priority SDG gaps and VLR actions.
+            </p>
+          </div>
+          {lastForecastLabel ? (
+            <span className="text-xs text-slate-400">Latest monthly update · {lastForecastLabel}</span>
+          ) : null}
+        </header>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {modelPerformanceStats.map((stat) => {
+            const tone = stat.tone === "up" ? "text-emerald-600" : "text-rose-600";
+            return (
+              <div key={stat.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{stat.metric}</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{stat.value}</p>
+                <p className={cn("mt-1 text-xs font-medium", tone)}>{stat.change}</p>
+              </div>
+            );
+          })}
+        </div>
+      </article>
+
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
           <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">SDG lift forecast</h2>
+              <h3 className="text-lg font-semibold text-slate-900">Gender equity projection</h3>
               <p className="text-sm text-slate-500">{demandForecast.horizon}</p>
             </div>
-            <span className="text-xs text-slate-400">Scenario · {demandForecast.metric}</span>
+            <span className="text-xs text-slate-400">Model · {demandForecast.metric}</span>
           </header>
 
           <div className="mt-4 h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsLineChart data={demandData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="hourLabel" stroke="#94a3b8" tickLine={false} axisLine={false} />
+                <XAxis dataKey="periodLabel" stroke="#94a3b8" tickLine={false} axisLine={false} />
                 <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} unit="%" />
                 <Tooltip
                   contentStyle={{
@@ -801,8 +859,8 @@ function PipelinesView() {
                     backgroundColor: "white",
                     boxShadow: "0 20px 40px -32px rgba(15,23,42,0.24)",
                   }}
-                  formatter={(value: number) => [`${value.toFixed(1)}%`, "Impact uplift"]}
-                  labelFormatter={(label) => `Hour ${label}`}
+                  formatter={(value: number) => [`${value.toFixed(1)}%`, "Gender equity index"]}
+                  labelFormatter={(label) => `Month ${label}`}
                 />
                 <RechartsLine
                   type="monotone"
@@ -815,12 +873,105 @@ function PipelinesView() {
               </RechartsLineChart>
             </ResponsiveContainer>
           </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl bg-slate-50 px-3 py-2">
+              <p className="text-xs text-slate-500">Highest monthly score</p>
+              <p className="text-sm font-semibold text-slate-900">{upliftPeak.toFixed(1)}%</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 px-3 py-2">
+              <p className="text-xs text-slate-500">Starting point</p>
+              <p className="text-sm font-semibold text-slate-900">{upliftFloor.toFixed(1)}%</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 px-3 py-2">
+              <p className="text-xs text-slate-500">Change since start</p>
+              <p className={cn("text-sm font-semibold", upliftChangeTone)}>
+                {upliftChange > 0 ? "+" : ""}
+                {upliftChange.toFixed(1)} pts
+              </p>
+            </div>
+          </div>
         </article>
 
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
           <header>
-            <h2 className="text-xl font-semibold text-slate-900">Wellbeing outlook</h2>
-            <p className="text-sm text-slate-500">{resilienceForecast.horizon}</p>
+            <h3 className="text-lg font-semibold text-slate-900">Program impact scenarios</h3>
+            <p className="text-sm text-slate-500">Compare baseline vs coordinated programs to see how SDG and VLR goals advance.</p>
+          </header>
+
+          {scenarioOptions.length ? (
+            <>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {scenarioOptions.map((scenario) => {
+                  const isActive = scenario.id === activeScenarioId;
+                  return (
+                    <button
+                      type="button"
+                      key={scenario.id}
+                      onClick={() => setActiveScenarioId(scenario.id)}
+                      className={cn(
+                        "rounded-2xl border px-3 py-1.5 text-sm font-medium transition-colors",
+                        isActive
+                          ? "border-sky-200 bg-sky-50 text-sky-700"
+                          : "border-transparent bg-slate-100 text-slate-500 hover:border-slate-200 hover:bg-white",
+                      )}
+                    >
+                      {scenario.scenario}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {activeScenario ? (
+                <div className="mt-5 space-y-3 text-sm text-slate-600">
+                  <div className="rounded-2xl bg-slate-50 px-3 py-2">
+                    <p className="text-xs text-slate-500">Baseline</p>
+                    <p className="mt-1 text-base font-semibold text-slate-900">
+                      {activeScenario.baseline.toLocaleString("en")} {scenarioUnit}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-sky-50 px-3 py-2">
+                    <p className="text-xs text-slate-500">Automation</p>
+                    <p className="mt-1 text-base font-semibold text-slate-900">
+                      {activeScenario.optimized.toLocaleString("en")} {scenarioUnit}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-emerald-50 px-3 py-2 text-emerald-700">
+                    <p className="text-xs font-semibold uppercase tracking-wide">Lift</p>
+                    <p className="mt-1 text-base font-semibold">
+                      {optimizedGain > 0 ? "+" : ""}
+                      {optimizedGain.toFixed(0)} {scenarioUnit}
+                    </p>
+                  </div>
+                  <div className="relative mt-4 h-2 w-full rounded-full bg-slate-200">
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full bg-slate-400/40"
+                      style={{ width: `${Math.min((activeScenario.baseline / scenarioMax) * 100, 100)}%` }}
+                    />
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full bg-sky-500"
+                      style={{ width: `${Math.min((activeScenario.optimized / scenarioMax) * 100, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400">Scaling against the strongest lift in this board.</p>
+                  <p className="text-sm leading-6 text-slate-600">{activeScenario.narrative}</p>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <p className="mt-4 text-sm text-slate-500">Scenario comparisons will appear here once they are set.</p>
+          )}
+        </article>
+      </div>
+
+      <div className="grid gap-6">
+        <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+          <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Wellbeing outlook</h3>
+              <p className="text-sm text-slate-500">{resilienceForecast.horizon}</p>
+            </div>
+            <span className="text-xs text-slate-400">Model · wellbeing index</span>
           </header>
 
           <div className="mt-4 h-64 w-full">
@@ -833,7 +984,7 @@ function PipelinesView() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="weekLabel" stroke="#94a3b8" tickLine={false} axisLine={false} />
+                <XAxis dataKey="quarterLabel" stroke="#94a3b8" tickLine={false} axisLine={false} />
                 <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} />
                 <Tooltip
                   contentStyle={{
@@ -855,52 +1006,99 @@ function PipelinesView() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </article>
-      </div>
 
-      <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-        <h2 className="text-xl font-semibold text-slate-900">AI hotspots</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-          {hotspots.map((cluster) => (
-            <li
-              key={cluster.id}
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-            >
-              <p className="text-sm font-semibold text-slate-900">{cluster.cluster}</p>
-              <p className="mt-2 text-xs text-slate-500">
-                {cluster.affectedAssets} packets · clears in {cluster.expectedResolutionMinutes} min
+          <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-600">
+            <div>
+              <p className="text-xs text-slate-500">Now</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {typeof resilienceLatest === "number" ? `${resilienceLatest.toFixed(0)} index` : "—"}
               </p>
-              <span
-                className={cn(
-                  "mt-3 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                  cluster.severity === "high"
-                    ? "bg-rose-100 text-rose-700"
-                    : cluster.severity === "moderate"
-                      ? "bg-amber-100 text-amber-700"
-                      : "bg-sky-100 text-sky-700",
-                )}
-              >
-                {cluster.severity === "high"
-                  ? "High"
-                  : cluster.severity === "moderate"
-                    ? "Moderate"
-                    : "Low"}{" "}
-                attention
-              </span>
-            </li>
-          ))}
-        </ul>
-      </article>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Six-quarter change</p>
+              <p className={cn("text-sm font-semibold", resilienceChangeTone)}>
+                {typeof resilienceChange === "number"
+                  ? `${resilienceChange > 0 ? "+" : ""}${resilienceChange.toFixed(0)} pts`
+                  : "—"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Confidence</p>
+              <p className="text-sm font-semibold text-slate-900">Model uses census & labor data</p>
+            </div>
+          </div>
+        </article>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+            <h3 className="text-lg font-semibold text-slate-900">Watch list</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              AI flags the districts that need attention before the monthly coordination meeting.
+            </p>
+            <ul className="mt-4 space-y-3">
+              {watchlist.map((item) => (
+                <li key={item.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+                  <p className="flex items-center justify-between text-sm font-semibold text-slate-900">
+                    <span>{item.district}</span>
+                    <span>{item.percentage}%</span>
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">{item.driver}</p>
+                  <div className="mt-2 h-1.5 w-full rounded-full bg-slate-200">
+                    <div
+                      className="h-1.5 rounded-full bg-sky-500"
+                      style={{ width: `${Math.min(item.percentage, 100)}%` }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {automationQueue.length ? (
+              <div className="mt-5 border-t border-slate-200 pt-4">
+                <h4 className="text-sm font-semibold text-slate-700">Automation queue</h4>
+                <ul className="mt-3 space-y-2 text-sm text-slate-600">
+                  {automationQueue.map((cluster) => (
+                    <li key={cluster.id} className="rounded-2xl bg-slate-50 px-3 py-2">
+                      <p className="text-sm font-semibold text-slate-900">{cluster.cluster}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {cluster.affectedAssets} VLR packets · resolves in {cluster.expectedResolutionDays} days
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </article>
+
+          <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+            <h3 className="text-lg font-semibold text-slate-900">Explainable by design</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Every insight carries the evidence trail city auditors expect.
+            </p>
+            <ul className="mt-4 space-y-3">
+              {explainability.map((snippet) => (
+                <li key={snippet.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-slate-900">{snippet.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">{snippet.detail}</p>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </div>
     </section>
   );
 }
 
-function formatShortTime(timestamp: string) {
-  return new Intl.DateTimeFormat("en", { hour: "numeric" }).format(new Date(timestamp));
+function formatMonthLabel(timestamp: string) {
+  return new Intl.DateTimeFormat("en", { month: "short", year: "2-digit" }).format(new Date(timestamp));
 }
 
-function formatDayLabel(timestamp: string) {
-  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(timestamp));
+function formatQuarterLabel(timestamp: string) {
+  const date = new Date(timestamp);
+  const quarter = Math.floor(date.getUTCMonth() / 3) + 1;
+  const year = String(date.getUTCFullYear()).slice(-2);
+  return `Q${quarter} '${year}`;
 }
 
 function normalizeAlertSeverity(severity: string): AlertSeverity {

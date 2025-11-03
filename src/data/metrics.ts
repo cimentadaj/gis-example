@@ -30,13 +30,13 @@ export type AnomalyCluster = {
   cluster: string;
   severity: "low" | "moderate" | "high";
   affectedAssets: number;
-  expectedResolutionMinutes: number;
+  expectedResolutionDays: number;
 };
 
 export const citywideKpis: SystemKpi[] = [
   {
     id: "sdg-progress",
-    label: "Districts ready",
+    label: "Cities ready",
     unit: "of 18",
     value: 12,
     change: { direction: "up", percentage: 1, period: "day" },
@@ -44,7 +44,7 @@ export const citywideKpis: SystemKpi[] = [
   },
   {
     id: "vlr-ready",
-    label: "Sections cleared",
+    label: "SDG Goals",
     unit: "of 9",
     value: 7,
     change: { direction: "up", percentage: 2, period: "day" },
@@ -70,56 +70,55 @@ export const citywideKpis: SystemKpi[] = [
 
 export const demandForecast: ForecastSeries = {
   scenario: "sdg-localization",
-  metric: "SDG impact uplift",
-  horizon: "Next 24 Hours",
+  metric: "Gender equity index",
+  horizon: "Next 12 Months",
   points: [
-    { timestamp: "2025-11-03T08:00:00Z", value: 0.46 },
-    { timestamp: "2025-11-03T10:00:00Z", value: 0.58 },
-    { timestamp: "2025-11-03T12:00:00Z", value: 0.72 },
-    { timestamp: "2025-11-03T14:00:00Z", value: 0.66 },
-    { timestamp: "2025-11-03T16:00:00Z", value: 0.81 },
-    { timestamp: "2025-11-03T18:00:00Z", value: 0.88 },
-    { timestamp: "2025-11-03T20:00:00Z", value: 0.76 },
-    { timestamp: "2025-11-03T22:00:00Z", value: 0.52 },
+    { timestamp: "2025-01-01T00:00:00Z", value: 0.62 },
+    { timestamp: "2025-02-01T00:00:00Z", value: 0.64 },
+    { timestamp: "2025-03-01T00:00:00Z", value: 0.67 },
+    { timestamp: "2025-04-01T00:00:00Z", value: 0.7 },
+    { timestamp: "2025-05-01T00:00:00Z", value: 0.73 },
+    { timestamp: "2025-06-01T00:00:00Z", value: 0.75 },
+    { timestamp: "2025-07-01T00:00:00Z", value: 0.77 },
+    { timestamp: "2025-08-01T00:00:00Z", value: 0.79 },
   ],
 };
 
 export const resilienceForecast: ForecastSeries = {
   scenario: "city-profiling",
-  metric: "wellbeing-outlook",
-  horizon: "Next 6 Weeks",
+  metric: "Inclusive growth index",
+  horizon: "Next 6 Quarters",
   points: [
-    { timestamp: "2025-11-04", value: 72 },
-    { timestamp: "2025-11-11", value: 73 },
-    { timestamp: "2025-11-18", value: 74 },
-    { timestamp: "2025-11-25", value: 72 },
-    { timestamp: "2025-12-02", value: 75 },
-    { timestamp: "2025-12-09", value: 77 },
-    { timestamp: "2025-12-16", value: 79 },
+    { timestamp: "2025-03-31", value: 68 },
+    { timestamp: "2025-06-30", value: 69 },
+    { timestamp: "2025-09-30", value: 71 },
+    { timestamp: "2025-12-31", value: 72 },
+    { timestamp: "2026-03-31", value: 74 },
+    { timestamp: "2026-06-30", value: 76 },
   ],
 };
 
 export const anomalyClusters: AnomalyCluster[] = [
   {
-    id: "sdg-green-schoolyards",
-    cluster: "Schoolyard retrofit evidence lag",
+    id: "gender-pay-gap",
+    cluster: "Gender wage data gap",
     severity: "moderate",
-    affectedAssets: 4,
-    expectedResolutionMinutes: 32,
+    affectedAssets: 5,
+    expectedResolutionDays: 14,
   },
   {
-    id: "housing-dossier",
-    cluster: "Affordable housing packet waiting sign-off",
+    id: "green-jobs-status",
+    cluster: "Green jobs grant awaiting codes",
     severity: "high",
-    affectedAssets: 6,
-    expectedResolutionMinutes: 38,
+    affectedAssets: 7,
+    expectedResolutionDays: 21,
   },
   {
-    id: "climate-innovation",
-    cluster: "Innovation Basin climate log sync",
+    id: "housing-sdg11",
+    cluster: "Affordable units inventory refresh",
     severity: "low",
     affectedAssets: 3,
-    expectedResolutionMinutes: 16,
+    expectedResolutionDays: 10,
   },
 ];
 
@@ -134,23 +133,23 @@ export type ModelPerformanceStat = {
 export const modelPerformanceStats: ModelPerformanceStat[] = [
   {
     id: "narrative-quality",
-    metric: "Narratives on target",
-    value: "94%",
+    metric: "Gender equity benchmarks met",
+    value: "78%",
     change: "+5%",
     tone: "up",
   },
   {
     id: "evidence-match",
-    metric: "Evidence matched",
-    value: "97%",
-    change: "+3%",
+    metric: "Green jobs milestones funded",
+    value: "64%",
+    change: "+8%",
     tone: "up",
   },
   {
     id: "assurance-drift",
-    metric: "Assurance drift",
-    value: "1.2%",
-    change: "-0.4%",
+    metric: "Critical reviews pending",
+    value: "9%",
+    change: "-3%",
     tone: "down",
   },
 ];
@@ -166,28 +165,28 @@ export type ScenarioComparison = {
 
 export const scenarioComparisons: ScenarioComparison[] = [
   {
-    id: "sdg-vs-ai",
-    scenario: "SDG Localization",
-    baseline: 62,
-    optimized: 78,
-    unit: "targets met",
-    narrative: "AI routing keeps stewards focused on districts slipping.",
-  },
-  {
-    id: "vlr-vs-ai",
-    scenario: "VLR Automation",
+    id: "gender-equity",
+    scenario: "Gender Equity Acceleration",
     baseline: 58,
-    optimized: 86,
-    unit: "sections ready",
-    narrative: "Automated drafting clears the backlog before review day.",
+    optimized: 74,
+    unit: "index score",
+    narrative: "Targeted programs close the gender gap across priority districts.",
   },
   {
-    id: "city-vs-ai",
-    scenario: "City Profiling",
-    baseline: 69,
-    optimized: 83,
-    unit: "wellbeing index",
-    narrative: "Capital shifts move the wellbeing score without extra spend.",
+    id: "green-economy",
+    scenario: "Green Economy Pipeline",
+    baseline: 52,
+    optimized: 81,
+    unit: "projects delivered",
+    narrative: "Job grants tied to SDG 8 keep small business support on schedule.",
+  },
+  {
+    id: "affordable-housing",
+    scenario: "Affordable Housing Progress",
+    baseline: 61,
+    optimized: 84,
+    unit: "units certified",
+    narrative: "Coordinated VLR tracking keeps SDG 11 reporting ahead of reviews.",
   },
 ];
 
@@ -207,28 +206,28 @@ export const riskCells: RiskCell[] = [
     district: "Harbor Resilience Loop",
     quadrant: "SDG",
     score: 0.86,
-    driver: "Shoreline works still missing SDG 13 sign-off.",
+    driver: "SDG 13 shoreline projects still waiting environmental audits.",
   },
   {
     id: "innovation-basin",
     district: "Innovation Basin Studio",
     quadrant: "VLR",
     score: 0.79,
-    driver: "Evidence packets due from finance and mobility desks.",
+    driver: "VLR labor evidence pending upload from economic development.",
   },
   {
     id: "northern-commons",
     district: "Northern Commons Network",
     quadrant: "Equity",
     score: 0.91,
-    driver: "Housing upgrades beating the equity target.",
+    driver: "Gender parity initiatives beating the SDG 5 target.",
   },
   {
     id: "civic-spine",
     district: "Civic Learning Spine",
     quadrant: "Capital",
     score: 0.74,
-    driver: "Capital drawdown pacing below plan.",
+    driver: "Green skills training budget pacing below plan.",
   },
 ];
 
@@ -241,17 +240,17 @@ export type ExplainabilitySnippet = {
 export const explainabilitySnippets: ExplainabilitySnippet[] = [
   {
     id: "sdg-traceability",
-    title: "Every claim links back to source data",
-    detail: "Narratives surface the dataset, steward, and refresh time in one click.",
+    title: "Equality metrics cite their source",
+    detail: "Gender parity scores list the census feed, steward, and refresh cycle.",
   },
   {
     id: "fairness-monitor",
-    title: "Equity guardrails stay on",
-    detail: "Counterfactual tests confirm interventions keep the wellbeing gap shrinking.",
+    title: "Economic guardrails stay tuned",
+    detail: "Scenario tests confirm new jobs and SDG 8 targets stay within budget.",
   },
   {
     id: "copilot-review",
-    title: "Human notes train the models",
-    detail: "Operators edit suggestions and the copilot learns the local rules.",
+    title: "Teams leave plain-language notes",
+    detail: "Planner comments teach the copilot which VLR evidence cleared review.",
   },
 ];

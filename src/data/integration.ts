@@ -79,8 +79,8 @@ export const dataConnectors: DataConnector[] = [
     steward: "Localization desk",
   },
   {
-    id: "district-digital-twin",
-    name: "District twin",
+    id: "district-gis-city-analysis",
+    name: "GIS City Analysis stream",
     department: "Innovation studio",
     dataScope: "District wellbeing and sensor feeds.",
     status: "syncing",

@@ -60,7 +60,7 @@ function selectKpis(ids: string[]): SystemKpi[] {
 const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "sdg-localization": {
     key: "sdg-localization",
-    name: "SDG Localization Twin",
+    name: "SDG Localization",
     tagline: "District SDG scorecards update in real time.",
     narrative:
       "Census, budget, and survey feeds flag which districts fall behind so crews can move before targets slip.",

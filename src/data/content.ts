@@ -54,7 +54,7 @@ export const heroContent = {
   eyebrow: "City-Scale AI",
   headline: "The intelligence layer cities trust to choreograph the future.",
   subheadline:
-    "Nexus Consulting fuses GIS, machine learning, and digital twins into a single pane of glass. Anticipate disruptions, orchestrate multi-agency response, and optimize urban systems before issues surface.",
+    "Nexus Consulting fuses GIS, machine learning, and GIS City Analysis into a single pane of glass. Anticipate disruptions, orchestrate multi-agency response, and optimize urban systems before issues surface.",
   primaryCta: {
     label: "Book an Immersive Demo",
     href: "#demo",
@@ -81,7 +81,7 @@ export const signalBadges = [
 
 export const platformPillars: PillarDescriptor[] = [
   {
-    title: "City Digital Twin",
+    title: "GIS City Analysis",
     description: "Continuously streaming geospatial intelligence across mobility, energy, and climate layers.",
     icon: CircleDashed,
   },
@@ -111,7 +111,7 @@ export const narrativeSections: NarrativeSection[] = [
     highlights: [
       "Self-healing map layers contextualize every anomaly alert.",
       "Explainable recommendations translate complex models into actionable guardrails.",
-      "Digital twin snapshots capture before/after states for executive briefings.",
+      "GIS City Analysis snapshots capture before/after states for executive briefings.",
     ],
   },
   {
@@ -206,7 +206,7 @@ export const callToActionContent: CallToActionContent = {
   eyebrow: "Co-design the next resilient metropolis",
   headline: "Ready to orchestrate your city's AI command center?",
   body:
-    "Partner with our urban technologists to map the data spine, activate digital twins, and deploy AI co-pilots that accelerate outcomes across your agencies within 90 days.",
+    "Partner with our urban technologists to map the data spine, activate GIS City Analysis, and deploy AI co-pilots that accelerate outcomes across your agencies within 90 days.",
   bullets: [
     "Executive vision workshop that translates strategy into an activation backlog.",
     "Data and governance deep dive to ensure compliance, ethics, and interoperability.",
@@ -224,7 +224,7 @@ export const callToActionContent: CallToActionContent = {
     {
       label: "Cities orchestrated",
       value: "24",
-      detail: "live urban digital twins under management",
+      detail: "live GIS City Analysis deployments under management",
     },
     {
       label: "Time to impact",
