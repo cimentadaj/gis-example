@@ -86,13 +86,18 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
     map.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
 
     map.once("load", () => {
-      map.setFog({
+      const mapWithEffects = map as MapInstance & {
+        setFog?: (options: unknown) => void;
+        setLight?: (options: unknown) => void;
+      };
+
+      mapWithEffects.setFog?.({
         range: [-0.8, 2.5],
         color: "rgba(14, 165, 233, 0.12)",
         "horizon-blend": 0.18,
         "high-color": "rgba(124, 58, 237, 0.12)",
       });
-      map.setLight({ color: "#6ee7b7", intensity: 0.45 });
+      mapWithEffects.setLight?.({ color: "#6ee7b7", intensity: 0.45 });
       syncScenarioLayers(map, scenario, activeLayersRef);
     });
 

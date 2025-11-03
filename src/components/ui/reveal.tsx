@@ -2,9 +2,9 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type RevealProps = HTMLAttributes<HTMLDivElement> & {
+type RevealProps = ComponentPropsWithoutRef<typeof motion.div> & {
   children: ReactNode;
   delay?: number;
   amount?: number;

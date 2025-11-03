@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { FeatureCollection as GeoJSONFeatureCollection } from "geojson";
 import {
   ActivitySquare,
   AlertTriangle,
@@ -16,7 +17,7 @@ import {
   Layers,
   LineChart,
   Loader2,
-  Map,
+  Map as MapIcon,
   MapPinned,
   MoveRight,
   Radar,
@@ -55,6 +56,21 @@ import {
   type SystemKpi,
 } from "@/data/metrics";
 import {
+  copilotAuditLog,
+  copilotMissionDeck,
+  copilotModuleIndex,
+  copilotPromptLibrary,
+  copilotRecommendations,
+  copilotThreads,
+  type CopilotScenarioKey,
+  type CopilotModule,
+  type CopilotMission,
+  type CopilotRecommendation,
+  type CopilotAuditEntry,
+  type CopilotPrompt,
+  type CopilotMessage,
+} from "@/data/copilot";
+import {
   vlrAlerts,
   vlrPdfPreview,
   vlrProcessSignals,
@@ -72,6 +88,7 @@ import {
   type ScenarioKey,
 } from "@/lib/scenarios";
 import { CommandCenterMap } from "@/components/command-center/command-center-map";
+import { CopilotDockContent, type CopilotDockView } from "@/components/copilot/copilot-dock";
 import { cn } from "@/lib/utils";
 
 const moduleNavigation = [
@@ -79,25 +96,29 @@ const moduleNavigation = [
     id: "digital-twin",
     label: "Digital Twin Canvas",
     description: "Live city operations and anomaly scanning in the spatial twin.",
-    icon: Map,
+    icon: MapIcon,
+    accent: "from-sky-400/40 via-transparent to-sky-500/20",
   },
   {
     id: "vlr-workbench",
     label: "VLR Automation",
     description: "AI-automated voluntary local review pipelines and compliance scoring.",
     icon: Workflow,
+    accent: "from-violet-400/35 via-transparent to-violet-500/15",
   },
   {
     id: "analytics",
     label: "AI Analytics",
     description: "Forecasts, risk posture, and performance lifts across scenarios.",
     icon: LineChart,
+    accent: "from-emerald-400/35 via-transparent to-emerald-500/15",
   },
   {
     id: "copilot",
     label: "Copilot Orchestration",
     description: "Conversational mission control and coordinated action queues.",
     icon: Bot,
+    accent: "from-rose-400/35 via-transparent to-rose-500/15",
   },
 ];
 
@@ -186,6 +207,13 @@ const anomalySeverityWeight: Record<AnomalyCluster["severity"], number> = {
   high: 90,
 };
 
+type ScenarioInsightsPayload = {
+  signals: ScenarioDefinition["liveSignals"];
+  aiInsights: ScenarioDefinition["aiInsights"];
+  kpis: ScenarioDefinition["kpis"];
+  actions: ScenarioDefinition["actions"];
+};
+
 const resiliencePlaybooks: Record<ScenarioKey, string[]> = {
   mobility: [
     "Adaptive signal retiming holds corridor saturation under 88% through peak commute.",
@@ -220,14 +248,41 @@ export default function Home() {
   const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>(defaultScenarioKey);
   const [focus, setFocus] = useState(52);
   const [activeModule, setActiveModule] = useState("digital-twin");
+  const [copilotDockOpen, setCopilotDockOpen] = useState(true);
+  const [copilotDockView, setCopilotDockView] = useState<CopilotDockView>("threads");
+  const [copilotOverlayOpen, setCopilotOverlayOpen] = useState(false);
 
   const scenario = getScenarioConfig(activeScenarioKey);
   const scenarioSummaries = useMemo(() => listScenarioSummaries(), []);
-  const scenarioInsights = useMemo(() => listScenarioInsights(activeScenarioKey), [activeScenarioKey]);
+  const scenarioInsights = useMemo<ScenarioInsightsPayload>(() => {
+    const insights = listScenarioInsights(activeScenarioKey);
+    if (Array.isArray(insights)) {
+      return {
+        signals: [] as ScenarioInsightsPayload["signals"],
+        aiInsights: [] as ScenarioInsightsPayload["aiInsights"],
+        kpis: [] as ScenarioInsightsPayload["kpis"],
+        actions: [] as ScenarioInsightsPayload["actions"],
+      };
+    }
+    return insights as ScenarioInsightsPayload;
+  }, [activeScenarioKey]);
 
   if (!scenario) {
     throw new Error(`Scenario configuration missing for key: ${activeScenarioKey}`);
   }
+
+  const copilotScenarioKey = (
+    ["mobility", "energy", "climate", "safety"].includes(activeScenarioKey)
+      ? activeScenarioKey
+      : "mobility"
+  ) as CopilotScenarioKey;
+
+  const copilotModule = copilotModuleIndex[copilotScenarioKey];
+  const copilotConversation = copilotThreads[copilotScenarioKey];
+  const copilotPrompts = copilotPromptLibrary[copilotScenarioKey];
+  const copilotMissionsForScenario = copilotMissionDeck[copilotScenarioKey];
+  const copilotRecommendationsForScenario = copilotRecommendations[copilotScenarioKey];
+  const copilotAuditTrail = copilotAuditLog[copilotScenarioKey];
 
   const syncTimestamp = new Intl.DateTimeFormat("en", {
     hour: "numeric",
@@ -236,6 +291,13 @@ export default function Home() {
     timeZoneName: "short",
   }).format(new Date());
 
+  const activeModuleMeta =
+    moduleNavigation.find((module) => module.id === activeModule) ?? moduleNavigation[0];
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeModule]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <DashboardTopBar
@@ -243,50 +305,135 @@ export default function Home() {
         scenarioSummaries={scenarioSummaries}
         onScenarioChange={setActiveScenarioKey}
         syncTimestamp={syncTimestamp}
+        onCopilotSummon={() => setCopilotOverlayOpen(true)}
+        onCopilotToggle={() => setCopilotDockOpen((prev) => !prev)}
+        isCopilotRailOpen={copilotDockOpen}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar activeModule={activeModule} onModuleChange={setActiveModule} />
 
-        <main className="flex-1 overflow-y-auto px-6 py-10 sm:px-10">
-          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 pb-16">
-            <KpiPulseStrip kpis={citywideKpis} />
-
-            <section
-              id="digital-twin"
-              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/70 p-6 shadow-[0_25px_80px_-40px_rgba(59,130,246,0.55)] backdrop-blur-3xl md:p-8"
-            >
-              <DigitalTwinPanel
-                scenario={scenario}
-                focus={focus}
-                onFocusChange={setFocus}
-                insights={scenarioInsights}
+        <div className="flex flex-1 overflow-hidden">
+          <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8 lg:px-10 lg:py-10">
+            <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 pb-16">
+              <ModuleSwitcher
+                activeModule={activeModule}
+                onModuleChange={setActiveModule}
+                modules={moduleNavigation}
+                activeModuleMeta={activeModuleMeta}
               />
-            </section>
 
-            <section
-              id="vlr-workbench"
-              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/60 p-6 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.45)] backdrop-blur-3xl md:p-8"
-            >
-              <VlrPreviewPanel />
-            </section>
+              {activeModule === "digital-twin" ? (
+                <>
+                  <section
+                    id="digital-twin"
+                    className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_35px_90px_-65px_rgba(59,130,246,0.65)] backdrop-blur-2xl md:p-8"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Citywide KPI Pulse</p>
+                        <h3 className="mt-1 text-lg font-semibold text-white">Live operations benchmark</h3>
+                        <p className="mt-1 text-sm text-foreground/60">
+                          Signals derived from Nexus telemetry and ML uplift vs baseline.
+                        </p>
+                      </div>
+                      <div className="hidden text-right text-xs uppercase tracking-[0.3em] text-foreground/45 sm:block">
+                        Updated with scenario focus &middot; {syncTimestamp}
+                      </div>
+                    </div>
+                    <div className="mt-5">
+                      <KpiPulseStrip kpis={citywideKpis} />
+                    </div>
+                  </section>
 
-            <section
-              id="analytics"
-              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/65 p-6 shadow-[0_25px_80px_-45px_rgba(14,165,233,0.48)] backdrop-blur-3xl md:p-8"
-            >
-              <AnalyticsPreviewPanel scenario={scenario} />
-            </section>
+                  <section
+                    aria-label="Digital twin module"
+                    className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-75px_rgba(79,70,229,0.65)] backdrop-blur-2xl md:p-8"
+                  >
+                    <DigitalTwinPanel
+                      scenario={scenario}
+                      focus={focus}
+                      onFocusChange={setFocus}
+                      insights={scenarioInsights}
+                    />
+                  </section>
+                </>
+              ) : null}
 
-            <section
-              id="copilot"
-              className="scroll-mt-24 rounded-[32px] border border-white/10 bg-surface/65 p-6 shadow-[0_25px_80px_-45px_rgba(236,72,153,0.42)] backdrop-blur-3xl md:p-8"
-            >
-              <CopilotPreviewPanel scenarioName={scenario.name} />
-            </section>
-          </div>
-        </main>
+              {activeModule === "vlr-workbench" ? (
+                <section
+                  id="vlr-workbench"
+                  aria-label="VLR automation module"
+                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(168,85,247,0.6)] backdrop-blur-2xl md:p-8"
+                >
+                  <VlrPreviewPanel />
+                </section>
+              ) : null}
+
+              {activeModule === "analytics" ? (
+                <section
+                  id="analytics"
+                  aria-label="Analytics module"
+                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(45,212,191,0.55)] backdrop-blur-2xl md:p-8"
+                >
+                  <AnalyticsPreviewPanel scenario={scenario} />
+                </section>
+              ) : null}
+
+              {activeModule === "copilot" ? (
+                <section
+                  id="copilot"
+                  aria-label="Copilot module"
+                  className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 shadow-[0_45px_120px_-80px_rgba(251,113,133,0.58)] backdrop-blur-2xl md:p-8"
+                >
+                  <CopilotPreviewPanel
+                    scenario={scenario}
+                    module={copilotModule}
+                    quickPrompts={copilotPrompts}
+                    recommendations={copilotRecommendationsForScenario}
+                    missions={copilotMissionsForScenario}
+                    auditLog={copilotAuditTrail}
+                    onSummonDock={() => setCopilotOverlayOpen(true)}
+                    onToggleRail={() => setCopilotDockOpen((prev) => !prev)}
+                    isRailOpen={copilotDockOpen}
+                  />
+                </section>
+              ) : null}
+            </div>
+          </main>
+
+          <CopilotRail
+            open={copilotDockOpen}
+            scenario={scenario}
+            module={copilotModule}
+            conversation={copilotConversation}
+            prompts={copilotPrompts}
+            missions={copilotMissionsForScenario}
+            recommendations={copilotRecommendationsForScenario}
+            auditLog={copilotAuditTrail}
+            scenarioActions={scenario.actions}
+            activeView={copilotDockView}
+            onToggle={() => setCopilotDockOpen((prev) => !prev)}
+            onViewChange={setCopilotDockView}
+          />
+        </div>
       </div>
+
+      {copilotOverlayOpen ? (
+        <CopilotOverlay
+          scenario={scenario}
+          module={copilotModule}
+          conversation={copilotConversation}
+          quickPrompts={copilotPrompts}
+          missions={copilotMissionsForScenario}
+          recommendations={copilotRecommendationsForScenario}
+          auditLog={copilotAuditTrail}
+          scenarioActions={scenario.actions}
+          activeView={copilotDockView}
+          onClose={() => setCopilotOverlayOpen(false)}
+          onViewChange={setCopilotDockView}
+        />
+      ) : null}
     </div>
   );
 }
@@ -296,44 +443,55 @@ type DashboardTopBarProps = {
   scenarioSummaries: ReturnType<typeof listScenarioSummaries>;
   onScenarioChange: (key: ScenarioKey) => void;
   syncTimestamp: string;
+  onCopilotSummon: () => void;
+  onCopilotToggle: () => void;
+  isCopilotRailOpen: boolean;
 };
 
-function DashboardTopBar({ scenarioKey, scenarioSummaries, onScenarioChange, syncTimestamp }: DashboardTopBarProps) {
+function DashboardTopBar({
+  scenarioKey,
+  scenarioSummaries,
+  onScenarioChange,
+  syncTimestamp,
+  onCopilotSummon,
+  onCopilotToggle,
+  isCopilotRailOpen,
+}: DashboardTopBarProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(8,16,38,0.88)]">
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-4 px-6 py-5 sm:px-10 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-accent-500 to-indigo-500 text-white shadow-[0_0_30px_rgba(59,130,246,0.45)]">
-            <Sparkles className="h-6 w-6" />
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(8,16,28,0.82)] backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-5 py-4 sm:px-8 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-accent-500 to-indigo-500 text-white shadow-[0_0_25px_rgba(59,130,246,0.4)]">
+            <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-foreground/50">Nexus Consulting</p>
-            <h1 className="text-xl font-semibold text-white sm:text-2xl">City Digital Twin Command</h1>
-            <p className="text-xs text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
+            <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Nexus Consulting</p>
+            <h1 className="text-lg font-semibold text-white sm:text-xl">City Digital Twin Command</h1>
+            <p className="text-[11px] text-foreground/60">Automated VLR intelligence for Metropolitan Nexus</p>
           </div>
         </div>
 
-        <div className="flex flex-1 flex-wrap items-center justify-end gap-4">
-          <nav className="flex flex-wrap gap-2 rounded-[999px] border border-white/10 bg-white/5 p-1.5">
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
+          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-white/10 bg-white/5 p-1">
             {scenarioSummaries.map((scenario) => (
               <button
                 key={scenario.key}
                 type="button"
                 onClick={() => onScenarioChange(scenario.key)}
                 className={cn(
-                  "min-w-[150px] rounded-[999px] px-4 py-2 text-left text-xs font-medium transition-all",
+                  "min-w-[132px] rounded-[999px] px-3.5 py-2 text-left text-[11px] font-medium transition-all",
                   scenario.key === scenarioKey
                     ? "bg-primary-500/80 text-white shadow-[0_15px_40px_-25px_rgba(14,165,233,0.85)]"
                     : "text-foreground/60 hover:bg-white/10 hover:text-foreground",
                 )}
               >
-                <span className="block text-[10px] uppercase tracking-[0.35em] text-white/60">Scenario</span>
+                <span className="block text-[9px] uppercase tracking-[0.35em] text-white/60">Scenario</span>
                 <span className="mt-0.5 block text-sm leading-tight">{scenario.name}</span>
               </button>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-foreground/60">
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-3 py-2 text-[11px] text-foreground/60">
             <MapPinned className="h-4 w-4 text-primary-200" />
             <div className="flex flex-col">
               <span className="uppercase tracking-[0.35em]">Metro Focus</span>
@@ -341,12 +499,31 @@ function DashboardTopBar({ scenarioKey, scenarioSummaries, onScenarioChange, syn
             </div>
           </div>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-foreground/60">
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-3 py-2 text-[11px] text-foreground/60">
             <Clock8 className="h-4 w-4 text-accent-400" />
             <div className="flex flex-col">
               <span className="uppercase tracking-[0.35em]">Sync Checkpoint</span>
               <span className="mt-0.5 text-sm font-semibold text-white">{syncTimestamp}</span>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onCopilotToggle}
+              className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
+            >
+              <Bot className="h-4 w-4 text-primary-200" />
+              {isCopilotRailOpen ? "Hide Copilot Dock" : "Show Copilot Dock"}
+            </button>
+            <button
+              type="button"
+              onClick={onCopilotSummon}
+              className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/20 xl:hidden"
+            >
+              <Bot className="h-4 w-4" />
+              Launch Copilot
+            </button>
           </div>
         </div>
       </div>
@@ -361,10 +538,10 @@ type DashboardSidebarProps = {
 
 function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProps) {
   return (
-    <aside className="hidden w-[280px] border-r border-white/10 bg-[rgba(6,12,28,0.88)] px-5 py-8 lg:block">
+    <aside className="hidden w-[260px] border-r border-white/10 bg-[rgba(6,12,28,0.82)] px-5 py-6 lg:block">
       <div className="space-y-6">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-5 text-xs uppercase tracking-[0.35em] text-foreground/60 shadow-[0_18px_50px_-35px_rgba(59,130,246,0.65)]">
-          <p className="flex items-center gap-2 text-foreground/60">
+        <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-5 text-[11px] uppercase tracking-[0.32em] text-foreground/55 shadow-[0_18px_50px_-38px_rgba(59,130,246,0.6)]">
+          <p className="flex items-center gap-2 text-foreground/65">
             <GaugeCircle className="h-4 w-4 text-primary-300" />
             Mission Status
           </p>
@@ -374,42 +551,232 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
           </span>
         </div>
 
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-1.5">
           {moduleNavigation.map((item) => (
-            <a
+            <button
               key={item.id}
-              href={`#${item.id}`}
+              type="button"
+              aria-pressed={activeModule === item.id}
               onClick={() => onModuleChange(item.id)}
               className={cn(
-                "group rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3 transition-all duration-200 hover:border-white/20 hover:bg-white/10",
-                activeModule === item.id ? "border-primary-400 bg-primary-500/15" : "text-foreground/70",
+                "group rounded-[22px] border border-white/5 bg-white/[0.03] px-4 py-3 text-left transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.08]",
+                activeModule === item.id
+                  ? "border-white/15 bg-white/[0.12] shadow-[0_18px_45px_-35px_rgba(59,130,246,0.55)]"
+                  : "text-foreground/70",
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5 text-primary-200" />
+                  <span
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 text-primary-100 transition-all duration-200",
+                      activeModule === item.id ? "bg-white/[0.15]" : "bg-white/[0.08]",
+                    )}
+                  >
+                    <item.icon className="h-5 w-5" />
+                  </span>
                   <div>
                     <p className="text-sm font-semibold text-white">{item.label}</p>
-                    <p className="text-[11px] text-foreground/60">{item.description}</p>
+                    <p className="text-[11px] text-foreground/55">{item.description}</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-foreground/50 transition-transform group-hover:translate-x-1" />
+                <ChevronRight className="h-4 w-4 text-foreground/45 transition-transform group-hover:translate-x-1" />
               </div>
-            </a>
+            </button>
           ))}
         </nav>
 
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary-500/10 via-accent-500/10 to-rose-500/10 p-5 text-xs text-foreground/60">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-primary-200">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary-500/12 via-accent-500/10 to-rose-500/12 p-5 text-[11px] text-foreground/60">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
             <BrainCircuit className="h-4 w-4" />
             AI Warden
           </p>
-          <p className="mt-3 text-sm text-white">
+          <p className="mt-3 text-sm text-white/90">
             Digital twin telemetry is clean. 3 proactive interventions queued with Nexus Copilot.
           </p>
         </div>
       </div>
     </aside>
+  );
+}
+
+type ModuleSwitcherProps = {
+  activeModule: string;
+  onModuleChange: (moduleId: string) => void;
+  modules: typeof moduleNavigation;
+  activeModuleMeta: (typeof moduleNavigation)[number];
+};
+
+function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMeta }: ModuleSwitcherProps) {
+  return (
+    <section className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_25px_80px_-70px_rgba(59,130,246,0.6)] backdrop-blur-2xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/55">Module Suite</p>
+          <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">{activeModuleMeta.label}</h2>
+          <p className="mt-1 text-sm text-foreground/60">{activeModuleMeta.description}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {modules.map((module) => {
+          const isActive = module.id === activeModule;
+
+          return (
+            <button
+              key={module.id}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => onModuleChange(module.id)}
+              className={cn(
+                "group relative overflow-hidden rounded-[999px] border border-white/10 px-3.5 py-2 text-sm font-medium text-foreground/65 transition-colors duration-200 hover:text-white",
+                isActive ? "text-white shadow-[0_18px_45px_-28px_rgba(59,130,246,0.6)]" : "",
+              )}
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute inset-0 -z-10 rounded-[999px] bg-gradient-to-r opacity-0 transition-opacity duration-300",
+                  module.accent ?? "",
+                  isActive ? "opacity-100" : "group-hover:opacity-60",
+                )}
+              />
+              <span className="relative flex items-center gap-2">
+                <span
+                  className={cn(
+                    "flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-xs transition-colors duration-200",
+                    isActive ? "border-white/30 bg-white/[0.18] text-primary-100" : "",
+                  )}
+                >
+                  <module.icon className="h-4 w-4" />
+                </span>
+                {module.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+type CopilotRailProps = {
+  open: boolean;
+  scenario: ScenarioDefinition;
+  module?: CopilotModule;
+  conversation: CopilotMessage[];
+  prompts: CopilotPrompt[];
+  missions: CopilotMission[];
+  recommendations: CopilotRecommendation[];
+  auditLog: CopilotAuditEntry[];
+  scenarioActions: string[];
+  activeView: CopilotDockView;
+  onToggle: () => void;
+  onViewChange: (view: CopilotDockView) => void;
+};
+
+function CopilotRail({
+  open,
+  scenario,
+  module,
+  conversation,
+  prompts,
+  missions,
+  recommendations,
+  auditLog,
+  scenarioActions,
+  activeView,
+  onToggle,
+  onViewChange,
+}: CopilotRailProps) {
+  return (
+    <div className="relative hidden h-full xl:flex">
+      <aside
+        className={cn(
+          "flex h-full flex-col border-l border-white/10 bg-[rgba(6,12,28,0.92)] backdrop-blur-2xl transition-all duration-300 ease-out",
+          open ? "w-[380px]" : "w-[84px]",
+        )}
+      >
+        {open ? (
+          <div className="flex h-full flex-col overflow-hidden px-6 py-7">
+            <CopilotDockContent
+              scenario={scenario}
+              module={module}
+              conversation={conversation}
+              quickPrompts={prompts}
+              missions={missions}
+              recommendations={recommendations}
+              auditLog={auditLog}
+              scenarioActions={scenarioActions}
+              activeView={activeView}
+              onViewChange={onViewChange}
+              onClose={onToggle}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onToggle}
+            className="group flex h-full w-full flex-col items-center justify-center gap-3 rounded-l-[32px] border-l border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.4em] text-foreground/60 transition hover:border-white/20 hover:text-white"
+          >
+            <Bot className="h-6 w-6 text-primary-200 transition group-hover:scale-105" />
+            <span className="px-3 text-center">Copilot Dock</span>
+            <span className="sr-only">Expand copilot dock</span>
+          </button>
+        )}
+      </aside>
+    </div>
+  );
+}
+
+type CopilotOverlayProps = {
+  scenario: ScenarioDefinition;
+  module?: CopilotModule;
+  conversation: CopilotMessage[];
+  quickPrompts: CopilotPrompt[];
+  missions: CopilotMission[];
+  recommendations: CopilotRecommendation[];
+  auditLog: CopilotAuditEntry[];
+  scenarioActions: string[];
+  activeView: CopilotDockView;
+  onClose: () => void;
+  onViewChange: (view: CopilotDockView) => void;
+};
+
+function CopilotOverlay({
+  scenario,
+  module,
+  conversation,
+  quickPrompts,
+  missions,
+  recommendations,
+  auditLog,
+  scenarioActions,
+  activeView,
+  onClose,
+  onViewChange,
+}: CopilotOverlayProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/60 backdrop-blur-sm xl:hidden">
+      <div role="presentation" className="flex-1" onClick={onClose} />
+      <div className="relative max-h-[88vh] w-full overflow-hidden rounded-t-[36px] border-t border-white/10 bg-[rgba(6,12,28,0.97)] px-5 py-6 shadow-[0_-25px_80px_rgba(15,23,42,0.65)] sm:px-6">
+        <div className="mx-auto h-full max-w-[540px] overflow-y-auto pb-6">
+          <CopilotDockContent
+            scenario={scenario}
+            module={module}
+            conversation={conversation}
+            quickPrompts={quickPrompts}
+            missions={missions}
+            recommendations={recommendations}
+            auditLog={auditLog}
+            scenarioActions={scenarioActions}
+            activeView={activeView}
+            onViewChange={onViewChange}
+            onClose={onClose}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -447,7 +814,7 @@ type DigitalTwinPanelProps = {
   scenario: ScenarioDefinition;
   focus: number;
   onFocusChange: (value: number) => void;
-  insights: ReturnType<typeof listScenarioInsights>;
+  insights: ScenarioInsightsPayload;
 };
 
 function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalTwinPanelProps) {
@@ -501,6 +868,8 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
             <MapHud scenario={scenario} insights={insights} focus={focus} />
           </div>
 
+          <MapSpotlightList scenario={scenario} />
+
           <LayerLegend layers={scenario.layers} focus={focus} />
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -553,7 +922,7 @@ function MapHud({
   focus,
 }: {
   scenario: ScenarioDefinition;
-  insights: ReturnType<typeof listScenarioInsights>;
+  insights: ScenarioInsightsPayload;
   focus: number;
 }) {
   const focusMinutes = Math.round((focus / 100) * 60);
@@ -606,6 +975,92 @@ function MapHud({
             <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-white">{scenario.layers.length}</p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
+  const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
+
+  const spotlightCandidates = pointLayers.flatMap((layer) => {
+    const dataset = layer.dataset as GeoJSONFeatureCollection;
+    return dataset.features
+      .filter((feature) => feature.geometry?.type === "Point")
+      .map((feature) => {
+        const properties = (feature.properties ?? {}) as Record<string, unknown>;
+        const anomalyScore = typeof properties.anomalyScore === "number" ? properties.anomalyScore : 0;
+        const health = typeof properties.health === "string" ? properties.health : null;
+        const type = typeof properties.type === "string" ? properties.type : "Sensor";
+        const district = typeof properties.district === "string" ? properties.district : null;
+        const id = typeof properties.id === "string" ? properties.id : layer.id;
+
+        return {
+          id,
+          layerLabel: layer.label,
+          anomalyScore,
+          health,
+          district,
+          type,
+        };
+      });
+  });
+
+  if (!spotlightCandidates.length) {
+    return null;
+  }
+
+  const topSpots = [...spotlightCandidates]
+    .sort((a, b) => (b.anomalyScore ?? 0) - (a.anomalyScore ?? 0))
+    .slice(0, 3);
+
+  return (
+    <div className="rounded-[24px] border border-white/10 bg-white/[0.05] p-5 shadow-[0_25px_70px_-55px_rgba(59,130,246,0.6)] backdrop-blur-2xl">
+      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+        <Crosshair className="h-3.5 w-3.5" />
+        Spatial Spotlight
+      </p>
+      <div className="mt-4 space-y-3">
+        {topSpots.map((spot) => {
+          const anomalyPercent = Math.round((spot.anomalyScore ?? 0) * 100);
+          const statusClass =
+            spot.health === "Offline"
+              ? "bg-rose-500/15 text-rose-200 border-rose-400/40"
+              : spot.health === "At Risk"
+                ? "bg-amber-500/15 text-amber-100 border-amber-400/35"
+                : "bg-emerald-500/15 text-emerald-200 border-emerald-400/35";
+          const narrative =
+            spot.health === "Offline"
+              ? "Dispatch crew · feed offline in corridor spine"
+              : spot.health === "At Risk"
+                ? "Edge models escalate drift vs baseline threshold"
+                : "Signal steady · AI guardrail holding variance";
+
+          return (
+            <div
+              key={`${spot.id}-${spot.layerLabel}`}
+              className="flex items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-black/30 px-4 py-3 text-sm text-foreground/70 backdrop-blur-xl"
+            >
+              <div>
+                <p className="text-sm font-semibold text-white">
+                  {spot.id} · {spot.type}
+                </p>
+                <p className="text-xs text-foreground/55">
+                  {spot.layerLabel}
+                  {spot.district ? ` • ${spot.district}` : ""} · {narrative}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <span className="text-xs font-semibold text-primary-100">{anomalyPercent}% anomaly</span>
+                {spot.health ? (
+                  <span className={cn("rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.3em]", statusClass)}>
+                    {spot.health}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -674,7 +1129,7 @@ function getVisualizationMeta(type: ScenarioLayer["visualization"]): { label: st
   }
 }
 
-function SignalBadge({ signal }: { signal: ReturnType<typeof listScenarioInsights>["signals"][number] }) {
+function SignalBadge({ signal }: { signal: ScenarioInsightsPayload["signals"][number] }) {
   const tone =
     signal.tone === "positive"
       ? "border-primary-400/40 bg-primary-500/10 text-primary-100"
@@ -700,7 +1155,7 @@ function InsightCard({
   insight,
   index,
 }: {
-  insight: ReturnType<typeof listScenarioInsights>["aiInsights"][number];
+  insight: ScenarioInsightsPayload["aiInsights"][number];
   index: number;
 }) {
   return (
@@ -1551,8 +2006,10 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                       color: "rgba(226,232,255,0.92)",
                       padding: "0.75rem 1rem",
                     }}
-                    formatter={(value: unknown) =>
-                      typeof value === "number" ? [`${Math.round(value * 100)}%`, "Risk Score"] : value
+                    formatter={(value: number | string) =>
+                      typeof value === "number"
+                        ? [`${Math.round(value * 100)}%`, "Risk Score"]
+                        : [value, "Risk Score"]
                     }
                   />
                   <Bar dataKey="score" fill="url(#riskScoreGradient)" radius={[14, 14, 0, 0]} />
@@ -1718,67 +2175,210 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
   );
 }
 
-function CopilotPreviewPanel({ scenarioName }: { scenarioName: string }) {
-  return (
-    <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
-      <div className="rounded-[28px] border border-white/10 bg-white/8 p-5">
-        <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Nexus Copilot</p>
-        <h3 className="mt-2 text-xl font-semibold text-white">Mission threads aligned to {scenarioName}</h3>
-        <p className="mt-3 text-sm text-foreground/70">
-          Operators can investigate anomalies, request forecasts, and deploy field actions through a secure copilot
-          interface. Every recommendation is grounded in digital twin evidence.
-        </p>
+type CopilotPreviewPanelProps = {
+  scenario: ScenarioDefinition;
+  module?: CopilotModule;
+  quickPrompts: CopilotPrompt[];
+  recommendations: CopilotRecommendation[];
+  missions: CopilotMission[];
+  auditLog: CopilotAuditEntry[];
+  onSummonDock: () => void;
+  onToggleRail: () => void;
+  isRailOpen: boolean;
+};
 
-        <div className="mt-5 space-y-3 text-sm">
-          <div className="rounded-[20px] border border-white/10 bg-white/5 px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.35em] text-primary-200">Live Prompt</p>
-            <p className="mt-2 text-foreground/80">
-              “Summarize the top three climate resilience risks for Harbor District and prep a briefing for emergency
-              services.”
+function CopilotPreviewPanel({
+  scenario,
+  module,
+  quickPrompts,
+  recommendations,
+  missions,
+  auditLog,
+  onSummonDock,
+  onToggleRail,
+  isRailOpen,
+}: CopilotPreviewPanelProps) {
+  const activeMissions = missions.filter((mission) => mission.status === "active");
+  const queuedMissions = missions.filter((mission) => mission.status === "queued");
+  const completedMissions = missions.filter((mission) => mission.status === "complete");
+
+  const topRecommendations = recommendations.slice(0, 3);
+  const highlightedAudit = auditLog.slice(0, 3);
+  const topPrompts = quickPrompts.slice(0, 3);
+
+  const missionSummary = [
+    {
+      label: "Active Threads",
+      value: activeMissions.length,
+      detail: activeMissions[0]?.title ?? "No live threads",
+      accent: "from-sky-500/20 via-sky-400/10 to-sky-500/0",
+    },
+    {
+      label: "Queued Next",
+      value: queuedMissions.length,
+      detail: queuedMissions[0]?.title ?? "No queued missions",
+      accent: "from-violet-500/20 via-violet-400/10 to-violet-500/0",
+    },
+    {
+      label: "Logged & Complete",
+      value: completedMissions.length,
+      detail: completedMissions[0]?.title ?? "Awaiting closeout",
+      accent: "from-emerald-500/20 via-emerald-400/10 to-emerald-500/0",
+    },
+  ];
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="space-y-5">
+        <div className="rounded-[30px] border border-white/10 bg-white/8 p-5 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.45)] sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.4em] text-primary-200">Nexus Copilot</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">
+                Mission orchestration for {scenario.name}
+              </h3>
+              <p className="mt-2 text-sm text-foreground/65">{scenario.command}</p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={onToggleRail}
+                className="hidden items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60 transition hover:border-white/20 hover:text-white xl:inline-flex"
+              >
+                <Bot className="h-4 w-4 text-primary-200" />
+                {isRailOpen ? "Collapse Dock" : "Pin Dock"}
+              </button>
+              <button
+                type="button"
+                onClick={onSummonDock}
+                className="inline-flex items-center gap-2 rounded-2xl border border-primary-400/40 bg-primary-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100 transition hover:border-primary-400/60 hover:bg-primary-500/25 xl:hidden"
+              >
+                <Bot className="h-4 w-4" />
+                Launch Copilot
+              </button>
+            </div>
+          </div>
+
+          <p className="mt-4 text-sm text-foreground/65">
+            {module?.description ??
+              "Conversational AI fuses telemetry, policy guardrails, and equity heuristics to choreograph the next best mission step for Nexus operators."}
+          </p>
+
+          {module ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {module.metrics.slice(0, 3).map((metric) => (
+                <div
+                  key={metric.label}
+                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-foreground/70"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
+                  <p className="mt-2 text-lg font-semibold text-white">{metric.value}</p>
+                  <p className="text-[11px] text-foreground/55">
+                    {metric.delta} • {metric.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        {topPrompts.length ? (
+          <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.4)]">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+              <Sparkles className="h-4 w-4" />
+              Quick prompts
             </p>
+            <div className="mt-4 grid gap-3">
+              {topPrompts.map((prompt) => (
+                <div
+                  key={prompt.id}
+                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-foreground/70 shadow-[0_18px_50px_-40px_rgba(59,130,246,0.55)]"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{prompt.label}</p>
+                  <p className="mt-2">{prompt.prompt}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="rounded-[20px] border border-white/10 bg-black/30 px-4 py-3 text-foreground/70">
-            Copilot cross-checks energy, mobility, and sentiment feeds before suggesting actions and writes the
-            executive-ready response in under 8 seconds.
-          </div>
+        ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {missionSummary.map((card) => (
+            <div
+              key={card.label}
+              className="relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-foreground/70"
+            >
+              <div
+                aria-hidden
+                className={cn(
+                  "pointer-events-none absolute inset-0 opacity-60 blur-[2px]",
+                  `bg-gradient-to-br ${card.accent}`,
+                )}
+              />
+              <div className="relative">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{card.label}</p>
+                <p className="mt-3 text-3xl font-semibold text-white">{card.value}</p>
+                <p className="mt-2 text-xs text-foreground/60">{card.detail}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-white/10 bg-black/35 p-5">
-        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
-          <Bot className="h-4 w-4" />
-          Recommended Actions
-        </p>
-        <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
-            Dispatch “Cooling Surge Kit” to Innovation Basin shelters and notify resilience desk.
-          </li>
-          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
-            Trigger congestion-aware freight reprioritization along Harbor Connector for next 45 minutes.
-          </li>
-          <li className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3">
-            Publish governance log to City Council portal summarizing AI interventions in last 24 hours.
-          </li>
-        </ul>
+        <div className="space-y-5">
+        <div className="rounded-[30px] border border-white/10 bg-black/30 p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-45px_rgba(236,72,153,0.42)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+            <Bot className="h-4 w-4" />
+            Recommended actions
+          </p>
+          <ul className="mt-4 space-y-3">
+            {topRecommendations.map((recommendation) => (
+              <li
+                key={recommendation.id}
+                className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-foreground/70"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
+                  <span>{recommendation.channel}</span>
+                  <span>{recommendation.impact}</span>
+                </div>
+                <p className="mt-2 text-sm font-semibold text-white">{recommendation.title}</p>
+                <p className="mt-2 text-xs text-foreground/60">{recommendation.detail}</p>
+              </li>
+            ))}
+          </ul>
 
-        <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
-          Audit Trail
+          <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
+            Peek inside the dock for full mission queue & playbook.
+          </div>
         </div>
 
-        <ul className="mt-3 space-y-2 text-xs text-foreground/60">
-          <li className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-primary-300" />
-            16:42 · Mobility anomaly explanation archived for compliance.
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-accent-400" />
-            16:40 · Nexus Copilot posted VLR chapter summary to mission channel.
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-rose-400" />
-            16:37 · Edge sensor escalation resolved via automated script.
-          </li>
-        </ul>
+        <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-45px_rgba(125,211,252,0.35)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+            <FileText className="h-4 w-4" />
+            Audit ledger
+          </p>
+          <div className="mt-4 space-y-3 border-l border-white/10 pl-5">
+            {highlightedAudit.map((entry, index) => (
+              <div key={entry.id} className="relative">
+                <span className="absolute -left-[11px] top-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/10 bg-white/20 text-[9px] text-slate-900">
+                  {index + 1}
+                </span>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{entry.time}</p>
+                <p className="mt-1 text-sm font-semibold text-white">{entry.label}</p>
+                <p className="mt-1 text-xs text-foreground/60">{entry.description}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={onSummonDock}
+            className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/55 transition hover:border-white/20 hover:text-white"
+          >
+            <MoveRight className="h-4 w-4" />
+            Review full ledger
+          </button>
+        </div>
       </div>
     </div>
   );

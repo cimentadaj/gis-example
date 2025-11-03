@@ -213,7 +213,7 @@ function ChatPanel({ messages }: { messages: CopilotMessage[] }) {
 
       <div className="mt-5 flex flex-col gap-4">
         {messages.map((message) => {
-          const isAi = message.speaker === "AetherCity AI";
+          const isAi = message.speaker !== "Operator";
           return (
             <div key={message.id} className={cn("flex", isAi ? "justify-start" : "justify-end")}>
               <div

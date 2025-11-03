@@ -9,10 +9,18 @@ import {
   getScenarioConfig,
   listScenarioInsights,
   listScenarioSummaries,
+  type ScenarioDefinition,
   type ScenarioKey,
 } from "@/lib/scenarios";
 import { CommandCenterPanel } from "@/components/command-center/command-center-panel";
 import { CommandCenterMap } from "@/components/command-center/command-center-map";
+
+type ScenarioInsights = {
+  signals: ScenarioDefinition["liveSignals"];
+  aiInsights: ScenarioDefinition["aiInsights"];
+  kpis: ScenarioDefinition["kpis"];
+  actions: ScenarioDefinition["actions"];
+};
 
 export function CommandCenterSection() {
   const [selectedScenario, setSelectedScenario] = useState<ScenarioKey>(defaultScenarioKey);
@@ -20,7 +28,18 @@ export function CommandCenterSection() {
 
   const scenarioSummaries = useMemo(() => listScenarioSummaries(), []);
   const scenario = getScenarioConfig(selectedScenario);
-  const insights = useMemo(() => listScenarioInsights(selectedScenario), [selectedScenario]);
+  const insights = useMemo<ScenarioInsights>(() => {
+    const result = listScenarioInsights(selectedScenario);
+    if (Array.isArray(result)) {
+      return {
+        signals: [] as ScenarioInsights["signals"],
+        aiInsights: [] as ScenarioInsights["aiInsights"],
+        kpis: [] as ScenarioInsights["kpis"],
+        actions: [] as ScenarioInsights["actions"],
+      };
+    }
+    return result as ScenarioInsights;
+  }, [selectedScenario]);
 
   if (!scenario) {
     return null;
@@ -71,7 +90,7 @@ function MapOverlays({
 }: {
   scenarioName: string;
   focus: number;
-  insights: ReturnType<typeof listScenarioInsights>;
+  insights: ScenarioInsights;
 }) {
   const primaryInsight = insights.aiInsights[0];
   const primaryAction = insights.actions[0];
