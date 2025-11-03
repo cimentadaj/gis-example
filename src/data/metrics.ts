@@ -117,3 +117,156 @@ export const anomalyClusters: AnomalyCluster[] = [
     expectedResolutionMinutes: 15,
   },
 ];
+
+export type ModelPerformanceStat = {
+  id: string;
+  metric: string;
+  value: string;
+  change: string;
+  tone: TrendDirection;
+};
+
+export const modelPerformanceStats: ModelPerformanceStat[] = [
+  {
+    id: "mobility-mape",
+    metric: "Mobility Demand MAPE",
+    value: "5.2%",
+    change: "-1.4%",
+    tone: "down",
+  },
+  {
+    id: "energy-r2",
+    metric: "Energy Load R²",
+    value: "0.94",
+    change: "+0.03",
+    tone: "up",
+  },
+  {
+    id: "incident-rmse",
+    metric: "Incident ETA RMSE",
+    value: "2.8 min",
+    change: "-0.6",
+    tone: "down",
+  },
+];
+
+export type ScenarioComparison = {
+  id: string;
+  scenario: string;
+  baseline: number;
+  optimized: number;
+  unit: string;
+  narrative: string;
+};
+
+export const scenarioComparisons: ScenarioComparison[] = [
+  {
+    id: "mobility-vs-ai",
+    scenario: "Mobility",
+    baseline: 78,
+    optimized: 93,
+    unit: "corridor efficiency",
+    narrative: "Adaptive signal retiming + curb reprioritization",
+  },
+  {
+    id: "energy-vs-ai",
+    scenario: "Energy",
+    baseline: 74,
+    optimized: 90,
+    unit: "resilience buffer",
+    narrative: "Edge battery dispatch + predictive load shedding",
+  },
+  {
+    id: "climate-vs-ai",
+    scenario: "Climate",
+    baseline: 69,
+    optimized: 88,
+    unit: "risk mitigation score",
+    narrative: "Storm surge simulation + shelter orchestration",
+  },
+  {
+    id: "safety-vs-ai",
+    scenario: "Safety",
+    baseline: 81,
+    optimized: 95,
+    unit: "response readiness",
+    narrative: "Crowd density fusion + sentiment triage",
+  },
+];
+
+export type RiskCell = {
+  id: string;
+  district: string;
+  quadrant: "Mobility" | "Energy" | "Climate" | "Safety";
+  score: number;
+  driver: string;
+};
+
+export const riskCells: RiskCell[] = [
+  {
+    id: "skyloop",
+    district: "Skyloop Express",
+    quadrant: "Mobility",
+    score: 0.82,
+    driver: "Evening rush surge",
+  },
+  {
+    id: "innovation-basin",
+    district: "Innovation Basin",
+    quadrant: "Energy",
+    score: 0.91,
+    driver: "Microgrid overload risk",
+  },
+  {
+    id: "harbor-district",
+    district: "Harbor District",
+    quadrant: "Climate",
+    score: 0.76,
+    driver: "Storm surge exposure",
+  },
+  {
+    id: "northern-commons",
+    district: "Northern Commons",
+    quadrant: "Safety",
+    score: 0.68,
+    driver: "Festival crowding",
+  },
+  {
+    id: "eastside-ring",
+    district: "Eastside Ring",
+    quadrant: "Mobility",
+    score: 0.59,
+    driver: "Transit reliability dip",
+  },
+  {
+    id: "aerotropolis",
+    district: "Aerotropolis Hub",
+    quadrant: "Energy",
+    score: 0.73,
+    driver: "EV charging peaks",
+  },
+];
+
+export type ExplainabilitySnippet = {
+  id: string;
+  title: string;
+  detail: string;
+};
+
+export const explainabilitySnippets: ExplainabilitySnippet[] = [
+  {
+    id: "shap",
+    title: "SHAP feature cascade surfaced load drivers",
+    detail: "Demand spikes traced back to rideshare surge zones and ferry arrivals, aligning stakeholder intuition with model rationale.",
+  },
+  {
+    id: "confidence-bands",
+    title: "Confidence bands tighten after drift retraining",
+    detail: "Active learning loop ingests field telemetry every 45 minutes, keeping prediction variance under 7%.",
+  },
+  {
+    id: "policy-guardrails",
+    title: "Policy guardrails enforce equity thresholds",
+    detail: "Fairness constraints automatically rebalance interventions to prioritize historically underserved districts.",
+  },
+];

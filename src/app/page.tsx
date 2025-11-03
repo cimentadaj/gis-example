@@ -17,6 +17,7 @@ import {
   type ScenarioSignal,
 } from "@/lib/scenarios";
 import { CommandCenterSection } from "@/components/command-center/command-center-section";
+import { AiAnalyticsSection } from "@/components/analytics/ai-analytics-section";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -41,6 +42,7 @@ export default function Home() {
       <SignalsMarquee badges={signalBadges} />
       <PillarsSection pillars={platformPillars} />
       <CommandCenterSection />
+      <AiAnalyticsSection />
       <NarrativeFlowSection narrative={narrativeSections} />
       <ImpactStoriesSection stories={successStories} />
       <CredibilitySection credibility={credibilitySignals} />
@@ -178,7 +180,7 @@ type NarrativeBlock = (typeof narrativeSections)[number];
 
 function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSections }) {
   return (
-    <Section id="ai-insights" className="pt-10">
+    <Section id="ai-narrative" className="pt-10">
       <Container className="space-y-12">
         <div className="max-w-2xl space-y-4">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
