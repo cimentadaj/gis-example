@@ -11,7 +11,7 @@
    - Surface global state (city, sync timestamp, alert badges) and quick AI status indicators.
    - Ensure the shell accommodates the command map, analytics stack, VLR pipelines, and copilot panes without overflow.
 
-2. **Digital Twin Operations Canvas** _(⬜ Pending)_
+2. **Digital Twin Operations Canvas** _(✅ Completed)_
    - Embed the MapLibre command center into the new shell with adaptive sizing, layer legends, and focus controls.
    - Pair the map with live KPI badges, AI insight overlays, and timeline focus dial.
    - Optimize for 1440px desktop while staying functional on tablets.
@@ -36,3 +36,4 @@
 
 ## Progress Log
 - **2025-11-03**: Replaced the marketing layout with a Nexus-branded dashboard shell featuring top intelligence bar, module sidebar, global KPI pulse strip, and reorganized sections for digital twin, VLR, analytics, and copilot experiences.
+- **2025-11-03**: Elevated the digital twin operations canvas with MapLibre overlays, dynamic layer legends, focus-driven telemetry, and expanded responsive breakpoints for large-format command displays.

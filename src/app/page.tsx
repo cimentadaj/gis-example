@@ -2,18 +2,24 @@
 
 import { useMemo, useState } from "react";
 import {
+  ActivitySquare,
   AlertTriangle,
   Bot,
   BrainCircuit,
   ChevronRight,
   Clock8,
+  Crosshair,
   GaugeCircle,
+  Layers,
   LineChart,
   Map,
   MapPinned,
+  MoveRight,
   Radar,
   Sparkles,
+  Waves,
   Workflow,
+  type LucideIcon,
 } from "lucide-react";
 import {
   citywideKpis,
@@ -28,6 +34,7 @@ import {
   listScenarioInsights,
   listScenarioSummaries,
   type ScenarioDefinition,
+  type ScenarioLayer,
   type ScenarioKey,
 } from "@/lib/scenarios";
 import { CommandCenterMap } from "@/components/command-center/command-center-map";
@@ -295,8 +302,7 @@ type DigitalTwinPanelProps = {
 };
 
 function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalTwinPanelProps) {
-  const confidence = insights.aiInsights.at(0)?.confidence ?? 0;
-  const confidenceLabel = `${Math.round(confidence * 100)}% confidence`;
+  const focusMinutes = Math.round((focus / 100) * 60);
 
   return (
     <div className="space-y-6">
@@ -314,7 +320,7 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
         <div className="w-full rounded-3xl border border-white/10 bg-white/10 px-5 py-4 text-sm text-foreground/70 sm:w-auto">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Focus Horizon</span>
-            <span className="text-base font-semibold text-white">{Math.round((focus / 100) * 60)} min</span>
+            <span className="text-base font-semibold text-white">{focusMinutes} min</span>
           </div>
           <input
             type="range"
@@ -324,24 +330,29 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
             max={100}
             className="mt-3 h-2 w-full appearance-none rounded-full bg-white/10 accent-primary-400"
           />
+          <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-foreground/40">
+            <span>Now</span>
+            <span>+60m</span>
+          </div>
         </div>
+      </div>
+
+      <div className="rounded-[28px] border border-white/10 bg-white/8 px-5 py-4 text-sm leading-6 text-foreground/70 shadow-[0_20px_65px_-45px_rgba(59,130,246,0.55)]">
+        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+          <ActivitySquare className="h-4 w-4" />
+          Operational Narrative
+        </p>
+        <p className="mt-3">{scenario.narrative}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
         <div className="space-y-5">
-          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-black/40 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.55)]">
+          <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-black/40 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.55)]">
             <CommandCenterMap scenario={scenario} focus={focus} />
-            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/5 bg-black/30 px-6 py-4 text-xs text-foreground/60">
-              <div className="flex items-center gap-3">
-                <Map className="h-4 w-4 text-primary-200" />
-                <span>Spatial overlays synced · {scenario.layers.length} active layers</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <BrainCircuit className="h-4 w-4 text-accent-400" />
-                <span>{confidenceLabel}</span>
-              </div>
-            </div>
+            <MapHud scenario={scenario} insights={insights} focus={focus} />
           </div>
+
+          <LayerLegend layers={scenario.layers} focus={focus} />
 
           <div className="grid gap-4 sm:grid-cols-3">
             {insights.signals.map((signal) => (
@@ -385,6 +396,133 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
       </div>
     </div>
   );
+}
+
+function MapHud({
+  scenario,
+  insights,
+  focus,
+}: {
+  scenario: ScenarioDefinition;
+  insights: ReturnType<typeof listScenarioInsights>;
+  focus: number;
+}) {
+  const focusMinutes = Math.round((focus / 100) * 60);
+  const primaryInsight = insights.aiInsights[0];
+  const primaryAction = insights.actions[0];
+  const confidence = primaryInsight ? Math.round(primaryInsight.confidence * 100) : null;
+
+  return (
+    <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-5">
+      <div className="flex flex-wrap items-start gap-4">
+        <div className="rounded-3xl border border-white/10 bg-black/45 px-5 py-4 text-xs uppercase tracking-[0.32em] text-foreground/60 shadow-[0_30px_90px_-45px_rgba(59,130,246,0.75)] backdrop-blur-xl">
+          <p className="flex items-center gap-2 text-foreground/70">
+            <Sparkles className="h-3.5 w-3.5 text-primary-200" />
+            Scenario
+          </p>
+          <p className="mt-2 text-sm font-semibold tracking-[0.18em] text-white">{scenario.name}</p>
+          <p className="mt-1 text-[11px] normal-case tracking-wide text-foreground/70">{scenario.tagline}</p>
+        </div>
+
+        {primaryInsight ? (
+          <div className="max-w-sm rounded-3xl border border-white/10 bg-white/10 px-5 py-4 text-sm leading-6 text-foreground/80 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.65)] backdrop-blur-xl">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
+              <ActivitySquare className="h-3.5 w-3.5" />
+              Insight Pulse{confidence !== null ? ` · ${confidence}%` : ""}
+            </p>
+            <p className="mt-2 font-medium text-white">{primaryInsight.title}</p>
+            <p className="mt-1 text-xs text-foreground/70">{primaryInsight.detail}</p>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        {primaryAction ? (
+          <div className="max-w-xl rounded-3xl border border-white/10 bg-black/45 px-5 py-4 text-sm text-foreground/70 shadow-[0_30px_90px_-45px_rgba(14,165,233,0.65)] backdrop-blur-xl">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
+              <MoveRight className="h-3.5 w-3.5" />
+              Next Orchestration
+            </p>
+            <p className="mt-2 leading-6">{primaryAction}</p>
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-foreground/50">
+            <p>Focus Horizon</p>
+            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-white">{focusMinutes}m</p>
+          </div>
+          <div className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-foreground/50">
+            <p>Active Layers</p>
+            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-white">{scenario.layers.length}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LayerLegend({ layers, focus }: { layers: ScenarioLayer[]; focus: number }) {
+  if (!layers.length) {
+    return null;
+  }
+
+  const focusFactor = 0.55 + (focus / 100) * 0.55;
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {layers.map((layer) => {
+        const { label, Icon } = getVisualizationMeta(layer.visualization);
+        const gradientBackground = layer.style.secondaryColor
+          ? `linear-gradient(135deg, ${layer.style.color} 0%, ${layer.style.secondaryColor} 100%)`
+          : `linear-gradient(135deg, ${layer.style.color} 0%, rgba(15, 23, 42, 0.65) 100%)`;
+        const amplified = Math.min(1.25, layer.style.intensity * focusFactor);
+        const focusBoost = Math.round((amplified / 1.25) * 100);
+
+        return (
+          <div
+            key={layer.id}
+            className="group relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-4 text-sm text-foreground/70 shadow-[0_25px_70px_-50px_rgba(14,165,233,0.55)]"
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-10 opacity-30 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+              style={{ background: gradientBackground }}
+            />
+
+            <div className="relative flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-primary-100">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{label}</p>
+                  <p className="text-sm font-semibold text-white">{layer.label}</p>
+                </div>
+              </div>
+              <span className="rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[11px] font-semibold text-white/80">
+                {focusBoost}% focus
+              </span>
+            </div>
+
+            <p className="relative mt-3 text-xs leading-relaxed text-foreground/60">{layer.legend}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function getVisualizationMeta(type: ScenarioLayer["visualization"]): { label: string; Icon: LucideIcon } {
+  switch (type) {
+    case "flow":
+      return { label: "Flow Field", Icon: Waves };
+    case "choropleth":
+      return { label: "Resilience Mesh", Icon: Layers };
+    case "point":
+    default:
+      return { label: "Sensor Pulse", Icon: Crosshair };
+  }
 }
 
 function SignalBadge({ signal }: { signal: ReturnType<typeof listScenarioInsights>["signals"][number] }) {

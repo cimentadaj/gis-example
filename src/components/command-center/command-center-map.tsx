@@ -162,7 +162,7 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
   return (
     <div
       ref={mapContainerRef}
-      className="h-[420px] w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_rgba(8,12,25,0.9))] sm:h-[480px] lg:h-[560px]"
+      className="h-[420px] w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_rgba(8,12,25,0.9))] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
     />
   );
 }
