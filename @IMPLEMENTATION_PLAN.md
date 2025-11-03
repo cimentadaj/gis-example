@@ -26,10 +26,10 @@
    - Introduced shared status-chip styling and a calmer scenario picker to keep the header breathable.
    - Softened the module tab rail with simplified pills and icon treatment, confirming responsive behaviour across breakpoints.
 
-5. **Experience QA & Build** _(Pending)_
-   - Cross-check the refreshed dashboard for layout regressions and interaction issues.
-   - Run the build to confirm the project compiles cleanly.
-   - Log outcomes and prepare for demo handoff.
+5. **Experience QA & Build** _(✅ Completed)_
+   - Reviewed the Digital Twin module and map composition to confirm layers, highlights, and companion cards stay visible on the light theme.
+   - Ran `npm run lint` with no findings and `npm run build` to validate a clean production bundle.
+   - Logged verification results so the demo handoff reflects the current state.
 
 ## Progress Log
 - **2025-11-03**: Tuned the top chrome and navigation controls—reduced header height, unified status chips via a shared component, simplified module tabs, and spot-checked responsive behaviour to match the refined GIS brief.
@@ -50,3 +50,4 @@
 - **2025-11-03**: Completed the polish pass with a compact top bar, module tab switcher, expanded sensor datasets, map spotlight narratives, and fully verified builds to showcase a production-ready Nexus dashboard.
 - **2025-11-03**: Refreshed the spatial storytelling module with a light-theme digital twin canvas, live AI hotspot markers, concise legends, and tightened KPI storytelling to align with the simplified GIS spec.
 - **2025-11-07**: Simplified KPIs, signals, and narrative copy; refreshed datasets, VLR stages, and copilot content to plain language; tightened dashboard spacing for a calm, production-ready presentation; re-ran lint/build to confirm stability.
+- **2025-11-03**: QA pass confirmed map overlays, cards, and scenario datasets render correctly on the light theme; lint and production build both succeed, ready for client demo.
