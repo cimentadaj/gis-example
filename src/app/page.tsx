@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { FeatureCollection as GeoJSONFeatureCollection } from "geojson";
 import {
   ActivitySquare,
@@ -356,6 +356,26 @@ type DashboardTopBarProps = {
   isCopilotRailOpen: boolean;
 };
 
+type StatusChipProps = {
+  icon: ReactNode;
+  label: string;
+  value: string;
+};
+
+function StatusChip({ icon, label, value }: StatusChipProps) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-3 py-1.5 text-[11px] text-slate-500">
+      <span aria-hidden className="text-slate-500">
+        {icon}
+      </span>
+      <div className="flex flex-col leading-tight">
+        <span className="text-[9px] uppercase tracking-[0.22em] text-slate-400">{label}</span>
+        <span className="text-sm font-semibold text-slate-900">{value}</span>
+      </div>
+    </div>
+  );
+}
+
 function DashboardTopBar({
   scenarioKey,
   scenarioSummaries,
@@ -366,74 +386,62 @@ function DashboardTopBar({
   isCopilotRailOpen,
 }: DashboardTopBarProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur-lg">
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-1.5 px-5 py-2 sm:px-8 sm:py-2.5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-sky-600 shadow-[0_10px_28px_-20px_rgba(59,130,246,0.35)]">
-            <Sparkles className="h-4 w-4" />
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6 lg:px-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:flex-1">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-sky-100 bg-sky-50 text-sky-600">
+              <Sparkles className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">Nexus Consulting</p>
+              <h1 className="text-sm font-semibold text-slate-900 sm:text-base">City Digital Twin Command</h1>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.32em] text-slate-500">Nexus Consulting</p>
-            <h1 className="text-base font-semibold text-slate-900 sm:text-lg">City Digital Twin Command</h1>
-            <p className="text-[11px] text-slate-500">Live smart city control for Nexus Consulting</p>
-          </div>
+
+          <nav className="flex flex-wrap items-stretch gap-1 rounded-full border border-slate-200/70 bg-white/80 p-1 sm:ml-3 sm:flex-1 sm:max-w-[520px]">
+            {scenarioSummaries.map((scenario) => {
+              const isActive = scenario.key === scenarioKey;
+
+              return (
+                <button
+                  key={scenario.key}
+                  type="button"
+                  onClick={() => onScenarioChange(scenario.key)}
+                  className={cn(
+                    "flex min-w-[108px] flex-col justify-center rounded-full px-3 py-1.5 text-left text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+                    isActive
+                      ? "bg-white text-slate-900 shadow-[0_8px_22px_-18px_rgba(14,165,233,0.32)]"
+                      : "text-slate-600 hover:bg-white hover:text-slate-900",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "text-[9px] uppercase tracking-[0.24em]",
+                      isActive ? "text-slate-500" : "text-slate-400",
+                    )}
+                  >
+                    Scenario
+                  </span>
+                  <span className="mt-0.5 text-sm leading-tight">{scenario.name}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
-          <nav className="flex flex-wrap gap-1.5 rounded-[999px] border border-slate-200/80 bg-[rgb(var(--surface-soft))] p-1.5">
-            {scenarioSummaries.map((scenario) => (
-              <button
-                key={scenario.key}
-                type="button"
-                onClick={() => onScenarioChange(scenario.key)}
-                className={cn(
-                  "min-w-[120px] rounded-[999px] px-3 py-1.5 text-left text-[11px] font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
-                  scenario.key === scenarioKey
-                    ? "bg-white text-slate-900 shadow-[0_12px_30px_-25px_rgba(14,165,233,0.35)]"
-                    : "text-slate-600 hover:bg-white hover:text-slate-900",
-                )}
-              >
-                <span
-                  className={cn(
-                    "block text-[9px] uppercase tracking-[0.35em]",
-                    scenario.key === scenarioKey ? "text-slate-500" : "text-slate-400",
-                  )}
-                >
-                  Scenario
-                </span>
-                <span
-                  className={cn(
-                    "mt-0.5 block text-sm leading-tight",
-                    scenario.key === scenarioKey ? "text-slate-900" : "text-slate-600",
-                  )}
-                >
-                  {scenario.name}
-                </span>
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] text-slate-500 shadow-[0_16px_40px_-28px_rgba(14,165,233,0.22)]">
-            <MapPinned className="h-4 w-4 text-sky-500" />
-            <div className="flex flex-col">
-              <span className="uppercase tracking-[0.32em]">Metro Focus</span>
-              <span className="mt-0.5 text-sm font-semibold text-slate-900">Aurora District Twin</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[10px] text-slate-500 shadow-[0_16px_40px_-28px_rgba(79,70,229,0.2)]">
-            <Clock8 className="h-4 w-4 text-violet-500" />
-            <div className="flex flex-col">
-              <span className="uppercase tracking-[0.32em]">Sync Checkpoint</span>
-              <span className="mt-0.5 text-sm font-semibold text-slate-900">{syncTimestamp}</span>
-            </div>
-          </div>
-
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <StatusChip
+            icon={<MapPinned className="h-4 w-4 text-sky-500" />}
+            label="Focus"
+            value="Aurora District Twin"
+          />
+          <StatusChip icon={<Clock8 className="h-4 w-4 text-violet-500" />} label="Sync" value={syncTimestamp} />
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={onCopilotToggle}
-              className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
             >
               <Bot className="h-4 w-4 text-sky-500" />
               {isCopilotRailOpen ? "Hide Copilot Dock" : "Show Copilot Dock"}
@@ -441,7 +449,7 @@ function DashboardTopBar({
             <button
               type="button"
               onClick={onCopilotSummon}
-              className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
+              className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
             >
               <Bot className="h-4 w-4" />
               Launch Copilot
@@ -531,10 +539,10 @@ type ModuleSwitcherProps = {
 
 function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMeta }: ModuleSwitcherProps) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.16)]">
+    <section className="rounded-[22px] border border-slate-200 bg-white px-5 py-6 shadow-[0_12px_30px_-28px_rgba(15,23,42,0.14)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.32em] text-slate-500">Module Suite</p>
+          <p className="text-[10px] uppercase tracking-[0.26em] text-slate-500">Module Suite</p>
           <h2 className="mt-1 text-lg font-semibold text-slate-900 sm:text-xl">{activeModuleMeta.label}</h2>
           <p className="mt-1 text-sm text-slate-600">{activeModuleMeta.description}</p>
         </div>
@@ -543,7 +551,7 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
       <div
         role="tablist"
         aria-label="Module navigation"
-        className="mt-4 flex flex-wrap gap-1.5 rounded-[999px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-1.5"
+        className="mt-4 flex flex-wrap gap-1 rounded-[18px] border border-slate-200/80 bg-white/80 p-1"
       >
         {modules.map((module) => {
           const isActive = module.id === activeModule;
@@ -557,31 +565,23 @@ function ModuleSwitcher({ activeModule, onModuleChange, modules, activeModuleMet
               tabIndex={isActive ? 0 : -1}
               onClick={() => onModuleChange(module.id)}
               className={cn(
-                "group relative flex items-center gap-2 rounded-[999px] px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+                "group flex items-center gap-2 rounded-[14px] px-3.5 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
                 isActive
-                  ? "bg-white text-slate-900 shadow-[0_12px_32px_-24px_rgba(59,130,246,0.28)]"
+                  ? "bg-white text-slate-900 shadow-[0_8px_20px_-16px_rgba(59,130,246,0.28)]"
                   : "text-slate-600 hover:bg-white hover:text-slate-900",
               )}
             >
               <span
-                aria-hidden
                 className={cn(
-                  "absolute inset-0 -z-10 rounded-[999px] bg-gradient-to-r opacity-0 transition-opacity duration-300",
-                  module.accent ?? "",
-                  isActive ? "opacity-50" : "group-hover:opacity-40",
+                  "flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-xs transition-colors",
+                  isActive
+                    ? "border-sky-200 text-sky-600"
+                    : "text-slate-500 group-hover:border-sky-100 group-hover:text-slate-700",
                 )}
-              />
-              <span className="relative flex items-center gap-2">
-                <span
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-[18px] border border-slate-200 bg-white text-xs transition-colors duration-200",
-                    isActive ? "border-sky-200 bg-sky-50 text-sky-600" : "text-slate-500",
-                  )}
-                >
-                  <module.icon className="h-4 w-4" />
-                </span>
-                {module.label}
+              >
+                <module.icon className="h-4 w-4" />
               </span>
+              <span className="leading-tight">{module.label}</span>
             </button>
           );
         })}
@@ -1920,7 +1920,3 @@ function CopilotPreviewPanel({ scenario, module, onSummonDock, onToggleRail, isR
     </div>
   );
 }
-
-
-
-
