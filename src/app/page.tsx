@@ -1,94 +1,66 @@
-import { AnchorButton, Button } from "@/components/ui/button";
+import { AnchorButton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
+import { heroContent, platformPillars, signalBadges } from "@/data/content";
+import {
+  defaultScenarioKey,
+  getScenarioConfig,
+  type ScenarioDefinition,
+  type ScenarioSignal,
+} from "@/lib/scenarios";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   ArrowUpRight,
-  Bot,
-  ChartBarIncreasing,
-  CircleDashed,
   MapPinned,
   Radar,
-  ShieldCheck,
 } from "lucide-react";
 
-const heroStats = [
-  { label: "Faster Response", value: "42%", detail: "incident mitigation speed" },
-  { label: "CO₂ Reduction", value: "28%", detail: "grid emission optimization" },
-  { label: "Predictive Accuracy", value: "94%", detail: "mobility demand forecast" },
-];
-
-const platformPillars = [
-  {
-    title: "City Digital Twin",
-    description: "Continuously streaming geospatial intelligence across mobility, energy, and climate layers.",
-    icon: CircleDashed,
-  },
-  {
-    title: "AI Command Center",
-    description: "Edge-to-cloud model stack monitoring anomalies and forecasting outcomes in real time.",
-    icon: Bot,
-  },
-  {
-    title: "Decision Studio",
-    description: "Scenario planning with explainable insights, collaborative workflows, and risk simulations.",
-    icon: ChartBarIncreasing,
-  },
-  {
-    title: "Operational Guardrails",
-    description: "Policy, compliance, and resiliency playbooks orchestrated across agencies at scale.",
-    icon: ShieldCheck,
-  },
-];
-
-const signalBadges = [
-  "Dynamic resilience index",
-  "Micromobility adoption heat",
-  "Hydro-reservoir forecast",
-  "AI incident triage",
-];
-
 export default function Home() {
+  const defaultScenario = getScenarioConfig(defaultScenarioKey);
+
+  if (!defaultScenario) {
+    throw new Error(`Scenario configuration missing for key: ${defaultScenarioKey}`);
+  }
+
   return (
     <div className="space-y-6 pb-12">
-      <HeroSection />
-      <SignalsMarquee />
-      <PillarsSection />
+      <HeroSection hero={heroContent} scenario={defaultScenario} />
+      <SignalsMarquee badges={signalBadges} />
+      <PillarsSection pillars={platformPillars} />
     </div>
   );
 }
 
-function HeroSection() {
+type HeroContent = typeof heroContent;
+
+function HeroSection({ hero, scenario }: { hero: HeroContent; scenario: ScenarioDefinition }) {
   return (
     <Section className="pt-32" id="platform">
       <Container className="relative grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="max-w-xl space-y-8">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
-            City-Scale AI
+            {hero.eyebrow}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </span>
 
           <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            The intelligence layer cities trust to choreograph the future.
+            {hero.headline}
           </h1>
-          <p className="text-base leading-7 text-foreground/70 sm:text-lg">
-            AetherCity fuses GIS, machine learning, and digital twins into a single pane of glass. Anticipate
-            disruptions, orchestrate multi-agency response, and optimize urban systems before issues surface.
-          </p>
+          <p className="text-base leading-7 text-foreground/70 sm:text-lg">{hero.subheadline}</p>
 
           <div className="flex flex-col gap-4 sm:flex-row">
-            <AnchorButton href="#demo" className="w-full sm:w-auto">
-              Book an Immersive Demo
+            <AnchorButton href={hero.primaryCta.href} className="w-full sm:w-auto">
+              {hero.primaryCta.label}
             </AnchorButton>
-            <Button variant="secondary" className="w-full sm:w-auto">
-              Explore Live Scenarios
-            </Button>
+            <AnchorButton href={hero.secondaryCta.href} variant="secondary" className="w-full sm:w-auto">
+              {hero.secondaryCta.label}
+            </AnchorButton>
           </div>
 
           <dl className="grid gap-4 sm:grid-cols-3">
-            {heroStats.map((stat) => (
+            {hero.stats.map((stat) => (
               <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <dt className="text-xs uppercase tracking-[0.25em] text-foreground/60">{stat.label}</dt>
                 <dd className="mt-2 text-3xl font-semibold text-white">{stat.value}</dd>
@@ -104,7 +76,7 @@ function HeroSection() {
             <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(15,118,110,0.15),transparent_45%)]" />
             <div className="relative z-10 flex h-full flex-col justify-between p-8">
               <div>
-                <CitySignalCard />
+                <CitySignalCard scenario={scenario} />
               </div>
               <div className="grid gap-4">
                 <InsightChip
@@ -130,11 +102,11 @@ function HeroSection() {
   );
 }
 
-function SignalsMarquee() {
+function SignalsMarquee({ badges }: { badges: string[] }) {
   return (
     <div className="overflow-hidden">
       <div className="flex animate-[marquee_18s_linear_infinite] gap-6 whitespace-nowrap border-y border-white/5 bg-white/5 py-4 text-xs uppercase tracking-[0.35em] text-foreground/60">
-        {[...signalBadges, ...signalBadges].map((signal, index) => (
+        {[...badges, ...badges].map((signal, index) => (
           <span key={`${signal}-${index}`} className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-primary-400" />
             {signal}
@@ -145,7 +117,7 @@ function SignalsMarquee() {
   );
 }
 
-function PillarsSection() {
+function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
   return (
     <Section id="ai-insights">
       <Container className="grid gap-12 lg:grid-cols-[0.75fr_1fr] lg:gap-16">
@@ -166,7 +138,7 @@ function PillarsSection() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          {platformPillars.map(({ title, description, icon: Icon }) => (
+          {pillars.map(({ title, description, icon: Icon }) => (
             <div
               key={title}
               className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/70 p-6 shadow-[0_35px_80px_-45px_rgba(15,118,110,0.45)] transition hover:-translate-y-1 hover:border-primary-400/40 hover:bg-surface/90"
@@ -187,7 +159,7 @@ function PillarsSection() {
   );
 }
 
-function CitySignalCard() {
+function CitySignalCard({ scenario }: { scenario: ScenarioDefinition }) {
   return (
     <div className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-6 text-sm text-foreground/80">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_55%)]" />
@@ -195,7 +167,7 @@ function CitySignalCard() {
       <div className="relative flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-primary-200">Live Signals</p>
-          <h3 className="mt-2 text-lg font-semibold text-white">Urban Pulse Index</h3>
+          <h3 className="mt-2 text-lg font-semibold text-white">{scenario.name}</h3>
         </div>
         <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-foreground/60">
           AI-Co-Pilot
@@ -203,39 +175,29 @@ function CitySignalCard() {
       </div>
 
       <div className="mt-6 grid gap-3">
-        <SignalRow label="Congestion" value="Moderate" delta="-12%" tone="positive" />
-        <SignalRow label="Energy Load" value="High" delta="+5%" tone="warning" />
-        <SignalRow label="Air Quality" value="Stable" delta="+2%" tone="positive" />
+        {scenario.liveSignals.map((signal) => (
+          <SignalRow key={signal.label} signal={signal} />
+        ))}
       </div>
     </div>
   );
 }
 
-function SignalRow({
-  label,
-  value,
-  delta,
-  tone,
-}: {
-  label: string;
-  value: string;
-  delta: string;
-  tone: "positive" | "warning" | "neutral";
-}) {
+function SignalRow({ signal }: { signal: ScenarioSignal }) {
   const deltaClasses = cn(
     "rounded-full px-3 py-1 text-[11px] font-medium",
-    tone === "positive" && "bg-success-500/15 text-success-500",
-    tone === "warning" && "bg-warning-500/15 text-warning-500",
-    tone === "neutral" && "bg-white/10 text-foreground/70",
+    signal.tone === "positive" && "bg-success-500/15 text-success-500",
+    signal.tone === "warning" && "bg-warning-500/15 text-warning-500",
+    signal.tone === "neutral" && "bg-white/10 text-foreground/70",
   );
 
   return (
     <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">{label}</p>
-        <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">{signal.label}</p>
+        <p className="mt-1 text-sm font-semibold text-white">{signal.value}</p>
       </div>
-      <span className={deltaClasses}>{delta}</span>
+      <span className={deltaClasses}>{signal.delta}</span>
     </div>
   );
 }

@@ -12,7 +12,7 @@
    - Establish global theme: typography, color system, spacing scale, glassmorphism gradient system, and dark-friendly palette.
    - Implement base layout components (`Layout`, `Header`, `Footer`, `Section` wrappers) with responsive handling.
 
-2. **Data & Content Preparation**
+2. **Data & Content Preparation** _(✅ Completed)_
    - Curate representative static datasets (GeoJSON layers, AI prediction metrics, KPI summaries) stored locally.
    - Create utility functions for scenario toggles (e.g., congestion, energy, resilience).
    - Collect/define copywriting content (taglines, section blurbs, client logos/testimonials) to avoid lorem ipsum.
@@ -45,3 +45,4 @@
 
 ## Progress Log
 - **2025-11-03**: Completed Project Foundation — scaffolded Next.js app, added mapping/charting/animation deps, established global theming, and introduced layout skeleton (Header, Footer, Section, layout shell, hero scaffolding).
+- **2025-11-04**: Curated demo datasets (geo layers, KPI + forecast metrics), authored scenario utilities for mobility/energy/climate/safety toggles, and centralized copywriting assets for storytelling modules.
