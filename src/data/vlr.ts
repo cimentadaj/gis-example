@@ -28,6 +28,22 @@ export type VlrAuditEvent = {
   message: string;
 };
 
+export type VlrStageTrendPoint = {
+  label: string;
+  value: number;
+};
+
+export type VlrStageTrend = {
+  id: string;
+  title: string;
+  metricLabel: string;
+  unit?: string;
+  points: VlrStageTrendPoint[];
+  baselineLabel?: string;
+  baselineValue?: number;
+  summary: string;
+};
+
 export type VlrStage = {
   id: string;
   title: string;
@@ -40,6 +56,7 @@ export type VlrStage = {
   compliance: VlrComplianceBadge[];
   artifacts: VlrStageArtifact[];
   auditTrail: VlrAuditEvent[];
+  trend?: VlrStageTrend;
 };
 
 export const vlrStages: VlrStage[] = [
@@ -49,10 +66,8 @@ export const vlrStages: VlrStage[] = [
     status: "complete",
     etaMinutes: 0,
     completion: 100,
-    summary: "64 feeds cleaned and aligned with the Nexus twin.",
-    insights: [
-      "Duplicate curb sensors removed before features load.",
-    ],
+    summary: "64 feeds cleaned and aligned with the twin.",
+    insights: ["Duplicate curb sensors removed before features load."],
     kpis: [
       {
         id: "ingestion-latency",
@@ -75,13 +90,28 @@ export const vlrStages: VlrStage[] = [
       {
         id: "feature-store",
         label: "Feature store snapshot",
-        detail: "118 engineered features ready for modelling.",
+        detail: "118 features ready for modeling.",
       },
     ],
     auditTrail: [
       { timestamp: "07:42", actor: "Pipeline bot", message: "All connectors returned healthy responses." },
       { timestamp: "07:48", actor: "Ops analyst", message: "Flagged EV charger feed for follow-up." },
     ],
+    trend: {
+      id: "ingestion-throughput",
+      title: "Feeds cleared",
+      metricLabel: "per 15 min",
+      points: [
+        { label: "07:00", value: 28 },
+        { label: "07:15", value: 31 },
+        { label: "07:30", value: 34 },
+        { label: "07:45", value: 36 },
+        { label: "08:00", value: 38 },
+      ],
+      baselineLabel: "Target",
+      baselineValue: 32,
+      summary: "Running 18% faster than last week's pull.",
+    },
   },
   {
     id: "classification",
@@ -90,9 +120,7 @@ export const vlrStages: VlrStage[] = [
     etaMinutes: 6,
     completion: 68,
     summary: "Models tag telemetry with SDG codes and policy context.",
-    insights: [
-      "Equity scan flagged an East Dock mobility subsidy gap.",
-    ],
+    insights: ["Equity scan flagged a subsidy gap in East Dock."],
     kpis: [
       {
         id: "classification-precision",
@@ -121,13 +149,28 @@ export const vlrStages: VlrStage[] = [
       {
         id: "taxonomy-crosswalk",
         label: "Taxonomy crosswalk",
-        detail: "SDG to city KPI translation with confidence scores.",
+        detail: "SDG to city KPI table with confidence scores.",
       },
     ],
     auditTrail: [
       { timestamp: "08:03", actor: "Model ops", message: "Scaled GPU nodes to 3× for inference." },
       { timestamp: "08:05", actor: "Policy engine", message: "Loaded 2025 VLR guidance update." },
     ],
+    trend: {
+      id: "classification-confidence",
+      title: "Model confidence",
+      metricLabel: "precision",
+      unit: "%",
+      points: [
+        { label: "07:30", value: 94.2 },
+        { label: "07:45", value: 95.6 },
+        { label: "08:00", value: 96.1 },
+        { label: "08:15", value: 97.4 },
+      ],
+      baselineLabel: "Floor",
+      baselineValue: 92,
+      summary: "Active learning lifted precision above the 95% floor.",
+    },
   },
   {
     id: "scoring",
@@ -135,7 +178,7 @@ export const vlrStages: VlrStage[] = [
     status: "pending",
     etaMinutes: 12,
     completion: 24,
-    summary: "Simulator benchmarks live KPIs against the baseline year.",
+    summary: "Simulator checks live KPIs against last year.",
     insights: [
       "Micromobility share is 12 points above last year.",
     ],
@@ -167,13 +210,29 @@ export const vlrStages: VlrStage[] = [
       {
         id: "scenario-sheets",
         label: "Scenario sheets",
-        detail: "Baseline vs. optimised comparison for 2023-2025.",
+        detail: "Baseline vs. improved comparison for 2023-2025.",
       },
     ],
     auditTrail: [
       { timestamp: "08:12", actor: "Twin simulator", message: "Monte Carlo batch #2 at 70% completion." },
       { timestamp: "08:15", actor: "Finance liaison", message: "Budget office notified for affordability review." },
     ],
+    trend: {
+      id: "scoring-uplift",
+      title: "Mobility uplift",
+      metricLabel: "vs baseline",
+      unit: "pts",
+      points: [
+        { label: "Baseline", value: 0 },
+        { label: "Week 1", value: 4.5 },
+        { label: "Week 2", value: 7.3 },
+        { label: "Week 3", value: 9.8 },
+        { label: "Week 4", value: 12.6 },
+      ],
+      baselineLabel: "Goal",
+      baselineValue: 8,
+      summary: "Mobility plan is already four points above the quarterly goal.",
+    },
   },
   {
     id: "narrative",
@@ -181,9 +240,9 @@ export const vlrStages: VlrStage[] = [
     status: "pending",
     etaMinutes: 18,
     completion: 12,
-    summary: "Generative authoring turns KPIs into VLR-ready stories.",
+    summary: "Writer bot turns KPIs into clear VLR stories.",
     insights: [
-      "Executive summary draft queues once SDG 9 evidence clears.",
+      "Executive summary waits for SDG 9 evidence.",
     ],
     kpis: [
       {
@@ -220,6 +279,21 @@ export const vlrStages: VlrStage[] = [
       { timestamp: "08:20", actor: "Narrative bot", message: "Drafted climate resilience chapter v1.4." },
       { timestamp: "08:23", actor: "Sensitivity reviewer", message: "Requested community quotes for Harbor District." },
     ],
+    trend: {
+      id: "narrative-cycle",
+      title: "Draft cycle time",
+      metricLabel: "per chapter",
+      unit: "min",
+      points: [
+        { label: "Kickoff", value: 9.4 },
+        { label: "Climate", value: 6.2 },
+        { label: "Equity", value: 5.5 },
+        { label: "Mobility", value: 4.8 },
+      ],
+      baselineLabel: "Target",
+      baselineValue: 6,
+      summary: "Playbooks keep chapters under the six minute target.",
+    },
   },
 ];
 

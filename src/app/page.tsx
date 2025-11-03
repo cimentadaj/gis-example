@@ -488,14 +488,17 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
   const [activeStageId, setActiveStageId] = useState(vlrStages[0].id);
   const activeStage = vlrStages.find((stage) => stage.id === activeStageId) ?? vlrStages[0];
   const alerts = vlrAlerts.slice(0, 3);
+  const stageKpis = activeStage.kpis.slice(0, 2);
+  const stageArtifacts = activeStage.artifacts.slice(0, 3);
+  const trendGradientId = activeStage.trend ? `vlr-trend-${activeStage.trend.id}` : null;
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
       <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:p-7">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">VLR automation</h2>
-            <p className="text-sm text-slate-500">See which step needs attention.</p>
+            <p className="text-sm text-slate-500">Follow each automated pass.</p>
           </div>
           <span className="text-xs uppercase tracking-wide text-slate-400">Scenario · {scenario.name}</span>
         </header>
@@ -516,9 +519,9 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
                 )}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div>
+                  <div className="space-y-1">
                     <p className="text-sm font-semibold text-slate-900">{displayLabel}</p>
-                    <p className="mt-1 text-xs text-slate-500">{stage.summary}</p>
+                    <p className="text-xs text-slate-500">{stage.summary}</p>
                   </div>
                   <StageBadge status={stage.status} />
                 </div>
@@ -544,55 +547,147 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
 
       <div className="space-y-5">
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-          <p className="text-sm font-semibold text-slate-700">Stage detail</p>
-          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
-            <ProgressBadge completion={activeStage.completion} />
-            <div className="space-y-2 text-sm text-slate-600">
-              <p className="text-sm font-semibold text-slate-900">
-                {stageLabels[activeStage.id] ?? activeStage.title}
-              </p>
-              <p>{activeStage.summary}</p>
-              <p className="text-xs text-slate-400">ETA {activeStage.etaMinutes} min</p>
+          <p className="text-sm font-semibold text-slate-700">Stage snapshot</p>
+          <div className="mt-4 flex flex-col gap-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <ProgressBadge completion={activeStage.completion} />
+                <div className="space-y-1 text-sm text-slate-600">
+                  <p className="text-sm font-semibold text-slate-900">
+                    {stageLabels[activeStage.id] ?? activeStage.title}
+                  </p>
+                  <p>{activeStage.summary}</p>
+                  <p className="text-xs text-slate-400">ETA {activeStage.etaMinutes} min</p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {activeStage.kpis.length ? (
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-              {activeStage.kpis.slice(0, 2).map((kpi) => (
-                <li key={kpi.id} className="rounded-2xl bg-slate-50 p-3">
-                  <p className="text-sm font-semibold text-slate-900">{kpi.value}</p>
-                  <p className="mt-1 text-xs text-slate-500">{kpi.label}</p>
-                  <p className="mt-2 text-[11px] text-slate-500">{kpi.narrative}</p>
+            {activeStage.trend ? (
+              <section className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{activeStage.trend.title}</p>
+                    <p className="text-xs text-slate-500">{activeStage.trend.metricLabel}</p>
+                  </div>
+                  {activeStage.trend.baselineLabel && activeStage.trend.baselineValue !== undefined ? (
+                    <span className="text-xs font-medium text-slate-400">
+                      {activeStage.trend.baselineLabel}{" "}
+                      {`${activeStage.trend.baselineValue}${activeStage.trend.unit ?? ""}`}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="mt-3 h-36 w-full sm:h-40">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={activeStage.trend.points}>
+                      {trendGradientId ? (
+                        <defs>
+                          <linearGradient id={trendGradientId} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.35} />
+                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                      ) : null}
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                      <XAxis dataKey="label" stroke="#94a3b8" tickLine={false} axisLine={false} />
+                      <YAxis hide domain={[0, "auto"]} />
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: 12,
+                          borderColor: "#e2e8f0",
+                          backgroundColor: "white",
+                          boxShadow: "0 20px 40px -32px rgba(15,23,42,0.24)",
+                        }}
+                        formatter={(value: number) => {
+                          const suffix = activeStage.trend?.unit ?? "";
+                          const formatted = Number.isInteger(value) ? String(value) : value.toFixed(1);
+                          return [`${formatted}${suffix}`, activeStage.trend?.title ?? "Value"];
+                        }}
+                        labelFormatter={(label) => label}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#0ea5e9"
+                        strokeWidth={2}
+                        fill={trendGradientId ? `url(#${trendGradientId})` : "#bae6fd"}
+                        fillOpacity={trendGradientId ? 1 : 0.4}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="mt-3 text-xs text-slate-500">{activeStage.trend.summary}</p>
+              </section>
+            ) : null}
+
+            {stageKpis.length ? (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {stageKpis.map((kpi) => {
+                  const deltaTone = kpi.direction === "up" ? "text-emerald-600" : "text-rose-600";
+                  return (
+                    <li key={kpi.id} className="rounded-2xl bg-slate-50 p-3">
+                      <p className="text-sm font-semibold text-slate-900">{kpi.value}</p>
+                      <p className="mt-1 text-xs text-slate-500">{kpi.label}</p>
+                      <p className={cn("mt-2 text-xs font-medium", deltaTone)}>{kpi.deltaLabel}</p>
+                      <p className="mt-1 text-[11px] text-slate-500">{kpi.narrative}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+
+            {activeStage.compliance.length ? (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Checks</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {activeStage.compliance.map((item) => (
+                    <span
+                      key={item.id}
+                      className={cn(
+                        "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
+                        item.status === "pass"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : item.status === "attention"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-rose-100 text-rose-700",
+                      )}
+                      title={item.description}
+                    >
+                      {item.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {stageArtifacts.length ? (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Artifacts</p>
+                <ul className="mt-2 space-y-2">
+                  {stageArtifacts.map((artifact) => (
+                    <li key={artifact.id} className="rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                      <p className="text-xs font-semibold text-slate-700">{artifact.label}</p>
+                      <p className="mt-1 text-xs text-slate-500">{artifact.detail}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </article>
+
+        <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+          <p className="text-sm font-semibold text-slate-700">Workflow log</p>
+          {activeStage.insights.length ? (
+            <ul className="mt-3 space-y-2 text-sm text-slate-600">
+              {activeStage.insights.map((item) => (
+                <li key={item} className="rounded-2xl bg-slate-50 px-3 py-2">
+                  {item}
                 </li>
               ))}
             </ul>
           ) : null}
-
-          {activeStage.compliance.length ? (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {activeStage.compliance.map((item) => (
-                <span
-                  key={item.id}
-                  className={cn(
-                    "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
-                    item.status === "pass"
-                      ? "bg-emerald-100 text-emerald-700"
-                      : item.status === "attention"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-rose-100 text-rose-700",
-                  )}
-                  title={item.description}
-                >
-                  {item.label}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </article>
-
-        <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-          <p className="text-sm font-semibold text-slate-700">Automation log</p>
-          <ul className="mt-3 space-y-2 text-xs text-slate-500">
+          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Recent events</p>
+          <ul className="mt-2 space-y-2 text-xs text-slate-500">
             {activeStage.auditTrail.map((event) => (
               <li key={`${event.timestamp}-${event.actor}`} className="flex items-start gap-3">
                 <span className="font-medium text-slate-400">{event.timestamp}</span>
@@ -603,16 +698,6 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
               </li>
             ))}
           </ul>
-
-          {activeStage.insights.length ? (
-            <ul className="mt-4 space-y-2 text-sm text-slate-600">
-              {activeStage.insights.map((item) => (
-                <li key={item} className="rounded-2xl bg-slate-50 px-3 py-2">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </article>
 
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">

@@ -16,9 +16,9 @@
    - Focused the KPI strip on the two SDG-critical numbers and rewrote the side panels (hotspots, playbook, sweep slider) in plain language.
    - Synced hotspot callouts, readiness forecasts, and slider feedback so each highlight tells a clear anomaly/prediction story.
 
-3. **VLR Automation Journey** _(⏳ Pending)_
-   - Rebuild stage interactions so clicking each step surfaces concise plots/metrics/text describing the automated evidence pass.
-   - Use simple copy and a consistent light aesthetic; avoid clutter while communicating end-to-end automation.
+3. **VLR Automation Journey** _(✅ Completed)_
+   - Added per-stage trend visuals, KPI deltas, and artifacts so every click reveals the automated evidence trail at a glance.
+   - Simplified copy and layout to keep the light Notion-like aesthetic while highlighting the workflow log and checks.
 
 4. **AI Pipelines Snapshot** _(⏳ Pending)_
    - Present the city profiling forecasts, demand trends, and resilience signals with charts that feel production-ready.
@@ -32,3 +32,4 @@
 ## Progress Log
 - **2025-11-03**: Cleared the MapLibre brightness error, restoring the light basemap and ensuring scenario overlays render immediately when the dashboard loads.
 - **2025-11-03**: Rebuilt the digital twin view with a larger map, simplified KPI strip, hotspot rail, and readiness sparkline so the SDG localisation story reads clearly at a glance.
+- **2025-11-03**: Refined the VLR module with stage-level charts, KPI deltas, artifacts, and plain-language logs so reviewers see automation progress without leaving the dashboard.
