@@ -30,19 +30,19 @@ const moduleNavigation = [
   {
     id: "digital-twin",
     label: "Digital Twin",
-    description: "Map SDG progress by district.",
+    description: "City map with SDG signals.",
     icon: MapIcon,
   },
   {
     id: "vlr",
     label: "VLR Automation",
-    description: "Follow the review workflow status.",
+    description: "Track the review workflow.",
     icon: Workflow,
   },
   {
     id: "pipelines",
     label: "AI Pipelines",
-    description: "Check forecasts and model health.",
+    description: "See forecasts and model health.",
     icon: LineChart,
   },
 ] as const;
@@ -137,8 +137,8 @@ export default function Home() {
 function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-1.5 sm:px-6">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-1 sm:px-6">
+        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
           <Sparkles className="h-3 w-3" />
         </span>
         <span className="text-sm font-semibold tracking-tight text-slate-700">Nexus Consulting</span>
@@ -152,23 +152,24 @@ function OverviewStrip() {
   return (
     <section className="mb-8 grid gap-3 sm:grid-cols-3">
       {topKpis.map((kpi) => {
-        const changePrefix = kpi.change.direction === "up" ? "+" : "−";
         const changeColor = kpi.change.direction === "up" ? "text-emerald-600" : "text-rose-600";
+        const changeLabel =
+          kpi.changeLabel ??
+          `${kpi.change.direction === "up" ? "+" : "−"}${kpi.change.percentage.toFixed(1)}% vs last ${kpi.change.period}`;
 
         return (
           <article
             key={kpi.id}
-            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+            className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
           >
-            <h2 className="text-sm font-medium text-slate-600">{kpi.label}</h2>
-            <p className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-900">{kpi.value}</span>
-              <span className="text-sm text-slate-500">{kpi.unit}</span>
-            </p>
-            <p className={cn("mt-3 text-xs font-medium", changeColor)}>
-              {changePrefix}
-              {kpi.change.percentage.toFixed(1)}% vs last {kpi.change.period}
-            </p>
+            <div>
+              <h2 className="text-sm font-medium text-slate-600">{kpi.label}</h2>
+              <p className="mt-3 flex items-baseline gap-2 text-slate-900">
+                <span className="text-3xl font-semibold">{kpi.value}</span>
+                <span className="text-sm font-medium text-slate-500">{kpi.unit}</span>
+              </p>
+            </div>
+            <p className={cn("mt-4 text-xs font-medium", changeColor)}>{changeLabel}</p>
           </article>
         );
       })}
@@ -281,93 +282,139 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
   const signals = insights.signals.slice(0, 3);
   const aiNote = insights.aiInsights[0];
   const actions = insights.actions.slice(0, 2);
+  const scenarioKpis = insights.kpis.slice(0, 2);
+  const topHighlights = highlights.slice(0, 3);
 
   return (
-    <section className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-          <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900">{scenario.name}</h2>
-              <p className="mt-1 text-sm text-slate-500">{scenario.tagline}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {signals.map((signal) => (
-                <SignalChip key={signal.label} signal={signal} />
-              ))}
-            </div>
-          </header>
+    <section>
+      <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:p-7">
+        <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">{scenario.name}</h2>
+            <p className="text-sm text-slate-500">{scenario.tagline}</p>
+          </div>
+          <p className="text-xs text-slate-400">Brief · {scenario.command}</p>
+        </header>
 
-          <div className="mt-4 overflow-hidden rounded-3xl border border-slate-200">
-            <CommandCenterMap scenario={scenario} focus={focus} highlights={highlights} />
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] xl:gap-8">
+          <div className="space-y-5">
+            <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-100/40">
+              <CommandCenterMap scenario={scenario} focus={focus} highlights={highlights} />
+              <HighlightsPanel highlights={topHighlights} />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">Focus window</p>
+                <p className="mt-1 text-xs text-slate-400">Move the slider to preview the next sweep.</p>
+                <div className="mt-4 flex items-center gap-3">
+                  <span className="text-sm font-medium text-slate-500">{Math.round((focus / 100) * 60)} min</span>
+                  <input
+                    type="range"
+                    value={focus}
+                    onChange={(event) => onFocusChange(Number(event.target.value))}
+                    min={0}
+                    max={100}
+                    className="h-1.5 w-full flex-1 appearance-none rounded-full bg-slate-200 accent-sky-500"
+                  />
+                </div>
+              </article>
+
+              {scenarioKpis.length ? (
+                <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-slate-700">City status</p>
+                  <ul className="mt-3 space-y-3">
+                    {scenarioKpis.map((kpi) => (
+                      <li key={kpi.id}>
+                        <p className="text-base font-semibold text-slate-900">
+                          {kpi.value}
+                          <span className="ml-2 text-sm font-medium text-slate-500">{kpi.unit}</span>
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">{kpi.label}</p>
+                        {kpi.changeLabel ? (
+                          <p className="mt-1 text-xs font-medium text-emerald-600">{kpi.changeLabel}</p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ) : null}
+            </div>
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Forecast window</p>
-              <p className="text-xs text-slate-400">Slide to preview the next hour on the map.</p>
-            </div>
-            <div className="flex w-full items-center gap-3 sm:w-auto">
-              <span className="text-sm text-slate-500">{Math.round((focus / 100) * 60)} min</span>
-              <input
-                type="range"
-                value={focus}
-                onChange={(event) => onFocusChange(Number(event.target.value))}
-                min={0}
-                max={100}
-                className="h-1.5 w-full flex-1 appearance-none rounded-full bg-slate-200 accent-sky-500 sm:w-48"
-              />
-            </div>
-          </div>
-        </article>
+          <aside className="space-y-4">
+            {signals.length ? (
+              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">Live pulse</p>
+                <ul className="mt-3 space-y-2 text-sm text-slate-600">
+                  {signals.map((signal) => (
+                    <li key={signal.label} className="flex items-baseline justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
+                      <span className="font-medium text-slate-900">{signal.value}</span>
+                      <span className="text-xs text-slate-500">{signal.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ) : null}
 
-        <div className="space-y-5">
-          {aiNote ? (
-            <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-              <p className="text-sm font-semibold text-slate-700">AI insight</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{aiNote.title}</p>
-              {aiNote.detail ? <p className="mt-2 text-sm text-slate-500">{aiNote.detail}</p> : null}
-              <p className="mt-3 text-xs text-slate-400">{Math.round(aiNote.confidence * 100)}% model confidence</p>
-            </article>
-          ) : null}
+            {aiNote ? (
+              <article className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">AI notice</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">{aiNote.title}</p>
+                {aiNote.detail ? <p className="mt-2 text-sm text-slate-500">{aiNote.detail}</p> : null}
+                <span className="mt-3 inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700">
+                  {Math.round(aiNote.confidence * 100)}% confidence
+                </span>
+              </article>
+            ) : null}
 
-          {actions.length ? (
-            <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-              <p className="text-sm font-semibold text-slate-700">Next steps</p>
-              <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                {actions.map((action, index) => (
-                  <li key={action} className="flex gap-2">
-                    <span className="font-medium text-sky-600">{index + 1}.</span>
-                    <span className="leading-6">{action}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ) : null}
+            {actions.length ? (
+              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">Next moves</p>
+                <ol className="mt-3 space-y-2 text-sm text-slate-600">
+                  {actions.map((action, index) => (
+                    <li key={action} className="flex gap-2">
+                      <span className="font-medium text-sky-500">{index + 1}.</span>
+                      <span className="leading-6">{action}</span>
+                    </li>
+                  ))}
+                </ol>
+              </article>
+            ) : null}
+          </aside>
         </div>
-      </div>
+      </article>
     </section>
   );
 }
 
-function SignalChip({
-  signal,
-}: {
-  signal: ScenarioInsightsPayload["signals"][number];
-}) {
-  const toneStyles =
-    signal.tone === "positive"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-      : signal.tone === "warning"
-        ? "border-amber-200 bg-amber-50 text-amber-700"
-        : "border-slate-200 bg-slate-100 text-slate-600";
+function HighlightsPanel({ highlights }: { highlights: SpatialHighlight[] }) {
+  if (!highlights.length) {
+    return null;
+  }
 
   return (
-    <span className={cn("flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm", toneStyles)}>
-      <span className="font-medium">{signal.value}</span>
-      <span className="text-xs text-slate-500">{signal.label}</span>
-      <span className="text-xs text-slate-400">{signal.delta}</span>
-    </span>
+    <div className="pointer-events-none absolute right-4 top-4 flex max-w-xs flex-col gap-2">
+      {highlights.map((highlight) => (
+        <div
+          key={highlight.id}
+          className="pointer-events-auto rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-xs text-slate-600 shadow-[0_20px_50px_-32px_rgba(15,23,42,0.45)] backdrop-blur"
+        >
+          <p className="text-sm font-semibold text-slate-900">{highlight.sensorType}</p>
+          <p className="mt-1 text-[11px] text-slate-500">
+            {highlight.district ?? "Citywide"} · {highlight.sensorId}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-1 text-[10px] font-medium text-sky-700">
+              {Math.round(highlight.anomalyScore * 100)}% watch
+            </span>
+            {highlight.lastReadingMinutes !== null ? (
+              <span className="text-[10px] text-slate-400">{highlight.lastReadingMinutes}m ago</span>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -377,17 +424,17 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
   const alerts = vlrAlerts.slice(0, 3);
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
-      <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 lg:p-7">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">VLR automation</h2>
-            <p className="mt-1 text-sm text-slate-500">AI keeps the voluntary local review on schedule.</p>
+            <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">VLR automation</h2>
+            <p className="text-sm text-slate-500">See which step needs attention.</p>
           </div>
           <span className="text-xs uppercase tracking-wide text-slate-400">Scenario · {scenario.name}</span>
         </header>
 
-        <div className="mt-4 space-y-2">
+        <div className="mt-5 space-y-2">
           {vlrStages.map((stage) => {
             const displayLabel = stageLabels[stage.id] ?? stage.title;
             const isActive = stage.id === activeStageId;
@@ -398,27 +445,30 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
                 key={stage.id}
                 onClick={() => setActiveStageId(stage.id)}
                 className={cn(
-                  "w-full rounded-2xl border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-300",
-                  isActive && "border-sky-200 bg-sky-50",
+                  "w-full rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-slate-300",
+                  isActive && "border-sky-200 bg-sky-50 shadow-[0_18px_42px_-30px_rgba(14,165,233,0.55)]",
                 )}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{displayLabel}</p>
                     <p className="mt-1 text-xs text-slate-500">{stage.summary}</p>
                   </div>
                   <StageBadge status={stage.status} />
                 </div>
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all",
-                      stage.status === "complete" && "bg-emerald-400",
-                      stage.status === "active" && "bg-sky-400",
-                      stage.status === "pending" && "bg-slate-400",
-                    )}
-                    style={{ width: `${Math.max(stage.completion, stage.status === "pending" ? 12 : 6)}%` }}
-                  />
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="h-1.5 w-full flex-1 overflow-hidden rounded-full bg-slate-200">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        stage.status === "complete" && "bg-emerald-400",
+                        stage.status === "active" && "bg-sky-400",
+                        stage.status === "pending" && "bg-slate-400",
+                      )}
+                      style={{ width: `${Math.max(stage.completion, stage.status === "pending" ? 12 : 6)}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-slate-400">{stage.etaMinutes}m</span>
                 </div>
               </button>
             );
@@ -428,40 +478,100 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
 
       <div className="space-y-5">
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-          <p className="text-sm font-semibold text-slate-700">What’s next</p>
-          <p className="mt-2 text-sm text-slate-500">{activeStage.summary}</p>
-          <ul className="mt-4 space-y-2 text-sm text-slate-600">
-            {activeStage.insights.slice(0, 3).map((item) => (
-              <li key={item} className="rounded-xl bg-slate-100 px-3 py-2">
-                {item}
+          <p className="text-sm font-semibold text-slate-700">Stage detail</p>
+          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
+            <ProgressBadge completion={activeStage.completion} />
+            <div className="space-y-2 text-sm text-slate-600">
+              <p className="text-sm font-semibold text-slate-900">
+                {stageLabels[activeStage.id] ?? activeStage.title}
+              </p>
+              <p>{activeStage.summary}</p>
+              <p className="text-xs text-slate-400">ETA {activeStage.etaMinutes} min</p>
+            </div>
+          </div>
+
+          {activeStage.kpis.length ? (
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {activeStage.kpis.slice(0, 2).map((kpi) => (
+                <li key={kpi.id} className="rounded-2xl bg-slate-50 p-3">
+                  <p className="text-sm font-semibold text-slate-900">{kpi.value}</p>
+                  <p className="mt-1 text-xs text-slate-500">{kpi.label}</p>
+                  <p className="mt-2 text-[11px] text-slate-500">{kpi.narrative}</p>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          {activeStage.compliance.length ? (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {activeStage.compliance.map((item) => (
+                <span
+                  key={item.id}
+                  className={cn(
+                    "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
+                    item.status === "pass"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : item.status === "attention"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-rose-100 text-rose-700",
+                  )}
+                  title={item.description}
+                >
+                  {item.label}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </article>
+
+        <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
+          <p className="text-sm font-semibold text-slate-700">Automation log</p>
+          <ul className="mt-3 space-y-2 text-xs text-slate-500">
+            {activeStage.auditTrail.map((event) => (
+              <li key={`${event.timestamp}-${event.actor}`} className="flex items-start gap-3">
+                <span className="font-medium text-slate-400">{event.timestamp}</span>
+                <div>
+                  <p className="font-medium text-slate-600">{event.actor}</p>
+                  <p>{event.message}</p>
+                </div>
               </li>
             ))}
           </ul>
+
+          {activeStage.insights.length ? (
+            <ul className="mt-4 space-y-2 text-sm text-slate-600">
+              {activeStage.insights.map((item) => (
+                <li key={item} className="rounded-2xl bg-slate-50 px-3 py-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </article>
 
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
           <p className="text-sm font-semibold text-slate-700">Alerts to clear</p>
           <ul className="mt-3 space-y-3">
-          {alerts.map((alert) => {
-            const severity = normalizeAlertSeverity(alert.severity);
+            {alerts.map((alert) => {
+              const severity = normalizeAlertSeverity(alert.severity);
 
-            return (
-              <li key={alert.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-medium text-slate-900">{alert.message}</p>
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                      alertSeverityStyles[severity],
-                    )}
-                  >
-                    {alertSeverityLabels[severity]}
-                  </span>
-                </div>
-                <p className="mt-2 text-xs text-slate-500">{alert.suggestedAction}</p>
-              </li>
-            );
-          })}
+              return (
+                <li key={alert.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-medium text-slate-900">{alert.message}</p>
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                        alertSeverityStyles[severity],
+                      )}
+                    >
+                      {alertSeverityLabels[severity]}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">{alert.suggestedAction}</p>
+                </li>
+              );
+            })}
           </ul>
         </article>
       </div>
@@ -483,6 +593,21 @@ function StageBadge({ status }: { status: VlrStageStatus }) {
     <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium", styles)}>
       {label}
     </span>
+  );
+}
+
+function ProgressBadge({ completion }: { completion: number }) {
+  const clamped = Math.min(100, Math.max(0, Math.round(completion)));
+  const arc = clamped * 3.6;
+  const stroke = `conic-gradient(#0ea5e9 ${arc}deg, rgba(14,165,233,0.12) ${arc}deg)`;
+
+  return (
+    <div className="relative h-20 w-20">
+      <div className="absolute inset-0 rounded-full" style={{ backgroundImage: stroke }} />
+      <div className="absolute inset-2 flex items-center justify-center rounded-full border border-slate-200 bg-white text-sm font-semibold text-slate-700 shadow-sm">
+        {clamped}%
+      </div>
+    </div>
   );
 }
 

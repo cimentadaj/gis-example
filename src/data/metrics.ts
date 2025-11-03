@@ -10,6 +10,7 @@ export type SystemKpi = {
     percentage: number;
     period: string;
   };
+  changeLabel?: string;
 };
 
 export type ForecastPoint = {
@@ -35,31 +36,35 @@ export type AnomalyCluster = {
 export const citywideKpis: SystemKpi[] = [
   {
     id: "sdg-progress",
-    label: "SDG Progress",
-    unit: "% on track",
-    value: 68,
-    change: { direction: "up", percentage: 4.8, period: "month" },
+    label: "Districts ready",
+    unit: "of 18",
+    value: 12,
+    change: { direction: "up", percentage: 1, period: "day" },
+    changeLabel: "+1 today",
   },
   {
     id: "vlr-ready",
-    label: "VLR Ready",
-    unit: "% ready",
-    value: 78,
-    change: { direction: "up", percentage: 12.4, period: "week" },
+    label: "Sections cleared",
+    unit: "of 9",
+    value: 7,
+    change: { direction: "up", percentage: 2, period: "day" },
+    changeLabel: "+2 today",
   },
   {
     id: "wellbeing-score",
-    label: "Wellbeing Score",
+    label: "Wellbeing index",
     unit: "index",
     value: 74,
     change: { direction: "up", percentage: 4.2, period: "quarter" },
+    changeLabel: "+4.2 vs last quarter",
   },
   {
     id: "capital-ready",
-    label: "Capital Ready",
+    label: "Capital funded",
     unit: "% funded",
     value: 81,
     change: { direction: "down", percentage: 2.6, period: "month" },
+    changeLabel: "-2.6% vs last month",
   },
 ];
 

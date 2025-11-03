@@ -13,6 +13,20 @@ import type { ScenarioDefinition, ScenarioLayer } from "@/lib/scenarios";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
+type MapLibreWorkerClass = new (...args: unknown[]) => Worker;
+
+let workerAttached = false;
+
+async function ensureMapLibreWorker() {
+  if (workerAttached || typeof window === "undefined") {
+    return;
+  }
+  const module = await import("maplibre-gl/dist/maplibre-gl-csp-worker");
+  const WorkerClass = module.default as unknown as MapLibreWorkerClass;
+  (maplibregl as typeof maplibregl & { workerClass?: MapLibreWorkerClass }).workerClass = WorkerClass;
+  workerAttached = true;
+}
+
 export type SpatialHighlight = {
   id: string;
   sensorId: string;
@@ -92,75 +106,98 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
   const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    const container = mapContainerRef.current;
-    if (!container || mapRef.current) {
-      return;
-    }
+    let isCancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    const map = new maplibregl.Map({
-      container,
-      style: BASE_STYLE,
-      center: MAP_CENTER,
-      zoom: MAPZOOM,
-      pitch: MAP_PITCH,
-      bearing: MAP_BEARING,
-      attributionControl: false,
-      hash: false,
-    });
+    const boot = async () => {
+      await ensureMapLibreWorker();
+      if (isCancelled) {
+        return;
+      }
 
-    map.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
+      const container = mapContainerRef.current;
+      if (!container || mapRef.current) {
+        return;
+      }
 
-    if (typeof ResizeObserver !== "undefined") {
-      const observer = new ResizeObserver(() => map.resize());
-      observer.observe(container);
-      resizeObserverRef.current = observer;
-    }
+      const map = new maplibregl.Map({
+        container,
+        style: BASE_STYLE,
+        center: MAP_CENTER,
+        zoom: MAPZOOM,
+        pitch: MAP_PITCH,
+        bearing: MAP_BEARING,
+        attributionControl: false,
+        hash: false,
+      });
 
-    const handleError = (event: ErrorEvent) => {
-      const rawMessage = event?.error instanceof Error ? event.error.message : null;
-      const friendlyMessage = rawMessage && rawMessage.toLowerCase().includes("failed to fetch")
-        ? "Basemap tiles are temporarily unavailable."
-        : rawMessage ?? "Map rendering error";
-      setIsReady(false);
-      setMapError(friendlyMessage);
-    };
+      map.addControl(new NavigationControl({ visualizePitch: true }), "top-right");
 
-    map.on("error", handleError);
+      if (typeof ResizeObserver !== "undefined") {
+        const observer = new ResizeObserver(() => map.resize());
+        observer.observe(container);
+        resizeObserverRef.current = observer;
+      }
 
-    map.once("load", () => {
-      const mapWithEffects = map as MapInstance & {
-        setFog?: (options: unknown) => void;
-        setLight?: (options: unknown) => void;
+      const handleError = (event: ErrorEvent) => {
+        const rawMessage = event?.error instanceof Error ? event.error.message : null;
+        const friendlyMessage = rawMessage && rawMessage.toLowerCase().includes("failed to fetch")
+          ? "Basemap tiles are temporarily unavailable."
+          : rawMessage ?? "Map rendering error";
+        setIsReady(false);
+        setMapError(friendlyMessage);
       };
 
-      mapWithEffects.setFog?.({
-        range: [-0.8, 2.2],
-        color: "rgba(148, 163, 184, 0.18)",
-        "horizon-blend": 0.22,
-        "high-color": "rgba(59, 130, 246, 0.12)",
-      });
-      mapWithEffects.setLight?.({ color: "#38bdf8", intensity: 0.55 });
-      syncScenarioLayers(map, scenario, activeLayersRef);
-      fitMapToScenario(map, scenario);
-      map.resize();
-      setIsReady(true);
-    });
+      map.on("error", handleError);
+      const handleIdle = () => {
+        setMapError(null);
+        setIsReady(true);
+      };
+      map.on("idle", handleIdle);
 
-    mapRef.current = map;
-    const handleResize = () => map.resize();
-    window.addEventListener("resize", handleResize);
+      map.once("load", () => {
+        const mapWithEffects = map as MapInstance & {
+          setFog?: (options: unknown) => void;
+          setLight?: (options: unknown) => void;
+        };
+
+        mapWithEffects.setFog?.({
+          range: [-0.8, 2.2],
+          color: "rgba(148, 163, 184, 0.18)",
+          "horizon-blend": 0.22,
+          "high-color": "rgba(59, 130, 246, 0.12)",
+        });
+        mapWithEffects.setLight?.({ color: "#38bdf8", intensity: 0.55 });
+        syncScenarioLayers(map, scenario, activeLayersRef);
+        fitMapToScenario(map, scenario);
+        map.resize();
+        setIsReady(true);
+      });
+
+      mapRef.current = map;
+      const handleResize = () => map.resize();
+      window.addEventListener("resize", handleResize);
+
+      cleanup = () => {
+        window.removeEventListener("resize", handleResize);
+        if (resizeObserverRef.current) {
+          resizeObserverRef.current.disconnect();
+          resizeObserverRef.current = null;
+        }
+        calloutMarkersRef.current.forEach((marker) => marker.remove());
+        calloutMarkersRef.current = [];
+        map.off("error", handleError);
+        map.off("idle", handleIdle);
+        map.remove();
+        mapRef.current = null;
+      };
+    };
+
+    void boot();
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-        resizeObserverRef.current = null;
-      }
-      calloutMarkersRef.current.forEach((marker) => marker.remove());
-      calloutMarkersRef.current = [];
-      map.off("error", handleError);
-      map.remove();
-      mapRef.current = null;
+      isCancelled = true;
+      cleanup?.();
     };
   }, [scenario]);
 
@@ -247,7 +284,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
   }, [focus]);
 
   return (
-    <div className="relative h-[320px] w-full overflow-hidden rounded-3xl bg-[#f8fafc] sm:h-[380px] lg:h-[440px] xl:h-[480px]">
+    <div className="relative h-[360px] w-full overflow-hidden rounded-[32px] bg-slate-100 sm:h-[440px] lg:h-[520px] xl:h-[560px]">
       <div ref={mapContainerRef} className="absolute inset-0" />
       {!isReady && !mapError ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">

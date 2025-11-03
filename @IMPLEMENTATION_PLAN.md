@@ -16,12 +16,11 @@
    - Brightened the light basemap, tuned point halos and strokes, and refreshed marker callouts for crisp AI hotspot legibility.
    - Added inline loading/error overlays that replace the grey canvas with purposeful status messaging.
 
-3. **Module Content & Visual Polish** _(⏳ Pending)_
-   - Simplify KPI summaries and scenario copy to plain, high-value language that matches each real use case.
-   - Align charts, alerts, and next-step cards with the lighter design system, trimming any redundant elements.
-   - Widen the digital twin canvas, framing the map with concise indicator tiles so the city view feels like an intelligent operations board.
-   - Enrich the VLR stage drill-in with clickable steps that reveal context cards (plots, indicators, narrative) while keeping the minimal briefing style.
-   - Ensure each module communicates a grounded Nexus workflow (SDG twin, VLR automation, AI pipelines) with minimal jargon.
+3. **Module Content & Visual Polish** _(✅ Completed)_
+   - Simplified the KPI strip and scenario copy into short, plain-language labels aligned to the SDG, VLR, and wellbeing workflows.
+   - Expanded the digital twin canvas with larger cartography, inline highlight overlays, and adjacent status cards so the map reads as the primary control surface.
+   - Rebuilt the VLR drill-in to surface completion progress, compliance chips, audit trail, and stage-specific insights whenever an operator selects a step.
+   - Tuned supporting cards (focus slider, live pulse, AI notices, alerts) to the light design system while removing redundant chrome and jargon.
 
 4. **QA & Build Validation** _(⏳ Pending)_
    - Cross-browser smoke test the refined layout for responsive behaviour and map interactivity.
@@ -29,6 +28,7 @@
    - Capture demo-ready usage notes highlighting the key workflows once polish is complete.
 
 ## Progress Log
+- **2025-11-11**: Streamlined the module content pass—widened the GIS canvas with live highlight callouts, refreshed KPIs and signals in plain language, and rebuilt the VLR stage detail panes with progress, compliance and audit context while wiring MapLibre to a CSP worker for reliable rendering.
 - **2025-11-10**: Stabilised the MapLibre canvas with load/error fallbacks, auto-fit bounds, and refreshed hotspot styling so the digital twin map never renders as a blank panel.
 - **2025-11-09**: Added a sticky left navigation rail, tightened the logo-only top bar, and reflowed the layout grid so the dashboard reads as a calm two-column experience with persistent module access.
 - **2025-11-08**: Simplified the three scenario tabs with plain-language copy, friendlier KPI labels, a compact logo-only top bar, and MapLibre resize handling so the light-theme GIS canvas renders markers and layers reliably.
