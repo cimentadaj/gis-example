@@ -6,16 +6,21 @@ import {
   AlertTriangle,
   Bot,
   BrainCircuit,
+  CheckCircle2,
   ChevronRight,
   Clock8,
+  CircleDashed,
   Crosshair,
+  FileText,
   GaugeCircle,
   Layers,
   LineChart,
+  Loader2,
   Map,
   MapPinned,
   MoveRight,
   Radar,
+  ShieldCheck,
   Sparkles,
   Waves,
   Workflow,
@@ -28,6 +33,14 @@ import {
   resilienceForecast,
   type SystemKpi,
 } from "@/data/metrics";
+import {
+  vlrAlerts,
+  vlrPdfPreview,
+  vlrProcessSignals,
+  vlrStages,
+  type VlrComplianceBadge,
+  type VlrStageStatus,
+} from "@/data/vlr";
 import {
   defaultScenarioKey,
   getScenarioConfig,
@@ -587,79 +600,314 @@ function ActionQueueCard({ actions }: { actions: string[] }) {
 }
 
 function VlrPreviewPanel() {
+  const [selectedStageId, setSelectedStageId] = useState<string>(() => {
+    const activeStage = vlrStages.find((stage) => stage.status === "active");
+    return activeStage?.id ?? vlrStages[0].id;
+  });
+
+  const selectedStage = vlrStages.find((stage) => stage.id === selectedStageId) ?? vlrStages[0];
+  const selectedIndex = Math.max(vlrStages.findIndex((stage) => stage.id === selectedStageId), 0);
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <div className="space-y-4">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">VLR Automation</p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="max-w-2xl">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">Nexus Consulting · VLR Automation</p>
           <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Voluntary Local Review Mission Board</h2>
           <p className="mt-3 text-sm text-foreground/70">
-            Nexus Consulting ingests mobility, energy, and climate telemetry to author full VLR chapters in minutes.
-            Every step is auditable and tied back to digital twin evidence.
+            Nexus orchestrates the entire VLR pipeline with AI guardrails—every chapter is grounded in live digital twin
+            evidence, policy compliance, and explainable scoring.
           </p>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {["Ingestion", "Classification", "KPI Scoring", "Narrative Generation"].map((stage, index) => (
-            <div key={stage} className="rounded-[24px] border border-white/10 bg-white/8 p-4">
-              <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Stage {index + 1}</p>
-              <p className="mt-1 text-lg font-semibold text-white">{stage}</p>
-              <p className="mt-2 text-xs text-foreground/60">
-                {index === 0 && "Harvesting 64 live data feeds, cleansing anomalies in under 90 seconds."}
-                {index === 1 && "AI tags Sustainable Development Goal metrics with 97% accuracy."}
-                {index === 2 && "Automated KPI deltas benchmark against baseline year for rapid validation."}
-                {index === 3 && "Narratives translate outputs into executive-ready PDF chapters instantly."}
-              </p>
-            </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {vlrProcessSignals.map((signal) => (
+            <span
+              key={signal}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.3em] text-foreground/60"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-primary-200" />
+              {signal}
+            </span>
           ))}
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-black/40 p-5">
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
-          VLR Snapshot · 2025 Q3
+      <div className="grid gap-6 xl:grid-cols-[340px_1fr]">
+        <div className="flex flex-col gap-5">
+          <div className="rounded-[28px] border border-white/10 bg-white/6 p-4">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Pipeline Status</p>
+            <div className="mt-4 space-y-3">
+              {vlrStages.map((stage, index) => {
+                const isActive = stage.id === selectedStageId;
+                return (
+                  <button
+                    type="button"
+                    key={stage.id}
+                    onClick={() => setSelectedStageId(stage.id)}
+                    className={cn(
+                      "w-full rounded-[24px] border border-white/8 bg-black/20 p-4 text-left transition-all duration-200 hover:border-white/20 hover:bg-black/25",
+                      isActive && "border-primary-400/60 bg-primary-500/15 shadow-[0_20px_65px_-45px_rgba(124,58,237,0.75)]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <StageStatusIcon status={stage.status} isActive={isActive} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/40">Stage {index + 1}</p>
+                        <p className="mt-1 truncate text-sm font-semibold text-white">{stage.title}</p>
+                      </div>
+                      <div className="text-right text-xs text-foreground/60">
+                        {stage.status === "active" && <span>ETA {stage.etaMinutes}m</span>}
+                        {stage.status === "pending" && <span>{stage.completion}% primed</span>}
+                        {stage.status === "complete" && <span>Ready</span>}
+                      </div>
+                    </div>
+                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all",
+                          stage.status === "complete" && "bg-primary-300/70",
+                          stage.status === "active" && "bg-accent-300/80",
+                          stage.status === "pending" && "bg-white/25"
+                        )}
+                        style={{ width: `${Math.max(stage.completion, stage.status === "pending" ? 18 : 6)}%` }}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="rounded-[28px] border border-white/10 bg-black/40 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Latest Export</p>
+                <p className="mt-2 text-sm font-semibold text-white">{vlrPdfPreview.period}</p>
+              </div>
+              <FileText className="h-8 w-8 text-primary-200" />
+            </div>
+            <p className="mt-3 text-sm text-foreground/70">{vlrPdfPreview.summary}</p>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/70">
+              {vlrPdfPreview.chapters.map((chapter) => (
+                <li
+                  key={chapter.id}
+                  className="flex items-center justify-between rounded-[18px] border border-white/10 bg-white/5 px-3 py-2"
+                >
+                  <span className="text-foreground/70">{chapter.label}</span>
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.35em]",
+                      chapter.status === "ready" && "bg-emerald-400/15 text-emerald-200",
+                      chapter.status === "in-review" && "bg-amber-400/15 text-amber-200",
+                      chapter.status === "draft" && "bg-rose-400/15 text-rose-200"
+                    )}
+                  >
+                    {chapter.status.replace("-", " ")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-center justify-between text-xs text-foreground/50">
+              <span>{vlrPdfPreview.filename}</span>
+              <span>{vlrPdfPreview.size}</span>
+            </div>
+            <button
+              type="button"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary-500/80 to-accent-500/80 px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01]"
+            >
+              Download AI-authored VLR
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col justify-between gap-4">
-          <div className="space-y-3">
-            <p className="text-sm text-foreground/70">
-              <strong className="text-white">Climate Resilience Chapter:</strong> AI drafted in 4m 28s with targeted
-              adaptation projects for Harbor District and Innovation Basin.
-            </p>
-            <p className="text-sm text-foreground/70">
-              <strong className="text-white">Social Equity Chapter:</strong> Trip abandonment dropped 12%, enabling a
-              green-light on expanded subsidy programs.
-            </p>
+        <div className="flex flex-col gap-6">
+          <div className="rounded-[32px] border border-white/10 bg-black/35 p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">
+                  Stage {selectedIndex + 1} · {getStageStatusLabel(selectedStage.status)}
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-white">{selectedStage.title}</h3>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-foreground/60">
+                <StageStatusIcon status={selectedStage.status} isActive />
+                {selectedStage.status === "active"
+                  ? `ETA ${selectedStage.etaMinutes} minutes`
+                  : `Completion ${selectedStage.completion}%`}
+              </div>
+            </div>
+            <p className="mt-4 text-sm text-foreground/70">{selectedStage.summary}</p>
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {selectedStage.insights.map((insight) => (
+                <div
+                  key={insight}
+                  className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground/70"
+                >
+                  <Sparkles className="mb-2 h-4 w-4 text-primary-200" />
+                  {insight}
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {selectedStage.kpis.map((kpi) => (
+                <div
+                  key={kpi.id}
+                  className="rounded-[24px] border border-white/10 bg-gradient-to-br from-white/8 to-black/20 p-4"
+                >
+                  <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">{kpi.value}</p>
+                  <p
+                    className={cn(
+                      "mt-1 text-xs font-semibold uppercase tracking-[0.3em]",
+                      kpi.direction === "up" ? "text-emerald-200" : "text-rose-200"
+                    )}
+                  >
+                    {kpi.deltaLabel}
+                  </p>
+                  <p className="mt-3 text-sm text-foreground/70">{kpi.narrative}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="rounded-[24px] border border-white/10 bg-white/10 p-4 text-sm text-foreground/70">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
-              <AlertTriangle className="h-4 w-4" />
-              Policy Gaps flagged
-            </p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 h-2 w-2 rounded-full bg-warning-500" />
-                Formal heat resilience strategy pending for two waterfront schools.
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 h-2 w-2 rounded-full bg-rose-500" />
-                DER incentives need City Council review before Q4 budget vote.
-              </li>
-            </ul>
-          </div>
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-[30px] border border-white/10 bg-white/6 p-5">
+              <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
+                <ShieldCheck className="h-4 w-4 text-primary-200" />
+                Compliance & Guardrails
+              </p>
+              <div className="mt-4 space-y-3">
+                {selectedStage.compliance.map((item) => (
+                  <div key={item.id} className="rounded-[22px] border border-white/10 bg-black/20 p-4">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.35em]",
+                          complianceBadgeTone(item.status).badge
+                        )}
+                      >
+                        {complianceBadgeTone(item.status).label}
+                      </span>
+                      <p className="text-sm font-semibold text-white">{item.label}</p>
+                    </div>
+                    <p className="mt-3 text-sm text-foreground/70">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 rounded-[22px] border border-white/10 bg-white/5 p-4">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">Artifacts ready</p>
+                <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+                  {selectedStage.artifacts.map((artifact) => (
+                    <li key={artifact.id} className="flex items-start gap-3">
+                      <FileText className="mt-0.5 h-4 w-4 text-primary-200" />
+                      <div>
+                        <p className="font-medium text-white">{artifact.label}</p>
+                        <p className="text-foreground/60">{artifact.detail}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 rounded-[999px] bg-gradient-to-r from-primary-500/80 to-accent-500/80 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-35px_rgba(124,58,237,0.68)] transition-transform hover:scale-[1.01]"
-          >
-            Download latest AI-authored VLR
-            <ChevronRight className="h-4 w-4" />
-          </button>
+            <div className="flex flex-col gap-5">
+              <div className="rounded-[30px] border border-white/10 bg-black/30 p-5">
+                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
+                  <ActivitySquare className="h-4 w-4 text-primary-200" />
+                  Audit Trail
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {selectedStage.auditTrail.map((event) => (
+                    <li
+                      key={`${event.timestamp}-${event.actor}`}
+                      className="flex gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground/70"
+                    >
+                      <span className="flex h-8 w-16 items-center justify-center rounded-full bg-primary-500/15 text-[11px] font-semibold text-white">
+                        {event.timestamp}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white">{event.actor}</p>
+                        <p className="text-foreground/60">{event.message}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-[30px] border border-white/10 bg-white/8 p-5">
+                <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+                  <AlertTriangle className="h-4 w-4" />
+                  Policy & Action Alerts
+                </p>
+                <ul className="mt-4 space-y-3 text-sm text-foreground/70">
+                  {vlrAlerts.map((alert) => (
+                    <li
+                      key={alert.id}
+                      className="flex gap-3 rounded-[22px] border border-white/10 bg-black/25 px-4 py-3"
+                    >
+                      <span className={cn("mt-1 h-2 w-2 rounded-full", alertSeverityTone(alert.severity))} />
+                      <div className="min-w-0">
+                        <p className="font-medium text-white">{alert.message}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.35em] text-foreground/50">
+                          {alert.suggestedAction}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+
+function StageStatusIcon({ status, isActive = false }: { status: VlrStageStatus; isActive?: boolean }) {
+  if (status === "complete") {
+    return <CheckCircle2 className={cn("h-5 w-5 text-emerald-300", !isActive && "text-emerald-300/70")} />;
+  }
+
+  if (status === "active") {
+    return <Loader2 className="h-5 w-5 animate-spin text-accent-200" />;
+  }
+
+  return <CircleDashed className="h-5 w-5 text-foreground/35" />;
+}
+
+function getStageStatusLabel(status: VlrStageStatus) {
+  switch (status) {
+    case "complete":
+      return "Completed";
+    case "active":
+      return "In progress";
+    default:
+      return "Queued";
+  }
+}
+
+function complianceBadgeTone(status: VlrComplianceBadge["status"]) {
+  switch (status) {
+    case "pass":
+      return { label: "Pass", badge: "bg-emerald-400/15 text-emerald-200 border border-emerald-400/20" };
+    case "attention":
+      return { label: "Attention", badge: "bg-amber-400/15 text-amber-200 border border-amber-400/20" };
+    default:
+      return { label: "Review", badge: "bg-rose-400/15 text-rose-200 border border-rose-400/20" };
+  }
+}
+
+function alertSeverityTone(severity: (typeof vlrAlerts)[number]["severity"]) {
+  switch (severity) {
+    case "critical":
+      return "bg-rose-400";
+    case "warning":
+      return "bg-amber-300";
+    default:
+      return "bg-primary-200";
+  }
 }
 
 function AnalyticsPreviewPanel() {
