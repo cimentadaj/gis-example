@@ -18,4 +18,4 @@ Focus on dashboards, interactive dahsboards, the real product, no tthe landing p
 --- 
 NEWER UPDATE:
 
-Make the top sidebar height smaller, make the map have actual points and con be seen in the contx of an analysis of some sort. Make the modules separate tabs and make the full aesthetics kinda like notion/apple in terms of visuals, colors, fonts, etc...
+Make the top sidebar height smaller, make the map have actual points and con be seen in the contx of an analysis of some sort. Make the modules separate tabs and make the full aesthetics kinda like notion/apple in terms of visuals, colors, fonts, etc... also, remove modules to not make it cluttered. Avoid a super dashboard with too many things, strike a clear notion like balance between good design, good show of stuff and elegant design. Please think hard about the actual each module so that the Ai/ML/plots, kpi, etc.. make sense, the wording is simple, easy t use and has a REAL case scenarion not just fancy set of words or stuff, etc..
