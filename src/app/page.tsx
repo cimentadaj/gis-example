@@ -87,7 +87,7 @@ import {
   type ScenarioLayer,
   type ScenarioKey,
 } from "@/lib/scenarios";
-import { CommandCenterMap } from "@/components/command-center/command-center-map";
+import { CommandCenterMap, type SpatialHighlight } from "@/components/command-center/command-center-map";
 import { CopilotDockContent, type CopilotDockView } from "@/components/copilot/copilot-dock";
 import { cn } from "@/lib/utils";
 
@@ -841,24 +841,74 @@ type DigitalTwinPanelProps = {
 
 function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalTwinPanelProps) {
   const focusMinutes = Math.round((focus / 100) * 60);
+  const spatialHighlights = useMemo<SpatialHighlight[]>(() => {
+    const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
+    const highlights: SpatialHighlight[] = [];
+
+    pointLayers.forEach((layer) => {
+      const dataset = layer.dataset as GeoJSONFeatureCollection;
+
+      dataset.features.forEach((feature, index) => {
+        if (feature.geometry?.type !== "Point") {
+          return;
+        }
+
+        const coordinates = feature.geometry.coordinates;
+        if (!Array.isArray(coordinates) || coordinates.length < 2) {
+          return;
+        }
+
+        const [lng, lat] = coordinates;
+        if (typeof lng !== "number" || typeof lat !== "number") {
+          return;
+        }
+
+        const properties = (feature.properties ?? {}) as Record<string, unknown>;
+        const anomalyScore =
+          typeof properties.anomalyScore === "number"
+            ? properties.anomalyScore
+            : typeof properties.peakLoad === "number"
+              ? properties.peakLoad
+              : 0;
+        const rawType =
+          typeof properties.type === "string" ? (properties.type as string) : (layer.label as string);
+        const sensorType = rawType.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+        highlights.push({
+          id: String(properties.id ?? feature.id ?? `${layer.id}-${index}`),
+          sensorId: typeof properties.id === "string" ? properties.id : `Node-${index + 1}`,
+          sensorType,
+          layerLabel: layer.label,
+          district: typeof properties.district === "string" ? properties.district : null,
+          health: typeof properties.health === "string" ? properties.health : null,
+          anomalyScore,
+          lastReadingMinutes:
+            typeof properties.lastReadingMinutesAgo === "number" ? properties.lastReadingMinutesAgo : null,
+          coordinates: [lng, lat],
+        });
+      });
+    });
+
+    return highlights;
+  }, [scenario]);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.4em] text-primary-200">Digital Twin Command</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{scenario.name}</h2>
-          <p className="mt-2 text-sm text-foreground/70">{scenario.tagline}</p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-foreground/60">
-            <Radar className="h-4 w-4 text-primary-200" />
+          <p className="text-[11px] uppercase tracking-[0.4em] text-sky-600">Digital Twin Command</p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">{scenario.name}</h2>
+          <p className="mt-2 text-sm text-slate-600">{scenario.tagline}</p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_12px_32px_-22px_rgba(15,23,42,0.28)]">
+            <Radar className="h-4 w-4 text-sky-500" />
             {scenario.command}
           </div>
         </div>
 
-        <div className="w-full rounded-3xl border border-white/10 bg-white/10 px-5 py-4 text-sm text-foreground/70 sm:w-auto">
+        <div className="w-full rounded-3xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.32)] sm:w-auto">
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Focus Horizon</span>
-            <span className="text-base font-semibold text-white">{focusMinutes} min</span>
+            <span className="text-[11px] uppercase tracking-[0.35em] text-slate-500">Focus Horizon</span>
+            <span className="text-base font-semibold text-slate-900">{focusMinutes} min</span>
           </div>
           <input
             type="range"
@@ -866,27 +916,27 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
             onChange={(event) => onFocusChange(Number(event.target.value))}
             min={0}
             max={100}
-            className="mt-3 h-2 w-full appearance-none rounded-full bg-white/10 accent-primary-400"
+            className="mt-3 h-2 w-full appearance-none rounded-full bg-slate-200 accent-sky-500"
           />
-          <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-foreground/40">
+          <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-slate-400">
             <span>Now</span>
             <span>+60m</span>
           </div>
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-white/10 bg-white/8 px-5 py-4 text-sm leading-6 text-foreground/70 shadow-[0_20px_65px_-45px_rgba(59,130,246,0.55)]">
-        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+      <div className="rounded-[28px] border border-slate-200 bg-white px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.35)]">
+        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
           <ActivitySquare className="h-4 w-4" />
           Operational Narrative
         </p>
-        <p className="mt-3">{scenario.narrative}</p>
+        <p className="mt-3 text-slate-700">{scenario.narrative}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
         <div className="space-y-5">
-          <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-black/40 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.55)]">
-            <CommandCenterMap scenario={scenario} focus={focus} />
+          <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_28px_80px_-48px_rgba(15,23,42,0.35)]">
+            <CommandCenterMap scenario={scenario} focus={focus} highlights={spatialHighlights} />
             <MapHud scenario={scenario} insights={insights} focus={focus} />
           </div>
 
@@ -902,8 +952,8 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
         </div>
 
         <div className="space-y-5">
-          <div className="rounded-[28px] border border-white/10 bg-white/8 p-5 shadow-[0_25px_80px_-45px_rgba(14,165,233,0.55)]">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.28)]">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
               <Sparkles className="h-4 w-4" />
               AI Insight Pulse
             </p>
@@ -918,13 +968,13 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
             {scenario.kpis.map((kpi) => (
               <div
                 key={kpi.id}
-                className="rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 text-sm text-foreground/70"
+                className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_20px_70px_-52px_rgba(15,23,42,0.25)]"
               >
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{kpi.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-white">
-                  {kpi.value} <span className="text-sm text-foreground/50">{kpi.unit}</span>
+                <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{kpi.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900">
+                  {kpi.value} <span className="text-sm text-slate-500">{kpi.unit}</span>
                 </p>
-                <p className="mt-1 text-[11px] text-primary-200">
+                <p className="mt-1 text-[11px] text-sky-600">
                   Δ {kpi.change.percentage}% {kpi.change.direction === "up" ? "improvement" : "reduction"}
                 </p>
               </div>
@@ -955,46 +1005,46 @@ function MapHud({
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-5">
       <div className="flex flex-wrap items-start gap-4">
-        <div className="rounded-3xl border border-white/10 bg-black/45 px-5 py-4 text-xs uppercase tracking-[0.32em] text-foreground/60 shadow-[0_30px_90px_-45px_rgba(59,130,246,0.75)] backdrop-blur-xl">
-          <p className="flex items-center gap-2 text-foreground/70">
-            <Sparkles className="h-3.5 w-3.5 text-primary-200" />
+        <div className="rounded-[26px] border border-slate-200 bg-white/90 px-5 py-4 text-xs uppercase tracking-[0.32em] text-slate-500 shadow-[0_26px_70px_-48px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+          <p className="flex items-center gap-2 text-slate-500">
+            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
             Scenario
           </p>
-          <p className="mt-2 text-sm font-semibold tracking-[0.18em] text-white">{scenario.name}</p>
-          <p className="mt-1 text-[11px] normal-case tracking-wide text-foreground/70">{scenario.tagline}</p>
+          <p className="mt-2 text-sm font-semibold tracking-[0.18em] text-slate-900">{scenario.name}</p>
+          <p className="mt-1 text-[11px] normal-case tracking-wide text-slate-500">{scenario.tagline}</p>
         </div>
 
         {primaryInsight ? (
-          <div className="max-w-sm rounded-3xl border border-white/10 bg-white/10 px-5 py-4 text-sm leading-6 text-foreground/80 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.65)] backdrop-blur-xl">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
+          <div className="max-w-sm rounded-[26px] border border-sky-100 bg-sky-50/90 px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_25px_80px_-45px_rgba(59,130,246,0.45)] backdrop-blur-xl">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-sky-600">
               <ActivitySquare className="h-3.5 w-3.5" />
               Insight Pulse{confidence !== null ? ` · ${confidence}%` : ""}
             </p>
-            <p className="mt-2 font-medium text-white">{primaryInsight.title}</p>
-            <p className="mt-1 text-xs text-foreground/70">{primaryInsight.detail}</p>
+            <p className="mt-2 font-medium text-slate-900">{primaryInsight.title}</p>
+            <p className="mt-1 text-xs text-slate-600">{primaryInsight.detail}</p>
           </div>
         ) : null}
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-4">
         {primaryAction ? (
-          <div className="max-w-xl rounded-3xl border border-white/10 bg-black/45 px-5 py-4 text-sm text-foreground/70 shadow-[0_30px_90px_-45px_rgba(14,165,233,0.65)] backdrop-blur-xl">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-primary-200">
+          <div className="max-w-xl rounded-[26px] border border-slate-200 bg-white/92 px-5 py-4 text-sm text-slate-600 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-slate-500">
               <MoveRight className="h-3.5 w-3.5" />
               Next Orchestration
             </p>
-            <p className="mt-2 leading-6">{primaryAction}</p>
+            <p className="mt-2 leading-6 text-slate-700">{primaryAction}</p>
           </div>
         ) : null}
 
         <div className="flex flex-wrap items-end gap-3">
-          <div className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-foreground/50">
+          <div className="rounded-full border border-slate-200 bg-white/95 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]">
             <p>Focus Horizon</p>
-            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-white">{focusMinutes}m</p>
+            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-slate-900">{focusMinutes}m</p>
           </div>
-          <div className="rounded-full border border-white/10 bg-white/10 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-foreground/50">
+          <div className="rounded-full border border-slate-200 bg-white/95 px-5 py-3 text-right text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]">
             <p>Active Layers</p>
-            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-white">{scenario.layers.length}</p>
+            <p className="mt-1 text-2xl font-semibold tracking-[0.2em] text-slate-900">{scenario.layers.length}</p>
           </div>
         </div>
       </div>
@@ -1037,8 +1087,8 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
     .slice(0, 3);
 
   return (
-    <div className="rounded-[24px] border border-white/10 bg-white/[0.05] p-5 shadow-[0_25px_70px_-55px_rgba(59,130,246,0.6)] backdrop-blur-2xl">
-      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_28px_80px_-56px_rgba(15,23,42,0.28)]">
+      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
         <Crosshair className="h-3.5 w-3.5" />
         Spatial Spotlight
       </p>
@@ -1047,10 +1097,10 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
           const anomalyPercent = Math.round((spot.anomalyScore ?? 0) * 100);
           const statusClass =
             spot.health === "Offline"
-              ? "bg-rose-500/15 text-rose-200 border-rose-400/40"
+              ? "bg-rose-50 text-rose-600 border-rose-200"
               : spot.health === "At Risk"
-                ? "bg-amber-500/15 text-amber-100 border-amber-400/35"
-                : "bg-emerald-500/15 text-emerald-200 border-emerald-400/35";
+                ? "bg-amber-50 text-amber-600 border-amber-200"
+                : "bg-emerald-50 text-emerald-600 border-emerald-200";
           const narrative =
             spot.health === "Offline"
               ? "Dispatch crew · feed offline in corridor spine"
@@ -1061,19 +1111,19 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
           return (
             <div
               key={`${spot.id}-${spot.layerLabel}`}
-              className="flex items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-black/30 px-4 py-3 text-sm text-foreground/70 backdrop-blur-xl"
+              className="flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
             >
               <div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-slate-900">
                   {spot.id} · {spot.type}
                 </p>
-                <p className="text-xs text-foreground/55">
+                <p className="text-xs text-slate-500">
                   {spot.layerLabel}
                   {spot.district ? ` • ${spot.district}` : ""} · {narrative}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-2">
-                <span className="text-xs font-semibold text-primary-100">{anomalyPercent}% anomaly</span>
+                <span className="text-xs font-semibold text-sky-600">{anomalyPercent}% anomaly</span>
                 {spot.health ? (
                   <span className={cn("rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.3em]", statusClass)}>
                     {spot.health}
@@ -1108,30 +1158,30 @@ function LayerLegend({ layers, focus }: { layers: ScenarioLayer[]; focus: number
         return (
           <div
             key={layer.id}
-            className="group relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-4 text-sm text-foreground/70 shadow-[0_25px_70px_-50px_rgba(14,165,233,0.55)]"
+            className="group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-[0_28px_80px_-52px_rgba(15,23,42,0.28)]"
           >
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -inset-10 opacity-30 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+              className="pointer-events-none absolute -inset-10 opacity-20 blur-3xl transition-opacity duration-500 group-hover:opacity-45"
               style={{ background: gradientBackground }}
             />
 
             <div className="relative flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-primary-100">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-sky-600">
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{label}</p>
-                  <p className="text-sm font-semibold text-white">{layer.label}</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">{label}</p>
+                  <p className="text-sm font-semibold text-slate-900">{layer.label}</p>
                 </div>
               </div>
-              <span className="rounded-full border border-white/15 bg-black/30 px-3 py-1 text-[11px] font-semibold text-white/80">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
                 {focusBoost}% focus
               </span>
             </div>
 
-            <p className="relative mt-3 text-xs leading-relaxed text-foreground/60">{layer.legend}</p>
+            <p className="relative mt-3 text-xs leading-relaxed text-slate-500">{layer.legend}</p>
           </div>
         );
       })}
@@ -1154,21 +1204,21 @@ function getVisualizationMeta(type: ScenarioLayer["visualization"]): { label: st
 function SignalBadge({ signal }: { signal: ScenarioInsightsPayload["signals"][number] }) {
   const tone =
     signal.tone === "positive"
-      ? "border-primary-400/40 bg-primary-500/10 text-primary-100"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-600"
       : signal.tone === "warning"
-        ? "border-warning-500/40 bg-warning-500/10 text-warning-500"
-        : "border-white/10 bg-white/5 text-foreground/70";
+        ? "border-amber-200 bg-amber-50 text-amber-600"
+        : "border-slate-200 bg-white text-slate-600";
 
   return (
     <div
       className={cn(
-        "rounded-[24px] border px-5 py-4 text-sm shadow-[0_18px_60px_-50px_rgba(59,130,246,0.55)]",
+        "rounded-[24px] border px-5 py-4 text-sm shadow-[0_20px_60px_-48px_rgba(15,23,42,0.28)]",
         tone,
       )}
     >
-      <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{signal.label}</p>
-      <p className="mt-2 text-lg font-semibold">{signal.value}</p>
-      <p className="text-[11px] text-foreground/60">Δ {signal.delta}</p>
+      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{signal.label}</p>
+      <p className="mt-2 text-lg font-semibold text-slate-900">{signal.value}</p>
+      <p className="text-[11px] text-slate-500">Δ {signal.delta}</p>
     </div>
   );
 }
@@ -1181,10 +1231,10 @@ function InsightCard({
   index: number;
 }) {
   return (
-    <div className="rounded-[22px] border border-white/10 bg-black/30 px-4 py-3">
-      <p className="text-xs font-semibold text-white">{insight.title}</p>
-      <p className="mt-2 text-sm text-foreground/70">{insight.detail}</p>
-      <p className="mt-3 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+    <div className="rounded-[22px] border border-slate-200 bg-white px-4 py-3 shadow-[0_20px_60px_-48px_rgba(15,23,42,0.28)]">
+      <p className="text-xs font-semibold text-slate-900">{insight.title}</p>
+      <p className="mt-2 text-sm text-slate-600">{insight.detail}</p>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.35em] text-sky-600">
         {Math.round(insight.confidence * 100)}% confidence · Insight #{index + 1}
       </p>
     </div>
@@ -1193,15 +1243,15 @@ function InsightCard({
 
 function ActionQueueCard({ actions }: { actions: string[] }) {
   return (
-    <div className="rounded-[26px] border border-white/10 bg-black/40 p-5 text-sm text-foreground/70">
-      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-primary-200">
+    <div className="rounded-[26px] border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-[0_28px_80px_-56px_rgba(15,23,42,0.28)]">
+      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
         <Workflow className="h-4 w-4" />
         Orchestration Queue
       </p>
       <ul className="mt-3 space-y-2">
         {actions.map((action, index) => (
-          <li key={action} className="flex gap-3 rounded-2xl bg-white/5 px-4 py-3 text-left text-sm text-foreground/80">
-            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-xs font-semibold text-primary-200">
+          <li key={action} className="flex gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-left text-sm text-slate-600">
+            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-600">
               {index + 1}
             </span>
             <span>{action}</span>

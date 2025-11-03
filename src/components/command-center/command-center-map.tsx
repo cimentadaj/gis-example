@@ -8,9 +8,22 @@ import type { ScenarioDefinition, ScenarioLayer } from "@/lib/scenarios";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
+export type SpatialHighlight = {
+  id: string;
+  sensorId: string;
+  sensorType: string;
+  layerLabel: string;
+  district: string | null;
+  health: string | null;
+  anomalyScore: number;
+  lastReadingMinutes: number | null;
+  coordinates: [number, number];
+};
+
 type CommandCenterMapProps = {
   scenario: ScenarioDefinition;
   focus: number;
+  highlights?: SpatialHighlight[];
 };
 
 type ActiveLayerRecord = {
@@ -27,7 +40,7 @@ const MAP_BEARING = -16;
 
 const BASE_STYLE: StyleSpecification = {
   version: 8,
-  name: "AetherCity Dark",
+  name: "Nexus Light",
   glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
   sources: {
     "osm-base": {
@@ -44,7 +57,7 @@ const BASE_STYLE: StyleSpecification = {
       id: "background",
       type: "background",
       paint: {
-        "background-color": "#050915",
+        "background-color": "#f4f6fb",
       },
     },
     {
@@ -54,19 +67,20 @@ const BASE_STYLE: StyleSpecification = {
       minzoom: 0,
       maxzoom: 19,
       paint: {
-        "raster-opacity": 0.55,
-        "raster-saturation": -0.8,
-        "raster-brightness-min": 0.12,
-        "raster-brightness-max": 0.85,
+        "raster-opacity": 0.7,
+        "raster-saturation": -0.2,
+        "raster-brightness-min": 0.9,
+        "raster-brightness-max": 1.05,
       },
     },
   ],
 };
 
-export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
+export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCenterMapProps) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapInstance | null>(null);
   const activeLayersRef = useRef<ActiveLayerRecord[]>([]);
+  const calloutMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) {
@@ -92,18 +106,20 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
       };
 
       mapWithEffects.setFog?.({
-        range: [-0.8, 2.5],
-        color: "rgba(14, 165, 233, 0.12)",
-        "horizon-blend": 0.18,
-        "high-color": "rgba(124, 58, 237, 0.12)",
+        range: [-0.8, 2.2],
+        color: "rgba(148, 163, 184, 0.18)",
+        "horizon-blend": 0.22,
+        "high-color": "rgba(59, 130, 246, 0.12)",
       });
-      mapWithEffects.setLight?.({ color: "#6ee7b7", intensity: 0.45 });
+      mapWithEffects.setLight?.({ color: "#38bdf8", intensity: 0.55 });
       syncScenarioLayers(map, scenario, activeLayersRef);
     });
 
     mapRef.current = map;
 
     return () => {
+      calloutMarkersRef.current.forEach((marker) => marker.remove());
+      calloutMarkersRef.current = [];
       map.remove();
       mapRef.current = null;
     };
@@ -125,6 +141,23 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
       map.once("load", updateLayers);
     }
   }, [scenario]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) {
+      return;
+    }
+
+    const updateMarkers = () => {
+      syncScenarioMarkers(map, highlights, calloutMarkersRef);
+    };
+
+    if (map.isStyleLoaded()) {
+      updateMarkers();
+    } else {
+      map.once("load", updateMarkers);
+    }
+  }, [highlights]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -156,6 +189,11 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
         case "point": {
           map.setPaintProperty(layer.id, "circle-radius", 6 + scaled * 6);
           map.setPaintProperty(layer.id, "circle-opacity", 0.35 + scaled * 0.65);
+          map.setPaintProperty(layer.id, "circle-stroke-width", 1.2 + scaled * 1.6);
+          if (map.getLayer(`${layer.id}-halo`)) {
+            map.setPaintProperty(`${layer.id}-halo`, "circle-radius", 14 + scaled * 14);
+            map.setPaintProperty(`${layer.id}-halo`, "circle-opacity", 0.18 + scaled * 0.35);
+          }
           break;
         }
         default:
@@ -167,7 +205,7 @@ export function CommandCenterMap({ scenario, focus }: CommandCenterMapProps) {
   return (
     <div
       ref={mapContainerRef}
-      className="h-[420px] w-full overflow-hidden rounded-[2.5rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_rgba(8,12,25,0.9))] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
+      className="h-[420px] w-full overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_32px_90px_-60px_rgba(15,23,42,0.45)] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
     />
   );
 }
@@ -185,6 +223,9 @@ function syncScenarioLayers(
     }
     if (map.getLayer(`${id}-glow`)) {
       map.removeLayer(`${id}-glow`);
+    }
+    if (map.getLayer(`${id}-halo`)) {
+      map.removeLayer(`${id}-halo`);
     }
     if (map.getSource(sourceId)) {
       map.removeSource(sourceId);
@@ -219,6 +260,88 @@ function syncScenarioLayers(
   });
 
   activeLayersRef.current = nextActive;
+}
+
+function syncScenarioMarkers(
+  map: MapInstance,
+  highlights: SpatialHighlight[],
+  calloutMarkersRef: React.MutableRefObject<maplibregl.Marker[]>,
+) {
+  calloutMarkersRef.current.forEach((marker) => marker.remove());
+  calloutMarkersRef.current = [];
+
+  const sorted = [...highlights].sort((a, b) => b.anomalyScore - a.anomalyScore).slice(0, 5);
+
+  sorted.forEach((highlight) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "pointer-events-auto flex flex-col items-center gap-2";
+
+    const card = document.createElement("div");
+    card.className =
+      "rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 shadow-[0_18px_50px_-24px_rgba(15,23,42,0.45)] backdrop-blur-md";
+
+    const title = document.createElement("p");
+    title.className = "text-xs font-semibold text-slate-800";
+    title.textContent = `${highlight.sensorId} • ${highlight.sensorType}`;
+    card.appendChild(title);
+
+    const subtitle = document.createElement("p");
+    subtitle.className = "mt-1 text-[11px] text-slate-500";
+    subtitle.textContent = [
+      highlight.layerLabel,
+      highlight.district ? `• ${highlight.district}` : null,
+    ]
+      .filter(Boolean)
+      .join(" ");
+    card.appendChild(subtitle);
+
+    const metaRow = document.createElement("div");
+    metaRow.className = "mt-2 flex items-center gap-2";
+
+    const anomalyBadge = document.createElement("span");
+    anomalyBadge.className =
+      "inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-700";
+    anomalyBadge.textContent = `${Math.round(highlight.anomalyScore * 100)}% anomaly`;
+    metaRow.appendChild(anomalyBadge);
+
+    if (highlight.lastReadingMinutes !== null) {
+      const latency = document.createElement("span");
+      latency.className = "text-[10px] text-slate-400";
+      latency.textContent = `${highlight.lastReadingMinutes}m ago`;
+      metaRow.appendChild(latency);
+    }
+
+    card.appendChild(metaRow);
+
+    if (highlight.health) {
+      const healthTag = document.createElement("span");
+      const baseClass =
+        highlight.health === "Offline"
+          ? "bg-rose-50 text-rose-600 border-rose-100"
+          : highlight.health === "At Risk"
+            ? "bg-amber-50 text-amber-600 border-amber-100"
+            : "bg-emerald-50 text-emerald-600 border-emerald-100";
+      healthTag.className = `mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${baseClass}`;
+      healthTag.textContent = highlight.health;
+      card.appendChild(healthTag);
+    }
+
+    wrapper.appendChild(card);
+
+    const stem = document.createElement("div");
+    stem.className = "h-4 w-px rounded-full bg-sky-400/70";
+    wrapper.appendChild(stem);
+
+    const anchor = document.createElement("div");
+    anchor.className = "h-2 w-2 rounded-full border border-white bg-sky-500";
+    wrapper.appendChild(anchor);
+
+    const marker = new maplibregl.Marker({ element: wrapper, anchor: "bottom" })
+      .setLngLat(highlight.coordinates)
+      .addTo(map);
+
+    calloutMarkersRef.current.push(marker);
+  });
 }
 
 function createLayer(
@@ -293,6 +416,19 @@ function createLayer(
     }
     case "point": {
       map.addLayer({
+        id: `${layerId}-halo`,
+        type: "circle",
+        source: sourceId,
+        paint: {
+          "circle-radius": 14,
+          "circle-color": adjustOpacity(layer.style.secondaryColor ?? layer.style.color, 0.35),
+          "circle-blur": 0.7,
+          "circle-opacity": 0.25,
+        },
+        metadata: { zIndex: zIndex * 2 },
+      });
+
+      map.addLayer({
         id: layerId,
         type: "circle",
         source: sourceId,
@@ -307,9 +443,10 @@ function createLayer(
             12,
           ],
           "circle-color": adjustOpacity(layer.style.color, 0.95),
-          "circle-opacity": 0.8,
-          "circle-stroke-color": adjustOpacity(layer.style.secondaryColor ?? "#ffffff", 0.85),
+          "circle-opacity": 0.85,
+          "circle-stroke-color": adjustOpacity(layer.style.secondaryColor ?? "#38bdf8", 0.85),
           "circle-stroke-width": 1.5,
+          "circle-stroke-opacity": 0.9,
           "circle-blur": 0.2,
         },
         metadata: { zIndex: zIndex * 2 + 1 },

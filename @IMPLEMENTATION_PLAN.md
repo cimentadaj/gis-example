@@ -11,15 +11,15 @@
    - Rebalance module switcher into crisp tab treatment with lighter, Notion/Apple-inspired surfaces.
    - Audit sidebar/footer spacing to preserve the airy, elegant hierarchy after the adjustments.
 
-2. **Spec Refresh – Spatial Storytelling** _(⏳ Pending)_
-   - Enrich the map overlays with clearer point emphasis and contextual analysis callouts per spec.
-   - Surface focused scenario narratives directly adjacent to the map to keep insights tangible.
-   - Ensure layer legends, spotlight, and KPI copy stay concise and real-world grounded.
+2. **Spec Refresh – Spatial Storytelling** _(✅ Completed)_
+   - Brightened the digital twin canvas with Notion-inspired surfaces and clarified the scenario framing around the map.
+   - Added AI hotspot callouts and inline narratives adjacent to the map to keep spatial insights contextual.
+   - Tightened layer legends, spotlight copy, and KPI summaries to stay concise and grounded in real operational language.
 
 3. **Experience Polish & QA** _(⏳ Pending)_
-   - Sweep typography, gradients, and muted backgrounds for a cleaner aesthetic aligned to Notion/Apple cues.
-   - Validate responsive breakpoints after refinements and remove any redundant visual noise.
-   - Re-run lint/build checks to guarantee a production-ready handoff.
+   - Extend the refreshed light visual system across the remaining modules (VLR, analytics, copilot) while avoiding clutter.
+   - Validate responsive breakpoints after the theme shift and smooth out any typography or spacing regressions.
+   - Re-run lint/build checks to guarantee a production-ready handoff once polish updates land.
 
 4. **Dashboard Shell & Navigation** _(✅ Completed)_
    - Replace the marketing layout with a Nexus-branded dashboard chrome: top intelligence bar, module navigation, and responsive grid system.
@@ -58,3 +58,4 @@
 - **2025-11-03**: Delivered the Nexus analytics studio with tabbed AI insight modules (forecast, resilience, anomalies, risk, explainability) featuring scoped filters, hover storytelling, and scenario-aware narratives.
 - **2025-11-03**: Launched the Nexus Copilot right rail with collapsible dock, scenario-aware conversations, mission decks, action recommendations, and governance audit trails synced to the active digital twin.
 - **2025-11-03**: Completed the polish pass with a compact top bar, module tab switcher, expanded sensor datasets, map spotlight narratives, and fully verified builds to showcase a production-ready Nexus dashboard.
+- **2025-11-03**: Refreshed the spatial storytelling module with a light-theme digital twin canvas, live AI hotspot markers, concise legends, and tightened KPI storytelling to align with the simplified GIS spec.

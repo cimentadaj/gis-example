@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
-  --background: 4 9 24;
-  --foreground: 233 243 255;
-  --surface: 10 18 42;
-  --surface-soft: 18 31 65;
-  --muted: 148 163 184;
+  color-scheme: light;
+  --background: 248 250 253;
+  --foreground: 30 41 59;
+  --surface: 255 255 255;
+  --surface-soft: 243 246 250;
+  --muted: 100 116 139;
 }
 
 @theme inline {
@@ -42,9 +42,11 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at top, rgba(37, 99, 235, 0.15), transparent 55%),
-    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.2), transparent 45%),
-    rgb(var(--background));
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 60%),
+    radial-gradient(circle at 15% 85%, rgba(110, 231, 183, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(165, 180, 252, 0.16), transparent 55%),
+    rgb(var(--surface-soft));
   color: rgb(var(--foreground));
   font-family: var(--font-geist-sans), "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   text-rendering: optimizeLegibility;
