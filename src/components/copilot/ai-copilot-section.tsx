@@ -16,9 +16,9 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
 import {
-  copilotConversation,
-  copilotMissions,
+  copilotMissionDeck,
   copilotModules,
+  copilotThreads,
   type CopilotMessage,
   type CopilotMission,
   type CopilotModule,
@@ -29,13 +29,15 @@ const moduleShadow =
   "shadow-[0_45px_120px_-65px_rgba(56,189,248,0.65)] border border-white/10 bg-surface/80";
 
 export function AiCopilotSection() {
-  const defaultKey = copilotModules[0]?.key ?? "mobility";
+  const defaultKey = copilotModules[0]?.key ?? "sdg-localization";
   const [activeKey, setActiveKey] = useState<CopilotModule["key"]>(defaultKey);
 
   const activeModule = useMemo(
     () => copilotModules.find((module) => module.key === activeKey) ?? copilotModules[0],
     [activeKey],
   );
+  const activeMessages = copilotThreads[activeKey] ?? copilotThreads[defaultKey] ?? [];
+  const activeMissions = copilotMissionDeck[activeKey] ?? copilotMissionDeck[defaultKey] ?? [];
 
   return (
     <Section id="copilot" className="pt-12">
@@ -49,8 +51,8 @@ export function AiCopilotSection() {
             Your digital chief of staff synchronizing every smart-city playbook.
           </h2>
           <p className="text-base leading-7 text-foreground/70">
-            Orchestrate multimodal responses, energy resilience, and climate readiness through a conversational
-            copilot that understands policy guardrails and narrates executive-ready stories on command.
+            Automate SDG localization, VLR submissions, and city profiling through a conversational copilot that
+            respects governance guardrails and delivers executive-ready storytelling on command.
           </p>
         </Reveal>
 
@@ -66,10 +68,10 @@ export function AiCopilotSection() {
 
           <div className="grid gap-6">
             <Reveal offset={28} delay={0.08}>
-              <ChatPanel messages={copilotConversation} />
+              <ChatPanel messages={activeMessages} />
             </Reveal>
             <Reveal offset={28} delay={0.16}>
-              <MissionDeck missions={copilotMissions} assurance={activeModule?.assurance} />
+              <MissionDeck missions={activeMissions} assurance={activeModule?.assurance} />
             </Reveal>
           </div>
         </div>

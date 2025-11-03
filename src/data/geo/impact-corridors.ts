@@ -1,25 +1,25 @@
 import type { FeatureCollection } from "@/data/geo/types";
 
-type MobilityProperties = {
-  corridor: string;
-  peakLoad: number;
-  offPeakLoad: number;
-  avgSpeedKph: number;
-  modeMix: { transit: number; micromobility: number; freight: number };
+type ImpactCorridorProperties = {
+  program: string;
+  sdgTarget: string;
+  impactScore: number;
+  stage: "Scaling" | "Pilot" | "Discovery";
+  leadAgency: string;
 };
 
-export const mobilityFlows: FeatureCollection<"LineString", MobilityProperties> = {
+export const impactCorridors: FeatureCollection<"LineString", ImpactCorridorProperties> = {
   type: "FeatureCollection",
-  name: "MobilityFlows",
+  name: "ImpactCorridors",
   features: [
     {
       type: "Feature",
       properties: {
-        corridor: "Skyloop Express",
-        peakLoad: 0.87,
-        offPeakLoad: 0.42,
-        avgSpeedKph: 38,
-        modeMix: { transit: 0.56, micromobility: 0.28, freight: 0.16 },
+        program: "Civic Learning Spine",
+        sdgTarget: "SDG 4.3 – Lifelong Learning Access",
+        impactScore: 0.91,
+        stage: "Scaling",
+        leadAgency: "Department of Learning Innovation",
       },
       geometry: {
         type: "LineString",
@@ -34,11 +34,11 @@ export const mobilityFlows: FeatureCollection<"LineString", MobilityProperties> 
     {
       type: "Feature",
       properties: {
-        corridor: "Harbor Connector",
-        peakLoad: 0.74,
-        offPeakLoad: 0.31,
-        avgSpeedKph: 26,
-        modeMix: { transit: 0.41, micromobility: 0.36, freight: 0.23 },
+        program: "Coastal Resilience Walk",
+        sdgTarget: "SDG 13.1 – Climate Preparedness",
+        impactScore: 0.84,
+        stage: "Pilot",
+        leadAgency: "Urban Coast Office",
       },
       geometry: {
         type: "LineString",
@@ -53,11 +53,11 @@ export const mobilityFlows: FeatureCollection<"LineString", MobilityProperties> 
     {
       type: "Feature",
       properties: {
-        corridor: "North Ridge Arterial",
-        peakLoad: 0.63,
-        offPeakLoad: 0.29,
-        avgSpeedKph: 32,
-        modeMix: { transit: 0.48, micromobility: 0.34, freight: 0.18 },
+        program: "Innovation Commons Stroll",
+        sdgTarget: "SDG 11.7 – Public Space Equity",
+        impactScore: 0.79,
+        stage: "Discovery",
+        leadAgency: "Civic Commons Lab",
       },
       geometry: {
         type: "LineString",

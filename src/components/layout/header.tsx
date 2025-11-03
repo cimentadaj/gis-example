@@ -26,7 +26,7 @@ export function Header() {
             <Sparkles className="h-5 w-5" />
           </span>
           <span className="text-base font-semibold leading-tight">
-            Aether<span className="text-primary-400">City</span>
+            Nexus<span className="text-primary-400"> Consulting</span>
           </span>
         </Link>
 

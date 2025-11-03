@@ -34,87 +34,101 @@ export type AnomalyCluster = {
 
 export const citywideKpis: SystemKpi[] = [
   {
-    id: "mobility-throughput",
-    label: "Mobility Throughput",
-    unit: "rides/day",
-    value: 128400,
-    change: { direction: "up", percentage: 12.4, period: "7 days" },
+    id: "sdg-alignment",
+    label: "SDG Alignment Rate",
+    unit: "% targets on track",
+    value: 68,
+    change: { direction: "up", percentage: 5.4, period: "quarter" },
   },
   {
-    id: "grid-resilience",
-    label: "Grid Resilience",
-    unit: "stability index",
+    id: "vlr-completion",
+    label: "VLR Completion",
+    unit: "% sections ready",
+    value: 78,
+    change: { direction: "up", percentage: 12.6, period: "week" },
+  },
+  {
+    id: "equity-gap-closure",
+    label: "Equity Gap Closure",
+    unit: "index",
+    value: 0.63,
+    change: { direction: "up", percentage: 8.1, period: "month" },
+  },
+  {
+    id: "assurance-health",
+    label: "Assurance Health",
+    unit: "% coverage",
     value: 92,
-    change: { direction: "up", percentage: 6.3, period: "30 days" },
+    change: { direction: "up", percentage: 3.2, period: "14 days" },
   },
   {
-    id: "incident-response",
-    label: "Incident Response",
-    unit: "minutes",
-    value: 11.4,
-    change: { direction: "down", percentage: 18.2, period: "quarter" },
+    id: "wellbeing-index",
+    label: "Wellbeing Index",
+    unit: "score",
+    value: 74,
+    change: { direction: "up", percentage: 4.7, period: "quarter" },
   },
   {
-    id: "air-quality-index",
-    label: "Air Quality Index",
-    unit: "AQI",
-    value: 41,
-    change: { direction: "down", percentage: 9.8, period: "month" },
+    id: "capital-readiness",
+    label: "Capital Readiness",
+    unit: "% pipeline funded",
+    value: 81,
+    change: { direction: "down", percentage: 3.1, period: "month" },
   },
 ];
 
 export const demandForecast: ForecastSeries = {
-  scenario: "mobility",
-  metric: "corridor-load",
+  scenario: "sdg-localization",
+  metric: "sdg-impact",
   horizon: "Next 24 Hours",
   points: [
-    { timestamp: "2025-11-03T08:00:00Z", value: 0.44 },
+    { timestamp: "2025-11-03T08:00:00Z", value: 0.46 },
     { timestamp: "2025-11-03T10:00:00Z", value: 0.58 },
     { timestamp: "2025-11-03T12:00:00Z", value: 0.72 },
-    { timestamp: "2025-11-03T14:00:00Z", value: 0.63 },
+    { timestamp: "2025-11-03T14:00:00Z", value: 0.66 },
     { timestamp: "2025-11-03T16:00:00Z", value: 0.81 },
-    { timestamp: "2025-11-03T18:00:00Z", value: 0.9 },
+    { timestamp: "2025-11-03T18:00:00Z", value: 0.88 },
     { timestamp: "2025-11-03T20:00:00Z", value: 0.76 },
-    { timestamp: "2025-11-03T22:00:00Z", value: 0.48 },
+    { timestamp: "2025-11-03T22:00:00Z", value: 0.52 },
   ],
 };
 
 export const resilienceForecast: ForecastSeries = {
-  scenario: "climate",
-  metric: "heat-index",
-  horizon: "Next 7 Days",
+  scenario: "city-profiling",
+  metric: "wellbeing-outlook",
+  horizon: "Next 6 Weeks",
   points: [
-    { timestamp: "2025-11-04", value: 32 },
-    { timestamp: "2025-11-05", value: 34 },
-    { timestamp: "2025-11-06", value: 31 },
-    { timestamp: "2025-11-07", value: 29 },
-    { timestamp: "2025-11-08", value: 27 },
-    { timestamp: "2025-11-09", value: 30 },
-    { timestamp: "2025-11-10", value: 33 },
+    { timestamp: "2025-11-04", value: 72 },
+    { timestamp: "2025-11-11", value: 73 },
+    { timestamp: "2025-11-18", value: 74 },
+    { timestamp: "2025-11-25", value: 72 },
+    { timestamp: "2025-12-02", value: 75 },
+    { timestamp: "2025-12-09", value: 77 },
+    { timestamp: "2025-12-16", value: 79 },
   ],
 };
 
 export const anomalyClusters: AnomalyCluster[] = [
   {
-    id: "mobility-aois",
-    cluster: "Downtown Transit Hub",
+    id: "sdg-green-schoolyards",
+    cluster: "Green Schoolyards Evidence Gap",
     severity: "moderate",
-    affectedAssets: 14,
-    expectedResolutionMinutes: 26,
+    affectedAssets: 6,
+    expectedResolutionMinutes: 34,
   },
   {
-    id: "energy-surge",
-    cluster: "Innovation Basin Microgrid",
+    id: "housing-dossier",
+    cluster: "Affordable Housing Dossier",
     severity: "high",
     affectedAssets: 9,
-    expectedResolutionMinutes: 38,
+    expectedResolutionMinutes: 42,
   },
   {
-    id: "air-quality-spike",
-    cluster: "Harbor District Sensor Array",
+    id: "climate-innovation",
+    cluster: "Innovation Basin Climate Packet",
     severity: "low",
-    affectedAssets: 6,
-    expectedResolutionMinutes: 15,
+    affectedAssets: 4,
+    expectedResolutionMinutes: 18,
   },
 ];
 
@@ -128,24 +142,24 @@ export type ModelPerformanceStat = {
 
 export const modelPerformanceStats: ModelPerformanceStat[] = [
   {
-    id: "mobility-mape",
-    metric: "Mobility Demand MAPE",
-    value: "5.2%",
-    change: "-1.4%",
-    tone: "down",
-  },
-  {
-    id: "energy-r2",
-    metric: "Energy Load R²",
-    value: "0.94",
-    change: "+0.03",
+    id: "narrative-quality",
+    metric: "Narrative Draft Quality",
+    value: "94%",
+    change: "+5%",
     tone: "up",
   },
   {
-    id: "incident-rmse",
-    metric: "Incident ETA RMSE",
-    value: "2.8 min",
-    change: "-0.6",
+    id: "evidence-match",
+    metric: "Evidence Match Rate",
+    value: "97%",
+    change: "+3%",
+    tone: "up",
+  },
+  {
+    id: "assurance-drift",
+    metric: "Assurance Drift",
+    value: "1.8%",
+    change: "-0.6%",
     tone: "down",
   },
 ];
@@ -161,89 +175,69 @@ export type ScenarioComparison = {
 
 export const scenarioComparisons: ScenarioComparison[] = [
   {
-    id: "mobility-vs-ai",
-    scenario: "Mobility",
-    baseline: 78,
-    optimized: 93,
-    unit: "corridor efficiency",
-    narrative: "Adaptive signal retiming + curb reprioritization",
+    id: "sdg-vs-ai",
+    scenario: "SDG Localization",
+    baseline: 62,
+    optimized: 78,
+    unit: "targets met",
+    narrative: "AI prioritization + community studio sprint",
   },
   {
-    id: "energy-vs-ai",
-    scenario: "Energy",
-    baseline: 74,
-    optimized: 90,
-    unit: "resilience buffer",
-    narrative: "Edge battery dispatch + predictive load shedding",
+    id: "vlr-vs-ai",
+    scenario: "VLR Automation",
+    baseline: 58,
+    optimized: 86,
+    unit: "sections ready",
+    narrative: "Evidence reconciliation + AI narratives",
   },
   {
-    id: "climate-vs-ai",
-    scenario: "Climate",
+    id: "city-vs-ai",
+    scenario: "City Profiling",
     baseline: 69,
-    optimized: 88,
-    unit: "risk mitigation score",
-    narrative: "Storm surge simulation + shelter orchestration",
-  },
-  {
-    id: "safety-vs-ai",
-    scenario: "Safety",
-    baseline: 81,
-    optimized: 95,
-    unit: "response readiness",
-    narrative: "Crowd density fusion + sentiment triage",
+    optimized: 83,
+    unit: "wellbeing index",
+    narrative: "Capital re-sequencing + wellbeing uplift",
   },
 ];
+
+export type RiskQuadrant = "SDG" | "VLR" | "Equity" | "Capital";
 
 export type RiskCell = {
   id: string;
   district: string;
-  quadrant: "Mobility" | "Energy" | "Climate" | "Safety";
+  quadrant: RiskQuadrant;
   score: number;
   driver: string;
 };
 
 export const riskCells: RiskCell[] = [
   {
-    id: "skyloop",
-    district: "Skyloop Express",
-    quadrant: "Mobility",
-    score: 0.82,
-    driver: "Evening rush surge",
+    id: "harbor-loop",
+    district: "Harbor Resilience Loop",
+    quadrant: "SDG",
+    score: 0.86,
+    driver: "SDG 13.1 climate adaptation surge",
   },
   {
     id: "innovation-basin",
-    district: "Innovation Basin",
-    quadrant: "Energy",
-    score: 0.91,
-    driver: "Microgrid overload risk",
-  },
-  {
-    id: "harbor-district",
-    district: "Harbor District",
-    quadrant: "Climate",
-    score: 0.76,
-    driver: "Storm surge exposure",
+    district: "Innovation Basin Studio",
+    quadrant: "VLR",
+    score: 0.79,
+    driver: "Evidence packets pending curator sign-off",
   },
   {
     id: "northern-commons",
-    district: "Northern Commons",
-    quadrant: "Safety",
-    score: 0.68,
-    driver: "Festival crowding",
+    district: "Northern Commons Network",
+    quadrant: "Equity",
+    score: 0.91,
+    driver: "Housing inclusion investments outperform forecast",
   },
   {
-    id: "eastside-ring",
-    district: "Eastside Ring",
-    quadrant: "Mobility",
-    score: 0.59,
-    driver: "Transit reliability dip",
-  },
-  {
-    id: "aerotropolis",
-    district: "Aerotropolis Hub",
-    quadrant: "Energy",
-    score: 0.73,
-    driver: "EV charging peaks",
+    id: "civic-spine",
+    district: "Civic Learning Spine",
+    quadrant: "Capital",
+    score: 0.74,
+    driver: "Capital drawdown pacing below target",
   },
 ];
 
@@ -255,18 +249,18 @@ export type ExplainabilitySnippet = {
 
 export const explainabilitySnippets: ExplainabilitySnippet[] = [
   {
-    id: "shap",
-    title: "SHAP feature cascade surfaced load drivers",
-    detail: "Demand spikes traced back to rideshare surge zones and ferry arrivals, aligning stakeholder intuition with model rationale.",
+    id: "sdg-traceability",
+    title: "Traceability links every claim to source evidence",
+    detail: "Each SDG statement in the narrative carries a deep link to its dataset, steward, and refresh timestamp.",
   },
   {
-    id: "confidence-bands",
-    title: "Confidence bands tighten after drift retraining",
-    detail: "Active learning loop ingests field telemetry every 45 minutes, keeping prediction variance under 7%.",
+    id: "fairness-monitor",
+    title: "Equity monitor enforces distributional guardrails",
+    detail: "Counterfactual tests confirm interventions do not widen the wellbeing gap for historically excluded districts.",
   },
   {
-    id: "policy-guardrails",
-    title: "Policy guardrails enforce equity thresholds",
-    detail: "Fairness constraints automatically rebalance interventions to prioritize historically underserved districts.",
+    id: "copilot-review",
+    title: "Copilot review mode captures human overrides",
+    detail: "City analysts annotate AI suggestions, training the model to respect local policy nuance without manual retraining.",
   },
 ];

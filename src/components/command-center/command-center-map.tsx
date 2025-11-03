@@ -301,7 +301,7 @@ function syncScenarioMarkers(
     const anomalyBadge = document.createElement("span");
     anomalyBadge.className =
       "inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-700";
-    anomalyBadge.textContent = `${Math.round(highlight.anomalyScore * 100)}% anomaly`;
+    anomalyBadge.textContent = `${Math.round(highlight.anomalyScore * 100)}% attention`;
     metaRow.appendChild(anomalyBadge);
 
     if (highlight.lastReadingMinutes !== null) {
@@ -313,18 +313,17 @@ function syncScenarioMarkers(
 
     card.appendChild(metaRow);
 
-    if (highlight.health) {
-      const healthTag = document.createElement("span");
-      const baseClass =
-        highlight.health === "Offline"
-          ? "bg-rose-50 text-rose-600 border-rose-100"
-          : highlight.health === "At Risk"
-            ? "bg-amber-50 text-amber-600 border-amber-100"
-            : "bg-emerald-50 text-emerald-600 border-emerald-100";
-      healthTag.className = `mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${baseClass}`;
-      healthTag.textContent = highlight.health;
-      card.appendChild(healthTag);
-    }
+    const state = highlight.health ?? "On Track";
+    const healthTag = document.createElement("span");
+    const baseClass =
+      state === "Delayed"
+        ? "bg-rose-50 text-rose-600 border-rose-100"
+        : state === "Watch"
+          ? "bg-amber-50 text-amber-600 border-amber-100"
+          : "bg-emerald-50 text-emerald-600 border-emerald-100";
+    healthTag.className = `mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${baseClass}`;
+    healthTag.textContent = state;
+    card.appendChild(healthTag);
 
     wrapper.appendChild(card);
 

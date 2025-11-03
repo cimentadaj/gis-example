@@ -1,25 +1,25 @@
 import type { FeatureCollection } from "@/data/geo/types";
 
-type ResilienceProperties = {
-  zone: string;
-  resilienceScore: number;
-  primaryRisk: "Flood" | "Heat" | "Power";
-  population: number;
-  adaptationPriority: "Immediate" | "Planned" | "Monitoring";
+type DistrictSnapshotProperties = {
+  district: string;
+  sdgComposite: number;
+  leadTheme: "Climate Adaptation" | "Housing Inclusion" | "Skills & Jobs";
+  householdsReached: number;
+  priority: "Accelerate" | "Stabilize" | "Monitor";
 };
 
-export const resilienceZones: FeatureCollection<"Polygon", ResilienceProperties> = {
+export const districtSnapshots: FeatureCollection<"Polygon", DistrictSnapshotProperties> = {
   type: "FeatureCollection",
-  name: "ResilienceZones",
+  name: "DistrictSnapshots",
   features: [
     {
       type: "Feature",
       properties: {
-        zone: "Harbor District",
-        resilienceScore: 0.82,
-        primaryRisk: "Flood",
-        population: 186000,
-        adaptationPriority: "Immediate",
+        district: "Harbor Resilience Loop",
+        sdgComposite: 0.86,
+        leadTheme: "Climate Adaptation",
+        householdsReached: 186000,
+        priority: "Accelerate",
       },
       geometry: {
         type: "Polygon",
@@ -37,11 +37,11 @@ export const resilienceZones: FeatureCollection<"Polygon", ResilienceProperties>
     {
       type: "Feature",
       properties: {
-        zone: "Innovation Basin",
-        resilienceScore: 0.67,
-        primaryRisk: "Power",
-        population: 94000,
-        adaptationPriority: "Planned",
+        district: "Innovation Basin Studio",
+        sdgComposite: 0.72,
+        leadTheme: "Skills & Jobs",
+        householdsReached: 94000,
+        priority: "Stabilize",
       },
       geometry: {
         type: "Polygon",
@@ -59,11 +59,11 @@ export const resilienceZones: FeatureCollection<"Polygon", ResilienceProperties>
     {
       type: "Feature",
       properties: {
-        zone: "Northern Commons",
-        resilienceScore: 0.9,
-        primaryRisk: "Heat",
-        population: 158000,
-        adaptationPriority: "Monitoring",
+        district: "Northern Commons Network",
+        sdgComposite: 0.9,
+        leadTheme: "Housing Inclusion",
+        householdsReached: 158000,
+        priority: "Monitor",
       },
       geometry: {
         type: "Polygon",

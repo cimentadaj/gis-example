@@ -105,28 +105,28 @@ const moduleNavigation = [
   {
     id: "digital-twin",
     label: "Digital Twin Canvas",
-    description: "Live city operations and anomaly scanning in the spatial twin.",
+    description: "Spatial SDG localization with live indicator stories and hotspots.",
     icon: MapIcon,
     accent: "from-sky-400/40 via-transparent to-sky-500/20",
   },
   {
     id: "vlr-workbench",
     label: "VLR Automation",
-    description: "AI-automated voluntary local review pipelines and compliance scoring.",
+    description: "AI-assembled voluntary local review pipelines and compliance scoring.",
     icon: Workflow,
     accent: "from-violet-400/35 via-transparent to-violet-500/15",
   },
   {
     id: "analytics",
-    label: "AI Analytics",
-    description: "Forecasts, risk posture, and performance lifts across scenarios.",
+    label: "AI Pipelines",
+    description: "Forecasts, evidence radar, and readiness insights across scenarios.",
     icon: LineChart,
     accent: "from-emerald-400/35 via-transparent to-emerald-500/15",
   },
   {
     id: "copilot",
     label: "Data Fabric",
-    description: "Automation health across cross-department feeds and AI guardrails.",
+    description: "Automation health across localization, VLR, and city profiling feeds.",
     icon: Layers,
     accent: "from-slate-400/35 via-transparent to-slate-500/15",
   },
@@ -143,45 +143,45 @@ const analyticsViews: Array<{
 }> = [
   {
     id: "forecast",
-    label: "Predictive Flow",
-    description: "AI vs baseline demand and throughput.",
+    label: "Indicator Momentum",
+    description: "AI vs manual SDG alignment lift.",
     icon: LineChart,
     accent: "from-sky-500/25 via-sky-400/10 to-sky-500/0",
   },
   {
     id: "resilience",
-    label: "Resilience Outlook",
-    description: "Climate and grid stability projections.",
+    label: "Wellbeing Outlook",
+    description: "Scenario projections for services and capital.",
     icon: ActivitySquare,
     accent: "from-emerald-500/25 via-emerald-400/10 to-emerald-500/0",
   },
   {
     id: "anomalies",
-    label: "Anomaly Radar",
-    description: "Cluster severity & triage velocity.",
+    label: "Evidence Radar",
+    description: "Cluster severity and steward triage velocity.",
     icon: AlertTriangle,
     accent: "from-amber-500/25 via-amber-400/10 to-amber-500/0",
   },
   {
     id: "risk",
-    label: "Risk Posture",
-    description: "District-level exposure scores.",
+    label: "Readiness Quadrants",
+    description: "District attention for SDG, VLR, equity, capital.",
     icon: ShieldCheck,
     accent: "from-indigo-500/25 via-indigo-400/10 to-indigo-500/0",
   },
   {
     id: "explainability",
-    label: "Explainability Lab",
-    description: "Narratives & governance tracking.",
+    label: "Transparency Lab",
+    description: "Narratives and governance tracking.",
     icon: Sparkles,
     accent: "from-rose-500/25 via-rose-400/10 to-rose-500/0",
   },
 ];
 
 const forecastScopeOptions = [
-  { id: "metro", label: "Metro Network" },
-  { id: "harbor", label: "Harbor District" },
-  { id: "innovation", label: "Innovation Basin" },
+  { id: "metro", label: "Citywide Portfolio" },
+  { id: "harbor", label: "Harbor Resilience Loop" },
+  { id: "innovation", label: "Innovation Basin Studio" },
 ] as const;
 
 type ForecastScope = (typeof forecastScopeOptions)[number]["id"];
@@ -195,8 +195,8 @@ const forecastScopeMultiplier: Record<ForecastScope, number> = {
 type ResilienceMode = "heat" | "grid";
 
 const resilienceModes: Array<{ id: ResilienceMode; label: string }> = [
-  { id: "heat", label: "Heat Stress" },
-  { id: "grid", label: "Grid Stability" },
+  { id: "heat", label: "Community Services" },
+  { id: "grid", label: "Capital Delivery" },
 ];
 
 const anomalySeverityBadgeTone: Record<AnomalyCluster["severity"], string> = {
@@ -225,33 +225,27 @@ type ScenarioInsightsPayload = {
 };
 
 const resiliencePlaybooks: Record<ScenarioKey, string[]> = {
-  mobility: [
-    "Adaptive signal retiming holds corridor saturation under 88% through peak commute.",
-    "Fleet reprioritization reserves 14% battery buffer for multimodal feeders.",
-    "Dynamic curb pricing keeps freight dwell time beneath 6 minutes.",
+  "sdg-localization": [
+    "Refresh SDG indicators below 0.6 progress and notify neighborhood stewards.",
+    "Blend census, civic feedback, and IoT layers into localized micro-briefs.",
+    "Escalate acceleration levers for Innovation Basin and Harbor Loop ahead of council.",
   ],
-  energy: [
-    "DER pre-charge builds a 23 MWh buffer before the evening surge.",
-    "Carbon-aware dispatch holds intensity below 280 gCO₂/kWh automatically.",
-    "Transformer stress triggers automated thermal relief sequencing.",
+  "vlr-automation": [
+    "Resolve evidence packets missing provenance before exporting the executive draft.",
+    "Map AI-generated narratives to SDG targets with human commentary injected.",
+    "Lock compliance attestations once governance and finance stewards approve.",
   ],
-  climate: [
-    "Storm surge barriers are staged across Harbor District piers within 3 hours.",
-    "Cooling center expansion increases safe capacity by 18% for vulnerable zones.",
-    "Hydro sensors feed automated evacuation overlays for coastal wards.",
-  ],
-  safety: [
-    "Crowd density monitors pre-empt festival overflow by 12 minutes.",
-    "Incident auto-plans hold emergency arrival times below 6 minutes.",
-    "Sentiment triage flags civic events requiring proactive outreach.",
+  "city-profiling": [
+    "Model wellbeing impact for each capital scenario and record decision trade-offs.",
+    "Surface districts where equity coverage slips under 0.8 and propose remedies.",
+    "Generate resident-ready story cards with sentiment, funding, and SDG tie-ins.",
   ],
 };
 
 const explainabilityHeadline: Record<ScenarioKey, string> = {
-  mobility: "Explainable AI keeps operators confident in multimodal moves.",
-  energy: "Transparency on load drivers maintains grid governance trust.",
-  climate: "Climate intelligence narrates why the twin escalates barriers.",
-  safety: "Safety mission threads show how AI reaches every field unit.",
+  "sdg-localization": "Explainable scoring shows how every SDG indicator earns its confidence badge.",
+  "vlr-automation": "Narrative transparency keeps VLR automation ready for governance review.",
+  "city-profiling": "Scenario intelligence proves where capital unlocks the biggest wellbeing lift.",
 };
 
 export default function Home() {
@@ -281,11 +275,7 @@ export default function Home() {
     throw new Error(`Scenario configuration missing for key: ${activeScenarioKey}`);
   }
 
-  const copilotScenarioKey = (
-    ["mobility", "energy", "climate", "safety"].includes(activeScenarioKey)
-      ? activeScenarioKey
-      : "mobility"
-  ) as CopilotScenarioKey;
+  const copilotScenarioKey = activeScenarioKey as CopilotScenarioKey;
 
   const copilotModule = copilotModuleIndex[copilotScenarioKey];
   const copilotConversation = copilotThreads[copilotScenarioKey];
@@ -872,15 +862,24 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
         }
 
         const properties = (feature.properties ?? {}) as Record<string, unknown>;
-        const anomalyScore =
-          typeof properties.anomalyScore === "number"
-            ? properties.anomalyScore
-            : typeof properties.peakLoad === "number"
-              ? properties.peakLoad
-              : 0;
-        const rawType =
-          typeof properties.type === "string" ? (properties.type as string) : (layer.label as string);
-        const sensorType = rawType.replace(/([a-z])([A-Z])/g, "$1 $2");
+        const progressIndex =
+          typeof properties.progressIndex === "number"
+            ? properties.progressIndex
+            : typeof properties.anomalyScore === "number"
+              ? 1 - Number(properties.anomalyScore)
+              : 0.5;
+        const attentionScore = Math.min(1, Math.max(0, 1 - progressIndex));
+        const indicatorLabel =
+          typeof properties.indicator === "string" ? (properties.indicator as string) : (layer.label as string);
+        const sdgTarget = typeof properties.sdgTarget === "string" ? (properties.sdgTarget as string) : null;
+        const sensorType = sdgTarget ? `${indicatorLabel} · ${sdgTarget}` : indicatorLabel;
+        const status = typeof properties.status === "string" ? (properties.status as string) : null;
+        const refreshMinutes =
+          typeof properties.refreshMinutesAgo === "number"
+            ? (properties.refreshMinutesAgo as number)
+            : typeof properties.lastReadingMinutesAgo === "number"
+              ? (properties.lastReadingMinutesAgo as number)
+              : null;
 
         highlights.push({
           id: String(properties.id ?? feature.id ?? `${layer.id}-${index}`),
@@ -888,10 +887,9 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
           sensorType,
           layerLabel: layer.label,
           district: typeof properties.district === "string" ? properties.district : null,
-          health: typeof properties.health === "string" ? properties.health : null,
-          anomalyScore,
-          lastReadingMinutes:
-            typeof properties.lastReadingMinutesAgo === "number" ? properties.lastReadingMinutesAgo : null,
+          health: status,
+          anomalyScore: attentionScore,
+          lastReadingMinutes: refreshMinutes,
           coordinates: [lng, lat],
         });
       });
@@ -1069,19 +1067,29 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
       .filter((feature) => feature.geometry?.type === "Point")
       .map((feature) => {
         const properties = (feature.properties ?? {}) as Record<string, unknown>;
-        const anomalyScore = typeof properties.anomalyScore === "number" ? properties.anomalyScore : 0;
-        const health = typeof properties.health === "string" ? properties.health : null;
-        const type = typeof properties.type === "string" ? properties.type : "Sensor";
+        const progressIndex =
+          typeof properties.progressIndex === "number"
+            ? properties.progressIndex
+            : typeof properties.anomalyScore === "number"
+              ? 1 - Number(properties.anomalyScore)
+              : 0.5;
+        const attentionScore = Math.min(1, Math.max(0, 1 - progressIndex));
+        const status = typeof properties.status === "string" ? (properties.status as string) : null;
+        const indicator =
+          typeof properties.indicator === "string" ? (properties.indicator as string) : layer.label;
+        const sdgTarget = typeof properties.sdgTarget === "string" ? (properties.sdgTarget as string) : null;
         const district = typeof properties.district === "string" ? properties.district : null;
         const id = typeof properties.id === "string" ? properties.id : layer.id;
 
         return {
           id,
           layerLabel: layer.label,
-          anomalyScore,
-          health,
+          attentionScore,
+          progressIndex,
+          status,
           district,
-          type,
+          indicator,
+          sdgTarget,
         };
       });
   });
@@ -1091,7 +1099,7 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
   }
 
   const topSpots = [...spotlightCandidates]
-    .sort((a, b) => (b.anomalyScore ?? 0) - (a.anomalyScore ?? 0))
+    .sort((a, b) => (b.attentionScore ?? 0) - (a.attentionScore ?? 0))
     .slice(0, 3);
 
   return (
@@ -1102,19 +1110,18 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
       </p>
       <div className="mt-4 space-y-3">
         {topSpots.map((spot) => {
-          const anomalyPercent = Math.round((spot.anomalyScore ?? 0) * 100);
           const statusClass =
-            spot.health === "Offline"
+            spot.status === "Delayed"
               ? "bg-rose-50 text-rose-600 border-rose-200"
-              : spot.health === "At Risk"
+              : spot.status === "Watch"
                 ? "bg-amber-50 text-amber-600 border-amber-200"
                 : "bg-emerald-50 text-emerald-600 border-emerald-200";
           const narrative =
-            spot.health === "Offline"
-              ? "Dispatch crew · feed offline in corridor spine"
-              : spot.health === "At Risk"
-                ? "Edge models escalate drift vs baseline threshold"
-                : "Signal steady · AI guardrail holding variance";
+            spot.status === "Delayed"
+              ? "Immediate steward action recommended."
+              : spot.status === "Watch"
+                ? "Monitor steward notes; AI flags emerging variance."
+                : "Indicator performing on plan.";
 
           return (
             <div
@@ -1123,20 +1130,22 @@ function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
             >
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  {spot.id} · {spot.type}
+                  {spot.indicator}
+                  {spot.sdgTarget ? ` · ${spot.sdgTarget}` : ""}
                 </p>
                 <p className="text-xs text-slate-500">
                   {spot.layerLabel}
-                  {spot.district ? ` • ${spot.district}` : ""} · {narrative}
+                  {spot.district ? ` · ${spot.district}` : ""}
                 </p>
+                <p className="mt-1 text-xs text-slate-500">{narrative}</p>
               </div>
               <div className="flex flex-col items-end gap-2">
-                <span className="text-xs font-semibold text-sky-600">{anomalyPercent}% anomaly</span>
-                {spot.health ? (
-                  <span className={cn("rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.3em]", statusClass)}>
-                    {spot.health}
-                  </span>
-                ) : null}
+                <span className="text-xs font-semibold text-sky-600">
+                  {(spot.progressIndex * 100).toFixed(0)}% progress
+                </span>
+                <span className={cn("rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.3em]", statusClass)}>
+                  {spot.status ?? "On Track"}
+                </span>
               </div>
             </div>
           );
@@ -1807,20 +1816,21 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scope</p>
                   <p className="mt-1 text-lg font-semibold text-slate-900">{scopeLabel}</p>
                   <p className="mt-2 text-sm text-foreground/65">
-                    Nexus factors ride-hail feeds, curb sensors, and micromobility staging to stabilise demand.
+                    Nexus blends indicator feeds, steward notes, and wellbeing sensors to explain district progress
+                    shifts before they surface in quarterly reviews.
                   </p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
-                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Current AI Throughput</p>
+                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Active AI Lift</p>
                     <p className="mt-1 text-2xl font-semibold text-slate-900">{aiPercent}%</p>
-                    <p className="text-xs text-sky-600">Signal retiming + fleet balancing</p>
+                    <p className="text-xs text-sky-600">Localization autoplan · steward alignment</p>
                   </div>
                   <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
-                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Legacy Baseline</p>
+                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Manual Baseline</p>
                     <p className="mt-1 text-2xl font-semibold text-slate-900">{baselinePercent}%</p>
-                    <p className="text-xs text-foreground/60">Pre-orchestration forecast</p>
+                    <p className="text-xs text-foreground/60">Human-led estimation</p>
                   </div>
                 </div>
 
@@ -1831,7 +1841,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   </p>
                   <p className="mt-2">
                     {scenario.aiInsights[0]?.detail ??
-                      "Operators receive proactive nudges when demand begins to drift beyond tolerance bands."}
+                      "Localization stewards receive nudges the moment indicator confidence drifts below guardrails."}
                   </p>
                 </div>
               </div>
@@ -1848,7 +1858,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-xl space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{activeViewConfig.label}</p>
-                <h3 className="text-lg font-semibold text-slate-900">{resilienceModeLabel} resilience outlook</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{resilienceModeLabel} wellbeing outlook</h3>
                 <p className="text-sm text-foreground/65">{scenario.tagline}</p>
               </div>
               <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
@@ -1872,8 +1882,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-emerald-600 shadow-[0_16px_50px_-38px_rgba(34,197,94,0.35)]">
                   Δ Lift
                   <p className="mt-1 text-2xl font-semibold text-emerald-700">
-                    {resilienceLift}
-                    {resilienceMode === "heat" ? "°C" : " pts"}
+                    {resilienceLift} pts
                   </p>
                 </div>
               </div>
@@ -2309,25 +2318,20 @@ const trendDescriptors: Record<DataFabricMetric["trend"], { label: string; tone:
 };
 
 const integrationPlaybooks: Record<ScenarioKey, string[]> = {
-  mobility: [
-    "Blend curb sensors, ticketing, and GTFS feeds into a single corridor view.",
-    "Flag gaps in live occupancy data before it hits demand forecasts.",
-    "Deliver a clean feed to fleet redispatch and VLR mobility indicators.",
+  "sdg-localization": [
+    "Unify census refreshes, community studios, and IoT feeds into indicator story packs.",
+    "Notify localization stewards when equity coverage dips under 0.8 in any district.",
+    "Publish SDG-ready datasets with provenance for the weekly council packet.",
   ],
-  energy: [
-    "Align substation load, DER dispatch, and outage tickets every 30 minutes.",
-    "Alert operators when carbon readings drift past the allowed window.",
-    "Publish a trusted dataset for the grid resilience chapter of the VLR.",
+  "vlr-automation": [
+    "Reconcile finance ledgers, climate disclosures, and policy notes every cycle.",
+    "Auto-assign assurance review whenever evidence lacks narrative context.",
+    "Seal compliance-ready exports with citation manifests and governance sign-offs.",
   ],
-  climate: [
-    "Merge tide gauges, weather radar, and shelter capacity for surge planning.",
-    "Highlight missing readings before adaptation scenarios are refreshed.",
-    "Push climate and equity inputs into the automated SDG summaries.",
-  ],
-  safety: [
-    "Fuse crowd density, incident logs, and social listening for situational awareness.",
-    "Escalate any outage in safety sensors within 10 minutes.",
-    "Stream verified metrics to the safety readiness section of the VLR.",
+  "city-profiling": [
+    "Blend wellbeing, budget pacing, and sentiment signals into a single investment view.",
+    "Flag neighborhoods where impact trajectories lag the capital roadmap.",
+    "Serve synchronized datasets to budget, design, and equity teams simultaneously.",
   ],
 };
 

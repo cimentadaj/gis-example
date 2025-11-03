@@ -1,11 +1,11 @@
 import { citywideKpis, demandForecast, resilienceForecast, anomalyClusters } from "@/data/metrics";
-import { mobilityFlows } from "@/data/geo/mobility-flows";
-import { resilienceZones } from "@/data/geo/resilience-zones";
-import { sensorNetwork } from "@/data/geo/sensor-network";
+import { impactCorridors } from "@/data/geo/impact-corridors";
+import { districtSnapshots } from "@/data/geo/district-snapshots";
+import { indicatorSites } from "@/data/geo/indicator-sites";
 import type { FeatureCollection, GeometryType } from "@/data/geo/types";
 import type { SystemKpi } from "@/data/metrics";
 
-export type ScenarioKey = "mobility" | "energy" | "climate" | "safety";
+export type ScenarioKey = "sdg-localization" | "vlr-automation" | "city-profiling";
 
 export type ScenarioSignal = {
   label: string;
@@ -57,205 +57,172 @@ function selectKpis(ids: string[]): SystemKpi[] {
 }
 
 const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
-  mobility: {
-    key: "mobility",
-    name: "Mobility Flow Optimization",
-    tagline: "Predictive demand, multimodal orchestration, and equitable curb space.",
+  "sdg-localization": {
+    key: "sdg-localization",
+    name: "SDG Localization Twin",
+    tagline: "District-level SDG progress blending equity signals with live evidence feeds.",
     narrative:
-      "AI agents fuse real-time feeds from transit turnstiles, ride-hail APIs, and curbside sensors to choreograph fleets across the city. Dynamic congestion pricing, micro-mobility balancing, and rapid incident triage keep riders moving.",
-    command: "Stabilize downtown rush-hour throughput without triggering emissions penalties.",
+      "Nexus fuses census refreshes, participatory budgeting inputs, and IoT observatories to map how SDG targets land street-by-street. Automated insights highlight districts slipping behind before the next quarterly briefing.",
+    command: "Prioritize districts that need SDG acceleration ahead of the mayoral check-in.",
     liveSignals: [
-      { label: "Congestion", value: "Moderate", delta: "-12%", tone: "positive" },
-      { label: "Energy Load", value: "High", delta: "+5%", tone: "warning" },
-      { label: "Air Quality", value: "Stable", delta: "+2%", tone: "positive" },
+      { label: "Targets On Track", value: "68%", delta: "+5%", tone: "positive" },
+      { label: "Equity Gap", value: "Moderate", delta: "-7%", tone: "positive" },
+      { label: "Data Freshness", value: "98%", delta: "+3%", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Adaptive signal timing suggests a 9% queue reduction along Skyloop Express.",
-        detail: "Edge models detected platoon drift at two arterial intersections; re-timing is estimated to shave 3.5 minutes off peak commute.",
-        confidence: 0.88,
+        title: "Innovation Basin Studio lags on SDG 4.3 despite new training pods.",
+        detail: "Cohort completion sits 11 points under target; AI recommends deploying mobile workshop units and micro-credential campaigns within 10 days.",
+        confidence: 0.87,
       },
       {
-        title: "Dynamic curb pricing curbs freight stalling in the Harbor Connector.",
-        detail: "Freight compliance climbs to 94% when a surge fee is applied for 45 minutes; reroute suggestions keep micromobility lanes uncongested.",
+        title: "Harbor Resilience Loop can hit SDG 13.1 ahead of schedule.",
+        detail: "Climate adaptation projects deliver 340 households beyond plan; pitch this as a headline outcome in the VLR narrative.",
         confidence: 0.79,
       },
     ],
-    kpis: selectKpis(["mobility-throughput", "incident-response"]),
+    kpis: selectKpis(["sdg-alignment", "equity-gap-closure"]),
     layers: [
       {
-        id: "corridor-flows",
-        label: "Corridor Load vs Capacity",
-        legend: "Line width and glow intensity represent corridor stress during peak windows.",
-        visualization: "flow",
-        dataset: mobilityFlows as unknown as GenericFeatureCollection,
-        style: { color: "#38bdf8", secondaryColor: "#0ea5e9", intensity: 0.85 },
+        id: "district-sdg-composite",
+        label: "District SDG Composite",
+        legend: "Polygons shaded by composite SDG readiness and equity lift.",
+        visualization: "choropleth",
+        dataset: districtSnapshots as unknown as GenericFeatureCollection,
+        style: { color: "#38bdf8", secondaryColor: "#0ea5e9", intensity: 0.78 },
       },
       {
-        id: "traffic-sensors",
-        label: "Traffic Sensor Health",
-        legend: "Node pulses highlight anomaly scores and hardware status.",
+        id: "indicator-observatories",
+        label: "Indicator Observatories",
+        legend: "Pulsing sites surface indicators trending off target.",
         visualization: "point",
-        dataset: sensorNetwork as unknown as GenericFeatureCollection,
-        style: { color: "#f97316", intensity: 0.6 },
+        dataset: indicatorSites as unknown as GenericFeatureCollection,
+        style: { color: "#7c3aed", secondaryColor: "#a855f7", intensity: 0.62 },
+      },
+      {
+        id: "impact-corridors",
+        label: "Impact Corridors",
+        legend: "Activations highlight live programs accelerating SDG delivery.",
+        visualization: "flow",
+        dataset: impactCorridors as unknown as GenericFeatureCollection,
+        style: { color: "#0ea5e9", secondaryColor: "#22d3ee", intensity: 0.7 },
       },
     ],
     actions: [
-      "Activate adaptive signal pack for Skyloop Express and sync with micromobility feed.",
-      "Notify curbside freight operators; recommend staging shift to Innovation Basin before 18:00.",
-      "Push demand forecast overlay to command wall for joint operations briefing.",
+      "Publish SDG 11 micro-brief with resolved gaps for Innovation Basin Studio.",
+      "Escalate Civic Learning Spine success story into the VLR storytelling track.",
+      "Trigger community studio invite for Care Corridor Spine stakeholders.",
     ],
   },
-  energy: {
-    key: "energy",
-    name: "Energy Resilience Balancing",
-    tagline: "Grid-aware microgrids, DER orchestration, and carbon-aware dispatch.",
+  "vlr-automation": {
+    key: "vlr-automation",
+    name: "VLR Automation Console",
+    tagline: "AI assembles evidence, drafts narratives, and flags compliance gaps for the next submission.",
     narrative:
-      "Machine learning forecasts align district loads with distributed energy resources. The platform identifies cascading outages before they materialize and choreographs battery assets to keep critical services online.",
-    command: "Maintain substation margins while keeping carbon intensity below 280 gCO₂/kWh.",
+      "Digital pipelines pull finance, sustainability, and community feedback sources into a governed workspace. Draft sections, evidence tables, and assurance checks update continuously as new data flows in.",
+    command: "Lock the VLR executive summary by Friday with clear SDG wins and remediation paths.",
     liveSignals: [
-      { label: "Substation Margin", value: "Safe", delta: "+8%", tone: "positive" },
-      { label: "Carbon Intensity", value: "272 gCO₂", delta: "-6%", tone: "positive" },
-      { label: "Microgrid Status", value: "Alerted", delta: "+1", tone: "warning" },
+      { label: "Sections Drafted", value: "7 / 9", delta: "+2", tone: "positive" },
+      { label: "Evidence Confidence", value: "92%", delta: "+6%", tone: "positive" },
+      { label: "Assurance Flags", value: "Low", delta: "-3", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Thermal storage pre-charge recommended in Harbor District.",
-        detail: "Temperature anomaly clusters align with demand spikes at 19:00; 11% cost avoidance projected with early charge.",
+        title: "Narrative engine recommends elevating SDG 11.7 public space upgrades.",
+        detail: "Auto-summarized testimony from citizens in the Civic Commons Lab strengthens the story and aligns with council priorities.",
         confidence: 0.83,
       },
       {
-        title: "Innovation Basin microgrid is trending toward brownout.",
-        detail: "Transformer load forecast breaches 92% in 45 minutes; dispatch hybrid generators to maintain service.",
+        title: "Compliance bot spotted metadata gaps in SDG 9.1 evidence packets.",
+        detail: "Two corridor programs lack geotagged invoices; automation can reconcile with the finance API in 14 minutes once authorized.",
         confidence: 0.9,
       },
     ],
-    kpis: selectKpis(["grid-resilience", "air-quality-index"]),
+    kpis: selectKpis(["vlr-completion", "assurance-health"]),
     layers: [
       {
-        id: "resilience-cells",
-        label: "District Resilience Scores",
-        legend: "Choropleth shading communicates climate resilience readiness.",
-        visualization: "choropleth",
-        dataset: resilienceZones as unknown as GenericFeatureCollection,
-        style: { color: "#14b8a6", secondaryColor: "#0f766e", intensity: 0.7 },
+        id: "evidence-corridors",
+        label: "Evidence Corridors",
+        legend: "Flow intensity shows program evidence feeding the VLR workspace.",
+        visualization: "flow",
+        dataset: impactCorridors as unknown as GenericFeatureCollection,
+        style: { color: "#14b8a6", secondaryColor: "#22c55e", intensity: 0.68 },
       },
       {
-        id: "power-sensors",
-        label: "Critical Power Sensors",
-        legend: "Pulsing nodes surfaced when anomaly score exceeds 0.6.",
+        id: "evidence-sites",
+        label: "Evidence Sites",
+        legend: "Nodes pulse when indicator packets need curator review.",
         visualization: "point",
-        dataset: sensorNetwork as unknown as GenericFeatureCollection,
-        style: { color: "#facc15", intensity: 0.65 },
+        dataset: indicatorSites as unknown as GenericFeatureCollection,
+        style: { color: "#f97316", secondaryColor: "#fb923c", intensity: 0.58 },
       },
     ],
     actions: [
-      "Dispatch DER fleet pre-charge for Innovation Basin before 18:45.",
-      "Notify hospitals on Harbor District channel about potential load shedding sequence.",
-      "Initiate automated carbon offset swap to keep intensity below target.",
+      "Route SDG 9.1 packet reconciliation to automation queue and notify finance steward.",
+      "Approve AI narrative draft for SDG 11.7 and push to executive summary.",
+      "Trigger cross-team review for Care Corridor Spine health access indicator.",
     ],
   },
-  climate: {
-    key: "climate",
-    name: "Climate Resilience Index",
-    tagline: "Early warning on heat, flooding, and storm surge for vulnerable districts.",
+  "city-profiling": {
+    key: "city-profiling",
+    name: "City Profiling Studio",
+    tagline: "Urban digital twin compares investment pathways and wellbeing outcomes at district scale.",
     narrative:
-      "Digital twin simulations ingest hyperlocal weather, tidal sensors, and satellite imagery to quantify exposure and guide proactive adaptation projects.",
-    command: "Quantify and mitigate climate risk for coastal communities ahead of incoming storm front.",
+      "Scenario engine blends demographic trends, capital plans, and community sentiment to prioritize regeneration investments. AI surfaces which levers move the wellbeing index without overspending.",
+    command: "Select the next three districts for regeneration funding before council vote.",
     liveSignals: [
-      { label: "Flood Probability", value: "Elevated", delta: "+9%", tone: "warning" },
-      { label: "Heat Index", value: "32°C", delta: "+3°C", tone: "warning" },
-      { label: "Shelter Capacity", value: "Adequate", delta: "+5%", tone: "positive" },
+      { label: "Wellbeing Index", value: "74 / 100", delta: "+4", tone: "positive" },
+      { label: "Capital Utilization", value: "81%", delta: "-3%", tone: "warning" },
+      { label: "Community Sentiment", value: "Optimistic", delta: "+2%", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Storm surge overlay highlights Harbor District vulnerabilities.",
-        detail: "Projected inundation depth exceeds 0.6m across Pier 6; deploy temporary barriers within 3 hours.",
-        confidence: 0.92,
+        title: "Northern Commons Network shows strongest wellbeing lift per dollar.",
+        detail: "A $14M streetscape bundle moves the wellbeing index by 6 points while cutting displacement risk by 18%.",
+        confidence: 0.88,
       },
       {
-        title: "Cooling center load expected to exceed safe capacity by 18%.",
-        detail: "Recommend extending hours at Innovation Basin community nodes and alerting vulnerable populations.",
+        title: "Harbor Resilience Loop needs supplemental funding for shoreline access.",
+        detail: "Equity model warns SDG 11.7 progress plateaus without an additional $4.2M in inclusive design upgrades.",
         confidence: 0.76,
       },
     ],
-    kpis: selectKpis(["grid-resilience", "incident-response"]),
+    kpis: selectKpis(["wellbeing-index", "capital-readiness"]),
     layers: [
       {
-        id: "resilience-gradient",
-        label: "Resilience Gradient",
-        legend: "Zones shaded by adaptive capacity to climate threats.",
+        id: "profile-districts",
+        label: "District Profiles",
+        legend: "Choropleth shading reflects the composite wellbeing index.",
         visualization: "choropleth",
-        dataset: resilienceZones as unknown as GenericFeatureCollection,
-        style: { color: "#6366f1", secondaryColor: "#a855f7", intensity: 0.8 },
+        dataset: districtSnapshots as unknown as GenericFeatureCollection,
+        style: { color: "#a855f7", secondaryColor: "#6366f1", intensity: 0.74 },
       },
       {
-        id: "environmental-sensors",
-        label: "Environment Sensors",
-        legend: "Air quality and heat stress monitors pulsing as anomalies emerge.",
-        visualization: "point",
-        dataset: sensorNetwork as unknown as GenericFeatureCollection,
-        style: { color: "#22d3ee", intensity: 0.55 },
-      },
-    ],
-    actions: [
-      "Activate floodgate drill along Harbor District piers.",
-      "Update climate risk dashboard with fresh resilience forecast outputs.",
-      "Coordinate cooling center staffing for Northern Commons neighborhoods.",
-    ],
-  },
-  safety: {
-    key: "safety",
-    name: "Public Safety Fusion",
-    tagline: "Unified command across emergency response, crowd safety, and situational awareness.",
-    narrative:
-      "Machine vision, NLP incident parsing, and social listening unify the intelligence picture. Response teams receive AI-curated playbooks with equity-aware deployment suggestions.",
-    command: "Stabilize festival crowds while preserving response readiness citywide.",
-    liveSignals: [
-      { label: "Response Readiness", value: "Optimal", delta: "+4%", tone: "positive" },
-      { label: "Crowd Density", value: "High", delta: "+11%", tone: "warning" },
-      { label: "Incident Volume", value: "Low", delta: "-6%", tone: "positive" },
-    ],
-    aiInsights: [
-      {
-        title: "Festival ingress lanes trending toward overcapacity.",
-        detail: "Recommend geo-fencing micromobility drop zones and dispatching extra med units to Sector B.",
-        confidence: 0.84,
-      },
-      {
-        title: "Social sentiment suggests misinformation spike near Innovation Basin.",
-        detail: "Deploy rapid messaging and coordinate with public information officers to stabilize sentiment.",
-        confidence: 0.7,
-      },
-    ],
-    kpis: selectKpis(["incident-response", "mobility-throughput"]),
-    layers: [
-      {
-        id: "sensor-health",
-        label: "Sensor Health Watchlist",
-        legend: "Offline or degraded sensors surface for technician routing.",
-        visualization: "point",
-        dataset: sensorNetwork as unknown as GenericFeatureCollection,
-        style: { color: "#ef4444", intensity: 0.75 },
-      },
-      {
-        id: "movement-corridors",
-        label: "Movement Corridors",
-        legend: "Dynamic flows track ingress/egress to critical venues.",
+        id: "investment-corridors",
+        label: "Investment Corridors",
+        legend: "Flows indicate prioritized capital programs and reach.",
         visualization: "flow",
-        dataset: mobilityFlows as unknown as GenericFeatureCollection,
-        style: { color: "#f472b6", secondaryColor: "#fb7185", intensity: 0.7 },
+        dataset: impactCorridors as unknown as GenericFeatureCollection,
+        style: { color: "#38bdf8", secondaryColor: "#22d3ee", intensity: 0.65 },
+      },
+      {
+        id: "wellbeing-sentinels",
+        label: "Wellbeing Sentinels",
+        legend: "Sites pulse when wellbeing indicators deviate from forecast.",
+        visualization: "point",
+        dataset: indicatorSites as unknown as GenericFeatureCollection,
+        style: { color: "#22c55e", secondaryColor: "#4ade80", intensity: 0.6 },
       },
     ],
     actions: [
-      "Stage rapid response pod near Sector B with shared situational feed.",
-      "Synchronize social sentiment insights with public communications team.",
-      "Lock in drone corridor for aerial thermal scans every 15 minutes.",
+      "Advance Northern Commons streetscape bundle to council pipeline.",
+      "Draft community feedback brief for Harbor Resilience Loop shoreline upgrades.",
+      "Share wellbeing uplift scenarios with budget office for funding alignment.",
     ],
   },
 };
 
-export const defaultScenarioKey: ScenarioKey = "mobility";
+export const defaultScenarioKey: ScenarioKey = "sdg-localization";
 
 export function listScenarioSummaries() {
   return Object.values(scenarioRegistry).map((scenario) => ({

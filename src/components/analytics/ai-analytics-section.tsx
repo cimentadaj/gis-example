@@ -165,9 +165,9 @@ function ForecastCard({
         <div>
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
             <Sparkles className="h-3.5 w-3.5 text-primary-200" />
-            Demand Forecast
+            SDG Momentum Forecast
           </p>
-          <h3 className="mt-2 text-lg font-semibold text-white">Mobility corridor orchestration</h3>
+          <h3 className="mt-2 text-lg font-semibold text-white">Indicator uplift trajectory</h3>
           <p className="mt-1 text-xs uppercase tracking-[0.3em] text-foreground/50">{horizon}</p>
         </div>
         <div className="rounded-2xl border border-primary-400/40 bg-primary-500/10 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-primary-100">
@@ -180,8 +180,8 @@ function ForecastCard({
       </div>
 
       <p className="mt-4 text-sm leading-6 text-foreground/70">
-        Adaptive routing predicts corridor load shifts 90 minutes ahead of the grid and rebalances fleets before
-        commuters feel the friction.
+        Nexus blends census refreshes, civic studio transcripts, and live IoT observatories to project SDG indicator lift
+        hours before manual teams could respond. Localization leads see where to double down and where to intervene.
       </p>
 
       <div className="mt-6 h-64">
@@ -205,7 +205,7 @@ function ForecastCard({
               cursor={{ stroke: "rgba(56,189,248,0.35)", strokeWidth: 1.5 }}
               contentStyle={tooltipStyle}
               formatter={(value: number, name: string) => {
-                const label = name === "ai" ? "AI Orchestrated" : "Baseline";
+                const label = name === "ai" ? "AI Plan" : "Manual Baseline";
                 return [`${(value * 100).toFixed(0)}%`, label];
               }}
             />
@@ -244,9 +244,9 @@ function AnomalyRadarCard({
         <div>
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
             <ActivitySquare className="h-3.5 w-3.5 text-accent-200" />
-            Anomaly Radar
+            Evidence Readiness Radar
           </p>
-          <h3 className="mt-2 text-lg font-semibold text-white">Sensor fusion severity lens</h3>
+          <h3 className="mt-2 text-lg font-semibold text-white">Signal priority across SDG indicators</h3>
         </div>
         <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
           Updated 2m ago
@@ -254,7 +254,8 @@ function AnomalyRadarCard({
       </div>
 
       <p className="mt-4 text-sm leading-6 text-foreground/70">
-        High-signal clusters bubble to the top so response teams can redeploy assets before thresholds are breached.
+        AI ranks indicator clusters by confidence gaps so localization teams can focus steward energy where evidence is
+        weakest and compliance deadlines loom.
       </p>
 
       <div className="mt-6 h-64">
@@ -374,8 +375,8 @@ function ResilienceCard({
             <Tooltip
               contentStyle={tooltipStyle}
               formatter={(value: number, name: string) => {
-                const label = name === "ai" ? "AI Forecast" : "Legacy Trend";
-                return [`${value.toFixed(1)}°C`, label];
+                const label = name === "ai" ? "AI Outlook" : "Legacy Trend";
+                return [`${value.toFixed(1)} pts`, label];
               }}
             />
             <Area
@@ -399,8 +400,8 @@ function ResilienceCard({
       </div>
 
       <p className="mt-4 text-xs leading-5 text-foreground/60">
-        Digital twin ensembles stress-test grid and climate scenarios every hour. AI recommends pre-cooling
-        schedules and community alerts while keeping carbon intensity compliant.
+        Wellbeing ensembles compare council investment options against lived outcomes. AI recommends where to inject
+        capital, unlock community programmes, or adjust pacing while keeping equity commitments intact.
       </p>
     </CardShell>
   );
@@ -427,7 +428,8 @@ function RiskHeatmapCard({
         </span>
       </div>
       <p className="mt-4 text-sm leading-6 text-foreground/70">
-        District-by-district readiness index blends mobility, energy, climate, and safety signals into one glance.
+        District readiness blends SDG momentum, VLR progress, equity coverage, and capital pacing so leadership can see
+        where to intervene next.
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -670,10 +672,10 @@ type AnomalyClusterSeverity = (typeof anomalyClusters)[number]["severity"];
 
 function scoreToGradient(score: number, quadrant: RiskCell["quadrant"]) {
   const palette: Record<RiskCell["quadrant"], [string, string]> = {
-    Mobility: ["rgba(56,189,248,0.55)", "rgba(56,189,248,0.15)"],
-    Energy: ["rgba(16,185,129,0.6)", "rgba(16,185,129,0.12)"],
-    Climate: ["rgba(168,85,247,0.55)", "rgba(168,85,247,0.15)"],
-    Safety: ["rgba(244,114,182,0.55)", "rgba(244,114,182,0.18)"],
+    SDG: ["rgba(14,165,233,0.55)", "rgba(14,165,233,0.15)"],
+    VLR: ["rgba(59,130,246,0.55)", "rgba(59,130,246,0.15)"],
+    Equity: ["rgba(244,114,182,0.55)", "rgba(244,114,182,0.18)"],
+    Capital: ["rgba(16,185,129,0.6)", "rgba(16,185,129,0.12)"],
   };
 
   const [start, end] = palette[quadrant];

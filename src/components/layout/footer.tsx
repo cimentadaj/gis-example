@@ -19,7 +19,7 @@ export function Footer() {
     <footer className="relative border-t border-white/10 bg-gradient-to-b from-transparent via-white/5 to-white/10">
       <Container className="flex flex-col gap-8 py-10 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary-300">AetherCity Intelligence</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary-300">Nexus Consulting</p>
           <p className="mt-3 max-w-md text-sm text-foreground/70">
             Designing human-centric, AI-powered infrastructure for the resilient cities of tomorrow.
           </p>
@@ -50,7 +50,7 @@ export function Footer() {
       </Container>
       <div className="border-t border-white/5">
         <Container className="flex flex-col gap-2 py-6 text-xs text-foreground/50 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} AetherCity Intelligence. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Nexus Consulting. All rights reserved.</span>
           <span>Designed for visionary smart-city leaders and urban innovation labs.</span>
         </Container>
       </div>

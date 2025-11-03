@@ -54,7 +54,7 @@ export const heroContent = {
   eyebrow: "City-Scale AI",
   headline: "The intelligence layer cities trust to choreograph the future.",
   subheadline:
-    "AetherCity fuses GIS, machine learning, and digital twins into a single pane of glass. Anticipate disruptions, orchestrate multi-agency response, and optimize urban systems before issues surface.",
+    "Nexus Consulting fuses GIS, machine learning, and digital twins into a single pane of glass. Anticipate disruptions, orchestrate multi-agency response, and optimize urban systems before issues surface.",
   primaryCta: {
     label: "Book an Immersive Demo",
     href: "#demo",
@@ -178,7 +178,7 @@ export const testimonialVoices: TestimonialVoice[] = [
     title: "Chief Resilience Officer",
     organization: "Ajuntament de Barcelona",
     quote:
-      "AetherCity synchronized our flood, heat, and mobility twins into a scenario war room so every agency aligned on the same forecast.",
+      "Nexus Consulting synchronized our flood, heat, and mobility twins into a scenario war room so every agency aligned on the same forecast.",
     cityFocus: "Barcelona Climate Pact",
     avatarInitials: "ET",
   },
