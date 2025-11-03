@@ -65,6 +65,7 @@ import {
   type DataFabricMetric,
   type DataQualityAlertSeverity,
 } from "@/data/integration";
+import { capabilityPillars, type CapabilityPillar } from "@/data/capabilities";
 import {
   copilotAuditLog,
   copilotMissionDeck,
@@ -842,6 +843,7 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
   const topSignals = insights.signals.slice(0, 3);
   const topKpis = scenario.kpis.slice(0, 2);
   const priorityActions = insights.actions.slice(0, 3);
+  const capabilityCards = capabilityPillars[scenario.key] ?? [];
   const spatialHighlights = useMemo<SpatialHighlight[]>(() => {
     const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
     const highlights: SpatialHighlight[] = [];
@@ -942,6 +944,8 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
         <p className="mt-3 text-slate-700">{scenario.narrative}</p>
       </div>
 
+      <CapabilityGrid pillars={capabilityCards} />
+
       <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
         <div className="space-y-5">
           <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_55px_-38px_rgba(15,23,42,0.2)]">
@@ -993,6 +997,59 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
           <ActionQueueCard actions={priorityActions} />
         </div>
       </div>
+    </div>
+  );
+}
+
+const capabilityIconMeta: Record<
+  CapabilityPillar["kind"],
+  { icon: LucideIcon; accent: string }
+> = {
+  ai: { icon: BrainCircuit, accent: "border-sky-200 bg-sky-50 text-sky-600" },
+  gis: { icon: MapIcon, accent: "border-emerald-200 bg-emerald-50 text-emerald-600" },
+  fabric: { icon: Layers, accent: "border-violet-200 bg-violet-50 text-violet-600" },
+  twin: { icon: Workflow, accent: "border-amber-200 bg-amber-50 text-amber-600" },
+};
+
+function CapabilityGrid({ pillars }: { pillars: CapabilityPillar[] }) {
+  if (!pillars.length) {
+    return null;
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {pillars.map((pillar) => (
+        <CapabilityCard key={pillar.id} pillar={pillar} />
+      ))}
+    </div>
+  );
+}
+
+function CapabilityCard({ pillar }: { pillar: CapabilityPillar }) {
+  const meta = capabilityIconMeta[pillar.kind];
+  const Icon = meta.icon;
+
+  return (
+    <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_16px_48px_-36px_rgba(15,23,42,0.18)] transition-shadow">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{pillar.label}</p>
+          <p className="mt-2 text-sm font-semibold text-slate-900">{pillar.title}</p>
+        </div>
+        <span
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-2xl border text-slate-600",
+            meta.accent,
+          )}
+        >
+          <Icon className="h-5 w-5" />
+        </span>
+      </div>
+      <div className="mt-4 flex items-baseline gap-3">
+        <p className="text-2xl font-semibold text-slate-900">{pillar.metric}</p>
+        <p className="text-xs text-slate-500">{pillar.metricLabel}</p>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-600">{pillar.narrative}</p>
     </div>
   );
 }
