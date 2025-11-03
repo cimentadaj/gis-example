@@ -21,6 +21,35 @@ type SuccessStory = {
   metric: string;
 };
 
+type TestimonialVoice = {
+  name: string;
+  title: string;
+  organization: string;
+  quote: string;
+  cityFocus: string;
+  avatarInitials: string;
+};
+
+type CallToActionContent = {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  bullets: string[];
+  primaryCta: {
+    label: string;
+    href: string;
+  };
+  secondaryCta: {
+    label: string;
+    href: string;
+  };
+  metrics: {
+    label: string;
+    value: string;
+    detail: string;
+  }[];
+};
+
 export const heroContent = {
   eyebrow: "City-Scale AI",
   headline: "The intelligence layer cities trust to choreograph the future.",
@@ -140,5 +169,72 @@ export const credibilitySignals = {
     { name: "SkyMetro Mobility Exchange", logo: Sparkles },
     { name: "UrbanFlux Energy Systems", logo: Map },
     { name: "CivicSentinel Trust", logo: ShieldCheck },
+  ],
+};
+
+export const testimonialVoices: TestimonialVoice[] = [
+  {
+    name: "Elena Torres",
+    title: "Chief Resilience Officer",
+    organization: "Ajuntament de Barcelona",
+    quote:
+      "AetherCity synchronized our flood, heat, and mobility twins into a scenario war room so every agency aligned on the same forecast.",
+    cityFocus: "Barcelona Climate Pact",
+    avatarInitials: "ET",
+  },
+  {
+    name: "Malik Henderson",
+    title: "Director of Urban Systems Lab",
+    organization: "Portland Bureau of Planning & Sustainability",
+    quote:
+      "We compress week-long analytics into live executive briefings with explainable AI guardrails that satisfy both council and chief data officers.",
+    cityFocus: "Portland Circular Mobility",
+    avatarInitials: "MH",
+  },
+  {
+    name: "Sakura Imai",
+    title: "Smart Region Strategist",
+    organization: "Tokyo Metropolitan Government",
+    quote:
+      "Across rail, energy, and emergency services we unlocked a single predictive command center that keeps every operator focused on action.",
+    cityFocus: "Tokyo Resilience MetroLab",
+    avatarInitials: "SI",
+  },
+];
+
+export const callToActionContent: CallToActionContent = {
+  eyebrow: "Co-design the next resilient metropolis",
+  headline: "Ready to orchestrate your city's AI command center?",
+  body:
+    "Partner with our urban technologists to map the data spine, activate digital twins, and deploy AI co-pilots that accelerate outcomes across your agencies within 90 days.",
+  bullets: [
+    "Executive vision workshop that translates strategy into an activation backlog.",
+    "Data and governance deep dive to ensure compliance, ethics, and interoperability.",
+    "Pilot-to-scale playbook with measurable KPIs, training, and change management.",
+  ],
+  primaryCta: {
+    label: "Schedule Executive Briefing",
+    href: "#demo",
+  },
+  secondaryCta: {
+    label: "Download Vision Kit",
+    href: "#vision",
+  },
+  metrics: [
+    {
+      label: "Cities orchestrated",
+      value: "24",
+      detail: "live urban digital twins under management",
+    },
+    {
+      label: "Time to impact",
+      value: "90 days",
+      detail: "from discovery to cross-agency activation",
+    },
+    {
+      label: "AI trust index",
+      value: "97%",
+      detail: "stakeholder confidence in explainable models",
+    },
   ],
 };

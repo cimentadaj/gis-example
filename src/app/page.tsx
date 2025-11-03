@@ -9,6 +9,8 @@ import {
   narrativeSections,
   successStories,
   credibilitySignals,
+  testimonialVoices,
+  callToActionContent,
 } from "@/data/content";
 import {
   defaultScenarioKey,
@@ -27,6 +29,8 @@ import {
   Globe2,
   MapPinned,
   Radar,
+  Quote,
+  Sparkles,
 } from "lucide-react";
 
 export default function Home() {
@@ -45,7 +49,9 @@ export default function Home() {
       <AiAnalyticsSection />
       <NarrativeFlowSection narrative={narrativeSections} />
       <ImpactStoriesSection stories={successStories} />
+      <TestimonialsSection voices={testimonialVoices} />
       <CredibilitySection credibility={credibilitySignals} />
+      <FinalCtaSection cta={callToActionContent} />
     </div>
   );
 }
@@ -318,6 +324,102 @@ function SuccessStoryCard({ story, accentIndex }: { story: SuccessStory; accentI
   );
 }
 
+type TestimonialVoice = (typeof testimonialVoices)[number];
+
+function TestimonialsSection({ voices }: { voices: typeof testimonialVoices }) {
+  const marqueeVoices = [...voices, ...voices];
+
+  return (
+    <Section id="testimonials" className="pt-6">
+      <Container className="space-y-10">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-xl space-y-4">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
+              <Sparkles className="h-3.5 w-3.5" />
+              Civic Innovators
+            </span>
+            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+              Voices from the frontlines of urban intelligence orchestration.
+            </h2>
+            <p className="text-base leading-7 text-foreground/70">
+              Executives and lab directors rely on AetherCity to fuse digital twins, AI guardrails, and mission control
+              workflows into one canvas that de-risks every activation sprint.
+            </p>
+          </div>
+          <div className="flex items-center gap-5 text-sm text-foreground/60">
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-[0.35em]">Customer Insight</span>
+              <span className="text-lg font-semibold text-white">Net Promoter 74</span>
+            </div>
+            <div className="h-10 w-px bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-xs uppercase tracking-[0.35em]">Global Reach</span>
+              <span className="text-lg font-semibold text-white">12 countries</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:hidden">
+          {voices.map((voice, index) => (
+            <TestimonialCard key={voice.name} voice={voice} accentIndex={index} />
+          ))}
+        </div>
+
+        <div className="relative hidden overflow-hidden rounded-[3rem] border border-white/10 bg-surface/70 p-8 shadow-[0_45px_120px_-65px_rgba(14,165,233,0.45)] md:block">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background via-background/60 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background via-background/60 to-transparent" />
+          <div className="space-y-8">
+            <div className="flex min-w-[200%] gap-6" style={{ animation: "marquee 34s linear infinite" }}>
+              {marqueeVoices.map((voice, index) => (
+                <TestimonialCard key={`marquee-top-${index}-${voice.name}`} voice={voice} accentIndex={index} />
+              ))}
+            </div>
+            <div className="flex min-w-[200%] gap-6" style={{ animation: "marquee 38s linear infinite reverse" }}>
+              {marqueeVoices.map((voice, index) => (
+                <TestimonialCard key={`marquee-bottom-${index}-${voice.name}`} voice={voice} accentIndex={index + 1} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+function TestimonialCard({ voice, accentIndex }: { voice: TestimonialVoice; accentIndex: number }) {
+  const accentPalette = [
+    "from-primary-500/20 via-transparent to-white/5",
+    "from-emerald-400/20 via-transparent to-primary-500/10",
+    "from-fuchsia-500/15 via-transparent to-purple-500/10",
+  ];
+
+  return (
+    <article className="group relative flex min-w-[19rem] max-w-[22rem] flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/75 shadow-[0_35px_120px_-65px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40 md:min-w-[22rem]">
+      <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-60`} />
+      <div className="relative flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-sm font-semibold uppercase text-white">
+            {voice.avatarInitials}
+          </span>
+          <div className="space-y-0.5">
+            <p className="text-base font-semibold text-white">{voice.name}</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-foreground/50">{voice.title}</p>
+          </div>
+        </div>
+        <Quote className="h-8 w-8 text-primary-300/50 transition group-hover:text-primary-100/80" />
+      </div>
+      <p className="relative text-sm leading-6 text-foreground/70">“{voice.quote}”</p>
+      <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-foreground/50">
+        <span>{voice.organization}</span>
+        <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] text-primary-200">{voice.cityFocus}</span>
+      </div>
+    </article>
+  );
+}
+
+type CtaContent = typeof callToActionContent;
+type CtaMetric = CtaContent["metrics"][number];
+
 type Credibility = typeof credibilitySignals;
 
 function CredibilitySection({ credibility }: { credibility: Credibility }) {
@@ -381,6 +483,77 @@ function CredibilitySection({ credibility }: { credibility: Credibility }) {
         </div>
       </Container>
     </Section>
+  );
+}
+
+function FinalCtaSection({ cta }: { cta: CtaContent }) {
+  return (
+    <Section id="contact" className="pt-0 pb-24">
+      <Container className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-surface/80 p-10 shadow-[0_55px_140px_-70px_rgba(14,165,233,0.55)] sm:p-16">
+        <div className="absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rotate-6 rounded-full bg-primary-500/20 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-72 w-72 translate-x-1/4 translate-y-1/4 rounded-full bg-fuchsia-500/15 blur-[160px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),_transparent_60%)]" />
+        <div className="relative grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+          <div className="space-y-6">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary-500/40 bg-primary-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-100">
+              <Sparkles className="h-3.5 w-3.5" />
+              {cta.eyebrow}
+            </span>
+            <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">{cta.headline}</h2>
+            <p className="text-base leading-7 text-foreground/70">{cta.body}</p>
+            <ul className="grid gap-3 text-sm text-foreground/70">
+              {cta.bullets.map((bullet) => (
+                <li key={bullet} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-200">
+                    <BrainCircuit className="h-4 w-4" />
+                  </span>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-col gap-4 pt-2 sm:flex-row">
+              <AnchorButton href={cta.primaryCta.href} variant="primary" className="w-full sm:w-auto">
+                {cta.primaryCta.label}
+              </AnchorButton>
+              <AnchorButton href={cta.secondaryCta.href} variant="secondary" className="w-full sm:w-auto">
+                {cta.secondaryCta.label}
+              </AnchorButton>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            {cta.metrics.map((metric, index) => (
+              <MetricCard key={metric.label} metric={metric} accentIndex={index} />
+            ))}
+          </div>
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+function MetricCard({ metric, accentIndex }: { metric: CtaMetric; accentIndex: number }) {
+  const accentPalette = [
+    "from-primary-500/25 via-transparent to-white/5",
+    "from-emerald-400/25 via-transparent to-primary-500/10",
+    "from-fuchsia-500/25 via-transparent to-purple-500/10",
+  ];
+  const offsetClasses = ["lg:-mt-4", "lg:translate-x-4", "lg:-mb-4 lg:translate-x-8"];
+
+  return (
+    <div
+      className={cn(
+        "glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-6 text-sm text-foreground/70 shadow-[0_35px_120px_-65px_rgba(59,130,246,0.55)] transition duration-500 hover:-translate-y-1",
+        offsetClasses[accentIndex % offsetClasses.length],
+      )}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]} opacity-70`} />
+      <div className="relative space-y-3">
+        <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
+        <p className="text-4xl font-semibold text-white">{metric.value}</p>
+        <p>{metric.detail}</p>
+      </div>
+    </div>
   );
 }
 
