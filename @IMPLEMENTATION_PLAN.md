@@ -11,10 +11,10 @@
    - Confirmed the digital twin canvas now loads with visible hotspots, flows, and choropleths on first paint.
    - Kept resize and module-switch handling intact so the map fills the primary panel across breakpoints.
 
-2. **Digital Twin Module Refinement** _(⏳ Pending)_
-   - Enlarge the GIS canvas footprint and rebalance adjacent indicator cards to keep the layout minimal.
-   - Curate a single set of high-value KPIs and AI callouts that explain the SDG localisation scenario in plain language.
-   - Tie highlight callouts and slider interactions to believable forecasting / anomaly narratives.
+2. **Digital Twin Module Refinement** _(✅ Completed)_
+   - Stretched the twin map to a hero canvas and moved supporting insight cards to a slimmer rail so the layout stays minimal.
+   - Focused the KPI strip on the two SDG-critical numbers and rewrote the side panels (hotspots, playbook, sweep slider) in plain language.
+   - Synced hotspot callouts, readiness forecasts, and slider feedback so each highlight tells a clear anomaly/prediction story.
 
 3. **VLR Automation Journey** _(⏳ Pending)_
    - Rebuild stage interactions so clicking each step surfaces concise plots/metrics/text describing the automated evidence pass.
@@ -31,3 +31,4 @@
 
 ## Progress Log
 - **2025-11-03**: Cleared the MapLibre brightness error, restoring the light basemap and ensuring scenario overlays render immediately when the dashboard loads.
+- **2025-11-03**: Rebuilt the digital twin view with a larger map, simplified KPI strip, hotspot rail, and readiness sparkline so the SDG localisation story reads clearly at a glance.

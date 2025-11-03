@@ -137,20 +137,20 @@ export default function Home() {
 function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-1 sm:px-6">
-        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-0.5 sm:px-6">
+        <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
           <Sparkles className="h-3 w-3" />
         </span>
-        <span className="text-sm font-semibold tracking-tight text-slate-700">Nexus Consulting</span>
+        <span className="text-xs font-semibold tracking-tight text-slate-700">Nexus Consulting</span>
       </div>
     </header>
   );
 }
 
 function OverviewStrip() {
-  const topKpis = citywideKpis.slice(0, 3);
+  const topKpis = citywideKpis.filter((kpi) => kpi.id === "sdg-progress" || kpi.id === "vlr-ready");
   return (
-    <section className="mb-8 grid gap-3 sm:grid-cols-3">
+    <section className="mb-8 grid gap-3 sm:grid-cols-2">
       {topKpis.map((kpi) => {
         const changeColor = kpi.change.direction === "up" ? "text-emerald-600" : "text-rose-600";
         const changeLabel =
@@ -284,6 +284,33 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
   const actions = insights.actions.slice(0, 2);
   const scenarioKpis = insights.kpis.slice(0, 2);
   const topHighlights = highlights.slice(0, 3);
+  const readinessSpark = demandForecast.points.slice(0, 6).map((point) => ({
+    hourLabel: formatShortTime(point.timestamp),
+    percentage: Math.round(point.value * 100),
+  }));
+  const currentOutlook =
+    readinessSpark.length > 0 ? readinessSpark[readinessSpark.length - 1]?.percentage ?? null : null;
+  const baselineOutlook = readinessSpark.length > 0 ? readinessSpark[0]?.percentage ?? null : null;
+  const outlookChange =
+    currentOutlook !== null && baselineOutlook !== null ? currentOutlook - baselineOutlook : null;
+  const outlookChangeLabel =
+    outlookChange !== null ? `${outlookChange >= 0 ? "+" : ""}${outlookChange.toFixed(0)} pts` : null;
+  const outlookTone =
+    outlookChange !== null ? (outlookChange >= 0 ? "text-emerald-600" : "text-rose-600") : "text-slate-400";
+  const liveNumbers = [
+    ...signals.map((signal) => ({
+      id: `signal-${signal.label}`,
+      label: signal.label,
+      value: signal.value,
+      helper: signal.delta,
+    })),
+    ...scenarioKpis.map((kpi) => ({
+      id: `kpi-${kpi.id}`,
+      label: kpi.label,
+      value: `${kpi.value} ${kpi.unit}`.trim(),
+      helper: kpi.changeLabel ?? null,
+    })),
+  ];
 
   return (
     <section>
@@ -296,89 +323,128 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
           <p className="text-xs text-slate-400">Brief · {scenario.command}</p>
         </header>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] xl:gap-8">
-          <div className="space-y-5">
-            <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-100/40">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,8.5fr)_minmax(0,3.5fr)] xl:gap-10">
+          <div className="space-y-4">
+            <div className="relative h-[400px] w-full overflow-hidden rounded-[36px] border border-slate-200 bg-slate-100/40 sm:h-[460px] lg:h-[560px] xl:h-[600px]">
               <CommandCenterMap scenario={scenario} focus={focus} highlights={highlights} />
               <HighlightsPanel highlights={topHighlights} />
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-700">Focus window</p>
-                <p className="mt-1 text-xs text-slate-400">Move the slider to preview the next sweep.</p>
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="text-sm font-medium text-slate-500">{Math.round((focus / 100) * 60)} min</span>
-                  <input
-                    type="range"
-                    value={focus}
-                    onChange={(event) => onFocusChange(Number(event.target.value))}
-                    min={0}
-                    max={100}
-                    className="h-1.5 w-full flex-1 appearance-none rounded-full bg-slate-200 accent-sky-500"
-                  />
-                </div>
-              </article>
-
-              {scenarioKpis.length ? (
-                <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-700">City status</p>
-                  <ul className="mt-3 space-y-3">
-                    {scenarioKpis.map((kpi) => (
-                      <li key={kpi.id}>
-                        <p className="text-base font-semibold text-slate-900">
-                          {kpi.value}
-                          <span className="ml-2 text-sm font-medium text-slate-500">{kpi.unit}</span>
-                        </p>
-                        <p className="mt-1 text-xs text-slate-500">{kpi.label}</p>
-                        {kpi.changeLabel ? (
-                          <p className="mt-1 text-xs font-medium text-emerald-600">{kpi.changeLabel}</p>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ) : null}
-            </div>
           </div>
-
           <aside className="space-y-4">
-            {signals.length ? (
+            <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-sm font-semibold text-slate-700">Next sweep</p>
+              <p className="mt-1 text-xs text-slate-400">Set how far ahead the AI skims the districts.</p>
+              <div className="mt-4 flex items-center gap-3">
+                <span className="text-sm font-medium text-slate-500">{Math.round((focus / 100) * 60)} min</span>
+                <input
+                  type="range"
+                  value={focus}
+                  onChange={(event) => onFocusChange(Number(event.target.value))}
+                  min={0}
+                  max={100}
+                  className="h-1.5 w-full flex-1 appearance-none rounded-full bg-slate-200 accent-sky-500"
+                  aria-label="Next sweep window"
+                />
+              </div>
+            </article>
+
+            {topHighlights.length ? (
               <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-700">Live pulse</p>
-                <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                  {signals.map((signal) => (
-                    <li key={signal.label} className="flex items-baseline justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
-                      <span className="font-medium text-slate-900">{signal.value}</span>
-                      <span className="text-xs text-slate-500">{signal.label}</span>
+                <p className="text-sm font-semibold text-slate-700">Active hotspots</p>
+                <ul className="mt-3 space-y-2">
+                  {topHighlights.map((highlight) => {
+                    const attentionLabel = `${Math.round(highlight.anomalyScore * 100)}% watch`;
+                    const tone =
+                      highlight.health === "Delayed"
+                        ? "text-rose-600"
+                        : highlight.health === "Watch"
+                          ? "text-amber-600"
+                          : "text-emerald-600";
+                    return (
+                      <li
+                        key={highlight.id}
+                        className="rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600"
+                      >
+                        <p className="flex items-center justify-between text-sm font-semibold text-slate-900">
+                          <span>{highlight.sensorType}</span>
+                          <span className="text-xs font-medium text-slate-400">{attentionLabel}</span>
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {[highlight.district ?? "Citywide", highlight.sensorId].filter(Boolean).join(" · ")}
+                        </p>
+                        <p className={cn("mt-1 text-xs font-medium", tone)}>{highlight.health ?? "On track"}</p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </article>
+            ) : null}
+
+            {liveNumbers.length ? (
+              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">Live numbers</p>
+                <ul className="mt-3 space-y-2">
+                  {liveNumbers.map((item) => (
+                    <li key={item.id} className="flex items-baseline justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{item.value}</p>
+                        <p className="text-xs text-slate-500">{item.label}</p>
+                      </div>
+                      {item.helper ? (
+                        <span className="text-xs font-medium text-slate-400">{item.helper}</span>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
               </article>
             ) : null}
 
-            {aiNote ? (
-              <article className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-700">AI notice</p>
-                <p className="mt-2 text-base font-semibold text-slate-900">{aiNote.title}</p>
-                {aiNote.detail ? <p className="mt-2 text-sm text-slate-500">{aiNote.detail}</p> : null}
-                <span className="mt-3 inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700">
-                  {Math.round(aiNote.confidence * 100)}% confidence
-                </span>
+            {readinessSpark.length ? (
+              <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-semibold text-slate-700">Readiness outlook</p>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-semibold text-slate-900">
+                    {currentOutlook !== null ? `${currentOutlook.toFixed(0)}% ready` : "—"}
+                  </span>
+                  {outlookChangeLabel ? (
+                    <span className={cn("text-xs font-medium", outlookTone)}>{outlookChangeLabel}</span>
+                  ) : null}
+                </div>
+                <p className="mt-1 text-xs text-slate-400">Forecast every two hours</p>
+                <div className="mt-4 h-24 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsLineChart data={readinessSpark}>
+                      <YAxis hide />
+                      <XAxis dataKey="hourLabel" hide />
+                      <RechartsLine type="monotone" dataKey="percentage" stroke="#0ea5e9" strokeWidth={2} dot={false} />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </div>
               </article>
             ) : null}
 
-            {actions.length ? (
+            {aiNote || actions.length ? (
               <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-sm font-semibold text-slate-700">Next moves</p>
-                <ol className="mt-3 space-y-2 text-sm text-slate-600">
-                  {actions.map((action, index) => (
-                    <li key={action} className="flex gap-2">
-                      <span className="font-medium text-sky-500">{index + 1}.</span>
-                      <span className="leading-6">{action}</span>
-                    </li>
-                  ))}
-                </ol>
+                <p className="text-sm font-semibold text-slate-700">AI playbook</p>
+                {aiNote ? (
+                  <div>
+                    <p className="mt-2 text-base font-semibold text-slate-900">{aiNote.title}</p>
+                    {aiNote.detail ? <p className="mt-1 text-sm text-slate-500">{aiNote.detail}</p> : null}
+                    <span className="mt-3 inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700">
+                      {Math.round(aiNote.confidence * 100)}% confidence
+                    </span>
+                  </div>
+                ) : null}
+                {actions.length ? (
+                  <ol className="mt-4 space-y-2 text-sm text-slate-600">
+                    {actions.map((action, index) => (
+                      <li key={action} className="flex gap-2">
+                        <span className="font-medium text-sky-500">{index + 1}.</span>
+                        <span className="leading-6">{action}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
               </article>
             ) : null}
           </aside>
