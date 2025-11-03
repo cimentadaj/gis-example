@@ -22,8 +22,8 @@
    - Add narrative sections explaining AI/ML capabilities, digital twin insights, and workflow steps.
    - Integrate client impact metrics and success highlights with stylized cards.
 
-4. **Interactive GIS Command Center**
-   - Implement full-screen interactive map with Mapbox basemap, custom layers (heatmap, choropleth, flow lines).
+4. **Interactive GIS Command Center** _(✅ Completed)_
+   - Implement full-screen interactive map with MapLibre basemap and layered mobility/energy/climate visualizations.
    - Add overlay control panel for toggling scenarios, time slider, and layer legend.
    - Display contextual KPIs alongside the map (e.g., anomaly detection, forecasted impact).
 
@@ -47,3 +47,4 @@
 - **2025-11-03**: Completed Project Foundation — scaffolded Next.js app, added mapping/charting/animation deps, established global theming, and introduced layout skeleton (Header, Footer, Section, layout shell, hero scaffolding).
 - **2025-11-04**: Curated demo datasets (geo layers, KPI + forecast metrics), authored scenario utilities for mobility/energy/climate/safety toggles, and centralized copywriting assets for storytelling modules.
 - **2025-11-05**: Delivered full landing narrative flow with AI storyline cards, success-case grid, and credibility panel reinforcing the smart city GIS value proposition.
+- **2025-11-06**: Activated the interactive command center with MapLibre map overlays, scenario toggles, KPI panels, and AI insight/action overlays for the GIS experience.

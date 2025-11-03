@@ -16,6 +16,7 @@ import {
   type ScenarioDefinition,
   type ScenarioSignal,
 } from "@/lib/scenarios";
+import { CommandCenterSection } from "@/components/command-center/command-center-section";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -39,6 +40,7 @@ export default function Home() {
       <HeroSection hero={heroContent} scenario={defaultScenario} />
       <SignalsMarquee badges={signalBadges} />
       <PillarsSection pillars={platformPillars} />
+      <CommandCenterSection />
       <NarrativeFlowSection narrative={narrativeSections} />
       <ImpactStoriesSection stories={successStories} />
       <CredibilitySection credibility={credibilitySignals} />
