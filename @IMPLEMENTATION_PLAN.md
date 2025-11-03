@@ -11,10 +11,10 @@
    - Removed the capability grid clutter and centered the layout around the canvas with calmer spacing.
    - Reworked the HUD chips to surface insight and focus data without covering the markers.
 
-2. **Signal & Copy Simplification** _(🚧 Pending)_
-   - Reduce KPI, signal, and narrative blocks to the most essential insights per scenario.
-   - Rewrite on-screen copy into clear, plain language that explains real actions succinctly.
-   - Harmonize spacing and color accents to keep the dashboard calm and aligned with the Notion-like palette.
+2. **Signal & Copy Simplification** _(✅ Completed)_
+   - Trimmed KPI rails, live signals, and action queues to the minimum set that tells the story for each scenario.
+   - Rewrote copy across scenarios, analytics, VLR stages, and copilot data into simple, plain-language guidance.
+   - Balanced spacing and card density so the light theme stays calm while still surfacing the highest-value insights.
 
 1. **Capability Pillar Spotlight** _(✅ Completed)_
    - Crafted scenario-aware capability descriptors covering AI pipelines, GIS telemetry, data fabric automation, and digital-twin simulation.
@@ -94,4 +94,4 @@
 - **2025-11-03**: Launched the Nexus Copilot right rail with collapsible dock, scenario-aware conversations, mission decks, action recommendations, and governance audit trails synced to the active digital twin.
 - **2025-11-03**: Completed the polish pass with a compact top bar, module tab switcher, expanded sensor datasets, map spotlight narratives, and fully verified builds to showcase a production-ready Nexus dashboard.
 - **2025-11-03**: Refreshed the spatial storytelling module with a light-theme digital twin canvas, live AI hotspot markers, concise legends, and tightened KPI storytelling to align with the simplified GIS spec.
-- **2025-11-03**: Harmonised the remaining modules with the light dashboard aesthetic—freshened VLR pipelines, analytics studios, and copilot orchestration, then revalidated lint/build for handoff readiness.
+- **2025-11-07**: Simplified KPIs, signals, and narrative copy; refreshed datasets, VLR stages, and copilot content to plain language; tightened dashboard spacing for a calm, production-ready presentation; re-ran lint/build to confirm stability.

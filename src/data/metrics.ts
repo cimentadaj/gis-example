@@ -34,46 +34,32 @@ export type AnomalyCluster = {
 
 export const citywideKpis: SystemKpi[] = [
   {
-    id: "sdg-alignment",
-    label: "SDG Alignment Rate",
-    unit: "% targets on track",
+    id: "sdg-progress",
+    label: "SDG Progress",
+    unit: "% on track",
     value: 68,
-    change: { direction: "up", percentage: 5.4, period: "quarter" },
+    change: { direction: "up", percentage: 4.8, period: "month" },
   },
   {
-    id: "vlr-completion",
-    label: "VLR Completion",
-    unit: "% sections ready",
+    id: "vlr-ready",
+    label: "VLR Ready",
+    unit: "% ready",
     value: 78,
-    change: { direction: "up", percentage: 12.6, period: "week" },
+    change: { direction: "up", percentage: 12.4, period: "week" },
   },
   {
-    id: "equity-gap-closure",
-    label: "Equity Gap Closure",
+    id: "wellbeing-score",
+    label: "Wellbeing Score",
     unit: "index",
-    value: 0.63,
-    change: { direction: "up", percentage: 8.1, period: "month" },
-  },
-  {
-    id: "assurance-health",
-    label: "Assurance Health",
-    unit: "% coverage",
-    value: 92,
-    change: { direction: "up", percentage: 3.2, period: "14 days" },
-  },
-  {
-    id: "wellbeing-index",
-    label: "Wellbeing Index",
-    unit: "score",
     value: 74,
-    change: { direction: "up", percentage: 4.7, period: "quarter" },
+    change: { direction: "up", percentage: 4.2, period: "quarter" },
   },
   {
-    id: "capital-readiness",
-    label: "Capital Readiness",
-    unit: "% pipeline funded",
+    id: "capital-ready",
+    label: "Capital Ready",
+    unit: "% funded",
     value: 81,
-    change: { direction: "down", percentage: 3.1, period: "month" },
+    change: { direction: "down", percentage: 2.6, period: "month" },
   },
 ];
 
@@ -111,24 +97,24 @@ export const resilienceForecast: ForecastSeries = {
 export const anomalyClusters: AnomalyCluster[] = [
   {
     id: "sdg-green-schoolyards",
-    cluster: "Green Schoolyards Evidence Gap",
+    cluster: "Schoolyard retrofit evidence lag",
     severity: "moderate",
-    affectedAssets: 6,
-    expectedResolutionMinutes: 34,
+    affectedAssets: 4,
+    expectedResolutionMinutes: 32,
   },
   {
     id: "housing-dossier",
-    cluster: "Affordable Housing Dossier",
+    cluster: "Affordable housing packet waiting sign-off",
     severity: "high",
-    affectedAssets: 9,
-    expectedResolutionMinutes: 42,
+    affectedAssets: 6,
+    expectedResolutionMinutes: 38,
   },
   {
     id: "climate-innovation",
-    cluster: "Innovation Basin Climate Packet",
+    cluster: "Innovation Basin climate log sync",
     severity: "low",
-    affectedAssets: 4,
-    expectedResolutionMinutes: 18,
+    affectedAssets: 3,
+    expectedResolutionMinutes: 16,
   },
 ];
 
@@ -143,23 +129,23 @@ export type ModelPerformanceStat = {
 export const modelPerformanceStats: ModelPerformanceStat[] = [
   {
     id: "narrative-quality",
-    metric: "Narrative Draft Quality",
+    metric: "Narratives on target",
     value: "94%",
     change: "+5%",
     tone: "up",
   },
   {
     id: "evidence-match",
-    metric: "Evidence Match Rate",
+    metric: "Evidence matched",
     value: "97%",
     change: "+3%",
     tone: "up",
   },
   {
     id: "assurance-drift",
-    metric: "Assurance Drift",
-    value: "1.8%",
-    change: "-0.6%",
+    metric: "Assurance drift",
+    value: "1.2%",
+    change: "-0.4%",
     tone: "down",
   },
 ];
@@ -180,7 +166,7 @@ export const scenarioComparisons: ScenarioComparison[] = [
     baseline: 62,
     optimized: 78,
     unit: "targets met",
-    narrative: "AI prioritization + community studio sprint",
+    narrative: "AI routing keeps stewards focused on districts slipping.",
   },
   {
     id: "vlr-vs-ai",
@@ -188,7 +174,7 @@ export const scenarioComparisons: ScenarioComparison[] = [
     baseline: 58,
     optimized: 86,
     unit: "sections ready",
-    narrative: "Evidence reconciliation + AI narratives",
+    narrative: "Automated drafting clears the backlog before review day.",
   },
   {
     id: "city-vs-ai",
@@ -196,7 +182,7 @@ export const scenarioComparisons: ScenarioComparison[] = [
     baseline: 69,
     optimized: 83,
     unit: "wellbeing index",
-    narrative: "Capital re-sequencing + wellbeing uplift",
+    narrative: "Capital shifts move the wellbeing score without extra spend.",
   },
 ];
 
@@ -216,28 +202,28 @@ export const riskCells: RiskCell[] = [
     district: "Harbor Resilience Loop",
     quadrant: "SDG",
     score: 0.86,
-    driver: "SDG 13.1 climate adaptation surge",
+    driver: "Shoreline works still missing SDG 13 sign-off.",
   },
   {
     id: "innovation-basin",
     district: "Innovation Basin Studio",
     quadrant: "VLR",
     score: 0.79,
-    driver: "Evidence packets pending curator sign-off",
+    driver: "Evidence packets due from finance and mobility desks.",
   },
   {
     id: "northern-commons",
     district: "Northern Commons Network",
     quadrant: "Equity",
     score: 0.91,
-    driver: "Housing inclusion investments outperform forecast",
+    driver: "Housing upgrades beating the equity target.",
   },
   {
     id: "civic-spine",
     district: "Civic Learning Spine",
     quadrant: "Capital",
     score: 0.74,
-    driver: "Capital drawdown pacing below target",
+    driver: "Capital drawdown pacing below plan.",
   },
 ];
 
@@ -250,17 +236,17 @@ export type ExplainabilitySnippet = {
 export const explainabilitySnippets: ExplainabilitySnippet[] = [
   {
     id: "sdg-traceability",
-    title: "Traceability links every claim to source evidence",
-    detail: "Each SDG statement in the narrative carries a deep link to its dataset, steward, and refresh timestamp.",
+    title: "Every claim links back to source data",
+    detail: "Narratives surface the dataset, steward, and refresh time in one click.",
   },
   {
     id: "fairness-monitor",
-    title: "Equity monitor enforces distributional guardrails",
-    detail: "Counterfactual tests confirm interventions do not widen the wellbeing gap for historically excluded districts.",
+    title: "Equity guardrails stay on",
+    detail: "Counterfactual tests confirm interventions keep the wellbeing gap shrinking.",
   },
   {
     id: "copilot-review",
-    title: "Copilot review mode captures human overrides",
-    detail: "City analysts annotate AI suggestions, training the model to respect local policy nuance without manual retraining.",
+    title: "Human notes train the models",
+    detail: "Operators edit suggestions and the copilot learns the local rules.",
   },
 ];

@@ -53,40 +53,35 @@ const defaultKpiLookup = Object.fromEntries(citywideKpis.map((kpi) => [kpi.id, k
 function selectKpis(ids: string[]): SystemKpi[] {
   return ids
     .map((id) => defaultKpiLookup[id])
-    .filter((kpi): kpi is SystemKpi => Boolean(kpi));
+    .filter((kpi): kpi is SystemKpi => Boolean(kpi))
+    .map((kpi) => ({ ...kpi }));
 }
 
 const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "sdg-localization": {
     key: "sdg-localization",
     name: "SDG Localization Twin",
-    tagline: "District-level SDG progress blending equity signals with live evidence feeds.",
+    tagline: "Track SDG progress district by district.",
     narrative:
-      "Nexus fuses census refreshes, participatory budgeting inputs, and IoT observatories to map how SDG targets land street-by-street. Automated insights highlight districts slipping behind before the next quarterly briefing.",
-    command: "Prioritize districts that need SDG acceleration ahead of the mayoral check-in.",
+      "Live census, budget, and sensor feeds show how close each district sits to its SDG goals. The twin points to places that need help right now.",
+    command: "Back the districts slipping under target before the mayoral stand-up.",
     liveSignals: [
-      { label: "Targets On Track", value: "68%", delta: "+5%", tone: "positive" },
-      { label: "Equity Gap", value: "Moderate", delta: "-7%", tone: "positive" },
-      { label: "Data Freshness", value: "98%", delta: "+3%", tone: "positive" },
+      { label: "Targets on track", value: "68%", delta: "+5%", tone: "positive" },
+      { label: "Data refreshed", value: "98%", delta: "+3%", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Innovation Basin Studio lags on SDG 4.3 despite new training pods.",
-        detail: "Cohort completion sits 11 points under target; AI recommends deploying mobile workshop units and micro-credential campaigns within 10 days.",
-        confidence: 0.87,
-      },
-      {
-        title: "Harbor Resilience Loop can hit SDG 13.1 ahead of schedule.",
-        detail: "Climate adaptation projects deliver 340 households beyond plan; pitch this as a headline outcome in the VLR narrative.",
-        confidence: 0.79,
+        title: "Innovation Basin needs tutoring crews this week.",
+        detail: "Attendance dips are pulling SDG 4 behind target; mobile workshops close the gap within five days.",
+        confidence: 0.82,
       },
     ],
-    kpis: selectKpis(["sdg-alignment", "equity-gap-closure"]),
+    kpis: selectKpis(["sdg-progress"]),
     layers: [
       {
         id: "district-sdg-composite",
         label: "District SDG Composite",
-        legend: "Polygons shaded by composite SDG readiness and equity lift.",
+        legend: "Blue shows overall SDG score for each district.",
         visualization: "choropleth",
         dataset: districtSnapshots as unknown as GenericFeatureCollection,
         style: { color: "#38bdf8", secondaryColor: "#0ea5e9", intensity: 0.78 },
@@ -94,7 +89,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       {
         id: "indicator-observatories",
         label: "Indicator Observatories",
-        legend: "Pulsing sites surface indicators trending off target.",
+        legend: "Pins mark indicators drifting from plan.",
         visualization: "point",
         dataset: indicatorSites as unknown as GenericFeatureCollection,
         style: { color: "#7c3aed", secondaryColor: "#a855f7", intensity: 0.62 },
@@ -102,48 +97,41 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       {
         id: "impact-corridors",
         label: "Impact Corridors",
-        legend: "Activations highlight live programs accelerating SDG delivery.",
+        legend: "Lines show active programs boosting SDG delivery.",
         visualization: "flow",
         dataset: impactCorridors as unknown as GenericFeatureCollection,
         style: { color: "#0ea5e9", secondaryColor: "#22d3ee", intensity: 0.7 },
       },
     ],
     actions: [
-      "Publish SDG 11 micro-brief with resolved gaps for Innovation Basin Studio.",
-      "Escalate Civic Learning Spine success story into the VLR storytelling track.",
-      "Trigger community studio invite for Care Corridor Spine stakeholders.",
+      "Send tutoring teams to Innovation Basin schools.",
+      "Share Harbor Loop climate win in tomorrow's VLR brief.",
     ],
   },
   "vlr-automation": {
     key: "vlr-automation",
     name: "VLR Automation Console",
-    tagline: "AI assembles evidence, drafts narratives, and flags compliance gaps for the next submission.",
+    tagline: "AI keeps the voluntary local review moving.",
     narrative:
-      "Digital pipelines pull finance, sustainability, and community feedback sources into a governed workspace. Draft sections, evidence tables, and assurance checks update continuously as new data flows in.",
-    command: "Lock the VLR executive summary by Friday with clear SDG wins and remediation paths.",
+      "Evidence from finance, climate, and community systems syncs automatically. Drafts stay live until each steward signs off.",
+    command: "Close the executive summary before Friday.",
     liveSignals: [
-      { label: "Sections Drafted", value: "7 / 9", delta: "+2", tone: "positive" },
-      { label: "Evidence Confidence", value: "92%", delta: "+6%", tone: "positive" },
-      { label: "Assurance Flags", value: "Low", delta: "-3", tone: "positive" },
+      { label: "Sections ready", value: "7 / 9", delta: "+2", tone: "positive" },
+      { label: "Evidence cleared", value: "92%", delta: "+6%", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Narrative engine recommends elevating SDG 11.7 public space upgrades.",
-        detail: "Auto-summarized testimony from citizens in the Civic Commons Lab strengthens the story and aligns with council priorities.",
-        confidence: 0.83,
-      },
-      {
-        title: "Compliance bot spotted metadata gaps in SDG 9.1 evidence packets.",
-        detail: "Two corridor programs lack geotagged invoices; automation can reconcile with the finance API in 14 minutes once authorized.",
+        title: "SDG 9 packet still needs invoice proof.",
+        detail: "Finance ledger lacks tags for two projects; automation can reconcile once the steward approves the fetch.",
         confidence: 0.9,
       },
     ],
-    kpis: selectKpis(["vlr-completion", "assurance-health"]),
+    kpis: selectKpis(["vlr-ready"]),
     layers: [
       {
         id: "evidence-corridors",
         label: "Evidence Corridors",
-        legend: "Flow intensity shows program evidence feeding the VLR workspace.",
+        legend: "Lines show which programs feed the VLR workspace.",
         visualization: "flow",
         dataset: impactCorridors as unknown as GenericFeatureCollection,
         style: { color: "#14b8a6", secondaryColor: "#22c55e", intensity: 0.68 },
@@ -151,48 +139,41 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       {
         id: "evidence-sites",
         label: "Evidence Sites",
-        legend: "Nodes pulse when indicator packets need curator review.",
+        legend: "Pins highlight packets waiting for review.",
         visualization: "point",
         dataset: indicatorSites as unknown as GenericFeatureCollection,
         style: { color: "#f97316", secondaryColor: "#fb923c", intensity: 0.58 },
       },
     ],
     actions: [
-      "Route SDG 9.1 packet reconciliation to automation queue and notify finance steward.",
-      "Approve AI narrative draft for SDG 11.7 and push to executive summary.",
-      "Trigger cross-team review for Care Corridor Spine health access indicator.",
+      "Ping finance to clear the SDG 9 invoice evidence.",
+      "Publish the SDG 11 public space story once quotes land.",
     ],
   },
   "city-profiling": {
     key: "city-profiling",
     name: "City Profiling Studio",
-    tagline: "Urban digital twin compares investment pathways and wellbeing outcomes at district scale.",
+    tagline: "See how funding choices shift wellbeing.",
     narrative:
-      "Scenario engine blends demographic trends, capital plans, and community sentiment to prioritize regeneration investments. AI surfaces which levers move the wellbeing index without overspending.",
-    command: "Select the next three districts for regeneration funding before council vote.",
+      "The twin blends demographics, capital plans, and sentiment to rank regeneration moves. Leaders get a clear view of where money changes outcomes.",
+    command: "Choose the next three districts for funding before the council vote.",
     liveSignals: [
-      { label: "Wellbeing Index", value: "74 / 100", delta: "+4", tone: "positive" },
-      { label: "Capital Utilization", value: "81%", delta: "-3%", tone: "warning" },
-      { label: "Community Sentiment", value: "Optimistic", delta: "+2%", tone: "positive" },
+      { label: "Wellbeing score", value: "74 / 100", delta: "+4", tone: "positive" },
+      { label: "Capital on track", value: "81%", delta: "-3%", tone: "warning" },
     ],
     aiInsights: [
       {
-        title: "Northern Commons Network shows strongest wellbeing lift per dollar.",
-        detail: "A $14M streetscape bundle moves the wellbeing index by 6 points while cutting displacement risk by 18%.",
+        title: "Northern Commons still delivers the biggest lift.",
+        detail: "A $14M streetscape bundle moves the wellbeing score six points while keeping displacement risk low.",
         confidence: 0.88,
       },
-      {
-        title: "Harbor Resilience Loop needs supplemental funding for shoreline access.",
-        detail: "Equity model warns SDG 11.7 progress plateaus without an additional $4.2M in inclusive design upgrades.",
-        confidence: 0.76,
-      },
     ],
-    kpis: selectKpis(["wellbeing-index", "capital-readiness"]),
+    kpis: selectKpis(["wellbeing-score", "capital-ready"]),
     layers: [
       {
         id: "profile-districts",
         label: "District Profiles",
-        legend: "Choropleth shading reflects the composite wellbeing index.",
+        legend: "Purple shows overall wellbeing score.",
         visualization: "choropleth",
         dataset: districtSnapshots as unknown as GenericFeatureCollection,
         style: { color: "#a855f7", secondaryColor: "#6366f1", intensity: 0.74 },
@@ -200,7 +181,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       {
         id: "investment-corridors",
         label: "Investment Corridors",
-        legend: "Flows indicate prioritized capital programs and reach.",
+        legend: "Lines trace priority capital programs.",
         visualization: "flow",
         dataset: impactCorridors as unknown as GenericFeatureCollection,
         style: { color: "#38bdf8", secondaryColor: "#22d3ee", intensity: 0.65 },
@@ -208,16 +189,15 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       {
         id: "wellbeing-sentinels",
         label: "Wellbeing Sentinels",
-        legend: "Sites pulse when wellbeing indicators deviate from forecast.",
+        legend: "Pins pulse if wellbeing deviates from forecast.",
         visualization: "point",
         dataset: indicatorSites as unknown as GenericFeatureCollection,
         style: { color: "#22c55e", secondaryColor: "#4ade80", intensity: 0.6 },
       },
     ],
     actions: [
-      "Advance Northern Commons streetscape bundle to council pipeline.",
-      "Draft community feedback brief for Harbor Resilience Loop shoreline upgrades.",
-      "Share wellbeing uplift scenarios with budget office for funding alignment.",
+      "Advance Northern Commons bundle to the council pipeline.",
+      "Share Harbor Loop shoreline options with the budget office.",
     ],
   },
 };

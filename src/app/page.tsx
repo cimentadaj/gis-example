@@ -105,28 +105,28 @@ const moduleNavigation = [
   {
     id: "digital-twin",
     label: "Digital Twin Canvas",
-    description: "Spatial SDG localization with live indicator stories and hotspots.",
+    description: "See SDG progress and hotspots on the map.",
     icon: MapIcon,
     accent: "from-sky-400/40 via-transparent to-sky-500/20",
   },
   {
     id: "vlr-workbench",
     label: "VLR Automation",
-    description: "AI-assembled voluntary local review pipelines and compliance scoring.",
+    description: "Follow the AI-driven VLR workflow.",
     icon: Workflow,
     accent: "from-violet-400/35 via-transparent to-violet-500/15",
   },
   {
     id: "analytics",
     label: "AI Pipelines",
-    description: "Forecasts, evidence radar, and readiness insights across scenarios.",
+    description: "Review forecasts and model health.",
     icon: LineChart,
     accent: "from-emerald-400/35 via-transparent to-emerald-500/15",
   },
   {
     id: "copilot",
     label: "Data Fabric",
-    description: "Automation health across localization, VLR, and city profiling feeds.",
+    description: "Check connectors and automations.",
     icon: Layers,
     accent: "from-slate-400/35 via-transparent to-slate-500/15",
   },
@@ -144,35 +144,35 @@ const analyticsViews: Array<{
   {
     id: "forecast",
     label: "Indicator Momentum",
-    description: "AI vs manual SDG alignment lift.",
+    description: "Compare SDG forecasts against actuals.",
     icon: LineChart,
     accent: "from-sky-500/25 via-sky-400/10 to-sky-500/0",
   },
   {
     id: "resilience",
     label: "Wellbeing Outlook",
-    description: "Scenario projections for services and capital.",
+    description: "Project service and capital outcomes.",
     icon: ActivitySquare,
     accent: "from-emerald-500/25 via-emerald-400/10 to-emerald-500/0",
   },
   {
     id: "anomalies",
     label: "Evidence Radar",
-    description: "Cluster severity and steward triage velocity.",
+    description: "Track open evidence issues.",
     icon: AlertTriangle,
     accent: "from-amber-500/25 via-amber-400/10 to-amber-500/0",
   },
   {
     id: "risk",
     label: "Readiness Quadrants",
-    description: "District attention for SDG, VLR, equity, capital.",
+    description: "Spot SDG, VLR, equity, and capital gaps.",
     icon: ShieldCheck,
     accent: "from-indigo-500/25 via-indigo-400/10 to-indigo-500/0",
   },
   {
     id: "explainability",
     label: "Transparency Lab",
-    description: "Narratives and governance tracking.",
+    description: "Surface governance and explainability cues.",
     icon: Sparkles,
     accent: "from-rose-500/25 via-rose-400/10 to-rose-500/0",
   },
@@ -226,26 +226,23 @@ type ScenarioInsightsPayload = {
 
 const resiliencePlaybooks: Record<ScenarioKey, string[]> = {
   "sdg-localization": [
-    "Refresh SDG indicators below 0.6 progress and notify neighborhood stewards.",
-    "Blend census, civic feedback, and IoT layers into localized micro-briefs.",
-    "Escalate acceleration levers for Innovation Basin and Harbor Loop ahead of council.",
+    "Ping stewards for districts drifting under target.",
+    "Share SDG wins and needs in tomorrow's mayoral brief.",
   ],
   "vlr-automation": [
-    "Resolve evidence packets missing provenance before exporting the executive draft.",
-    "Map AI-generated narratives to SDG targets with human commentary injected.",
-    "Lock compliance attestations once governance and finance stewards approve.",
+    "Clear evidence packets waiting on finance.",
+    "Publish the executive draft once checks pass.",
   ],
   "city-profiling": [
-    "Model wellbeing impact for each capital scenario and record decision trade-offs.",
-    "Surface districts where equity coverage slips under 0.8 and propose remedies.",
-    "Generate resident-ready story cards with sentiment, funding, and SDG tie-ins.",
+    "Compare wellbeing lift versus spend for top districts.",
+    "Log the decision trail for council review.",
   ],
 };
 
 const explainabilityHeadline: Record<ScenarioKey, string> = {
-  "sdg-localization": "Explainable scoring shows how every SDG indicator earns its confidence badge.",
-  "vlr-automation": "Narrative transparency keeps VLR automation ready for governance review.",
-  "city-profiling": "Scenario intelligence proves where capital unlocks the biggest wellbeing lift.",
+  "sdg-localization": "Every SDG insight links straight back to its source.",
+  "vlr-automation": "Stakeholders see why each VLR step is approved.",
+  "city-profiling": "Capital choices show the wellbeing lift and trade-offs.",
 };
 
 export default function Home() {
@@ -334,7 +331,7 @@ export default function Home() {
                         <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Citywide KPI Pulse</p>
                         <h3 className="mt-1 text-lg font-semibold text-slate-900">Live operations benchmark</h3>
                         <p className="mt-1 text-sm text-slate-600">
-                          Signals derived from Nexus telemetry and ML uplift vs baseline.
+                          Signals from live feeds and AI uplift versus last period.
                         </p>
                       </div>
                       <div className="hidden text-right text-xs uppercase tracking-[0.3em] text-slate-400 sm:block">
@@ -463,7 +460,7 @@ function DashboardTopBar({
           <div>
             <p className="text-[10px] uppercase tracking-[0.32em] text-slate-500">Nexus Consulting</p>
             <h1 className="text-base font-semibold text-slate-900 sm:text-lg">City Digital Twin Command</h1>
-            <p className="text-[11px] text-slate-500">Automated VLR intelligence for Metropolitan Nexus</p>
+            <p className="text-[11px] text-slate-500">Live smart city control for Nexus Consulting</p>
           </div>
         </div>
 
@@ -603,9 +600,7 @@ function DashboardSidebar({ activeModule, onModuleChange }: DashboardSidebarProp
             <BrainCircuit className="h-4 w-4" />
             AI Warden
           </p>
-          <p className="mt-2 text-sm text-slate-700">
-            Digital twin telemetry is clean. 3 proactive interventions queued with Nexus Copilot.
-          </p>
+          <p className="mt-2 text-sm text-slate-700">Telemetry healthy. Three interventions queued in Copilot.</p>
         </div>
       </div>
     </aside>
@@ -802,8 +797,8 @@ function CopilotOverlay({
 
 function KpiPulseStrip({ kpis }: { kpis: SystemKpi[] }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {kpis.map((kpi) => (
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      {kpis.slice(0, 4).map((kpi) => (
         <KpiCard key={kpi.id} kpi={kpi} />
       ))}
     </div>
@@ -816,8 +811,8 @@ function KpiCard({ kpi }: { kpi: SystemKpi }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_14px_42px_-30px_rgba(15,23,42,0.18)]">
-      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{kpi.label}</p>
-      <div className="mt-3 flex items-end justify-between">
+      <p className="text-xs font-medium uppercase tracking-[0.28em] text-slate-500">{kpi.label}</p>
+      <div className="mt-3 flex items-end justify-between gap-2">
         <span className="text-2xl font-semibold text-slate-900">
           {kpi.value.toLocaleString()} <span className="text-sm text-slate-500">{kpi.unit}</span>
         </span>
@@ -825,7 +820,7 @@ function KpiCard({ kpi }: { kpi: SystemKpi }) {
           {arrow} {kpi.change.percentage}%
         </span>
       </div>
-      <p className="mt-2 text-[11px] text-slate-500">vs. last {kpi.change.period}</p>
+      <p className="mt-2 text-xs text-slate-500">vs last {kpi.change.period}</p>
     </div>
   );
 }
@@ -1300,8 +1295,7 @@ function VlrPreviewPanel() {
             Voluntary Local Review Mission Board
           </h2>
           <p className="mt-3 text-sm text-slate-600">
-            Nexus orchestrates the entire VLR pipeline with AI guardrails—every chapter is grounded in live digital twin
-            evidence, policy compliance, and explainable scoring.
+            AI keeps the VLR pipeline moving with clean evidence, clear owners, and explainable scoring.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -1400,7 +1394,7 @@ function VlrPreviewPanel() {
               type="button"
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:border-sky-300 hover:bg-sky-100"
             >
-              Download AI-authored VLR
+              Download VLR package
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -1818,8 +1812,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scope</p>
                   <p className="mt-1 text-lg font-semibold text-slate-900">{scopeLabel}</p>
                   <p className="mt-2 text-sm text-foreground/65">
-                    Nexus blends indicator feeds, steward notes, and wellbeing sensors to explain district progress
-                    shifts before they surface in quarterly reviews.
+                    Live indicator feeds, steward notes, and wellbeing sensors explain progress shifts before quarterly reviews.
                   </p>
                 </div>
 
@@ -2025,8 +2018,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                     </div>
                     <p className="text-sm font-semibold text-white">{highestSeverityCluster.cluster}</p>
                     <p className="text-sm text-foreground/65">
-                      Nexus triage playbooks are sequencing {highestSeverityCluster.affectedAssets} assets and notifying
-                      field teams automatically.
+                      AI triage playbooks are sequencing {highestSeverityCluster.affectedAssets} assets and notifying field teams automatically.
                     </p>
                   </div>
                 ) : (
@@ -2143,8 +2135,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   Governance cue
                 </p>
                 <p className="mt-2">
-                  Nexus automatically stages mitigation briefs when risk exceeds 70% and routes them to {scenario.name}{" "}
-                  owners.
+                  Mitigation briefs trigger automatically when risk passes 70% and route to {scenario.name} owners.
                 </p>
               </div>
             </div>
@@ -2207,7 +2198,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
                   Audit trail
                 </p>
                 <p className="mt-2">
-                  Export-ready VLR chapters assemble automatically with provenance, ready for Nexus Consulting briefings.
+                  Export-ready VLR chapters assemble with provenance for the Nexus team.
                 </p>
               </div>
             </div>
@@ -2225,8 +2216,7 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
         <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">AI Analytics</p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">Model telemetry and explainable lifts</h2>
         <p className="mt-3 text-sm text-foreground/70">
-          Forecast corridors, resilience trajectories, anomaly triage, and governance insight align live to the{" "}
-          {scenario.name} mission.
+          Forecasts, resilience outlooks, anomaly triage, and governance cues stay aligned to the {scenario.name} mission.
         </p>
       </div>
 
