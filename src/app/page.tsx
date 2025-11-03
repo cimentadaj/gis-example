@@ -21,6 +21,7 @@ import {
 } from "@/lib/scenarios";
 import { CommandCenterSection } from "@/components/command-center/command-center-section";
 import { AiAnalyticsSection } from "@/components/analytics/ai-analytics-section";
+import { AiCopilotSection } from "@/components/copilot/ai-copilot-section";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -48,6 +49,7 @@ export default function Home() {
       <PillarsSection pillars={platformPillars} />
       <CommandCenterSection />
       <AiAnalyticsSection />
+      <AiCopilotSection />
       <NarrativeFlowSection narrative={narrativeSections} />
       <ImpactStoriesSection stories={successStories} />
       <TestimonialsSection voices={testimonialVoices} />
