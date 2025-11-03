@@ -1009,40 +1009,41 @@ function MapHud({
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5">
       <div className="flex flex-wrap items-start gap-3">
-        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-xs uppercase tracking-[0.3em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)] backdrop-blur-md">
-          <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-          <div className="pointer-events-auto text-left normal-case">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500">Scenario</p>
-            <p className="mt-1 text-sm font-semibold tracking-[0.05em] text-slate-900">{scenario.name}</p>
+        <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-slate-200/70 bg-white/75 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.22)] backdrop-blur-sm">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-600">
+            <Sparkles className="h-3.5 w-3.5" />
+          </span>
+          <div className="text-left">
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500">Scenario</p>
+            <p className="text-sm font-semibold text-slate-900">{scenario.name}</p>
           </div>
         </div>
 
         {primaryInsight ? (
-          <div className="pointer-events-auto max-w-xs rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_-24px_rgba(59,130,246,0.28)] backdrop-blur-md">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-sky-600">
-              Insight{confidence !== null ? ` · ${confidence}%` : ""}
+          <div className="pointer-events-auto max-w-xs rounded-2xl border border-sky-100 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_40px_-26px_rgba(59,130,246,0.28)] backdrop-blur-sm">
+            <p className="text-[10px] uppercase tracking-[0.28em] text-sky-600">
+              AI Note{confidence !== null ? ` · ${confidence}%` : ""}
             </p>
-            <p className="mt-1 font-medium leading-5 text-slate-900">{primaryInsight.title}</p>
+            <p className="mt-2 font-medium leading-5 text-slate-900">{primaryInsight.title}</p>
+            {primaryInsight.detail ? (
+              <p className="mt-1 text-[12px] leading-relaxed text-slate-500">{primaryInsight.detail}</p>
+            ) : null}
           </div>
         ) : null}
       </div>
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         {primaryAction ? (
-          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.2)] backdrop-blur-md">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500">Next Step</p>
-            <p className="mt-1 text-sm leading-5 text-slate-700">{primaryAction}</p>
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200/70 bg-white/75 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.22)] backdrop-blur-sm">
+            <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">Next step</p>
+            <p className="mt-2 text-sm leading-5 text-slate-700">{primaryAction}</p>
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="pointer-events-auto rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-right text-[10px] uppercase tracking-[0.32em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)]">
+        <div className="flex gap-2">
+          <div className="pointer-events-auto rounded-full border border-slate-200/70 bg-white/75 px-4 py-2 text-[10px] uppercase tracking-[0.28em] text-slate-500 shadow-[0_12px_28px_-24px_rgba(15,23,42,0.2)] backdrop-blur-sm">
             <p>Focus</p>
-            <p className="mt-1 text-lg font-semibold tracking-[0.18em] text-slate-900">{focusMinutes}m</p>
-          </div>
-          <div className="pointer-events-auto rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-right text-[10px] uppercase tracking-[0.32em] text-slate-500 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)]">
-            <p>Layers</p>
-            <p className="mt-1 text-lg font-semibold tracking-[0.18em] text-slate-900">{scenario.layers.length}</p>
+            <p className="mt-1 text-lg font-semibold tracking-normal text-slate-900">{focusMinutes}m</p>
           </div>
         </div>
       </div>

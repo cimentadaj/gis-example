@@ -67,10 +67,10 @@ const BASE_STYLE: StyleSpecification = {
       minzoom: 0,
       maxzoom: 19,
       paint: {
-        "raster-opacity": 0.7,
-        "raster-saturation": -0.2,
-        "raster-brightness-min": 0.9,
-        "raster-brightness-max": 1.05,
+        "raster-opacity": 0.92,
+        "raster-saturation": -0.1,
+        "raster-brightness-min": 0.95,
+        "raster-brightness-max": 1.12,
       },
     },
   ],
@@ -205,7 +205,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
   return (
     <div
       ref={mapContainerRef}
-      className="h-[420px] w-full overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_32px_90px_-60px_rgba(15,23,42,0.45)] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
+      className="h-[420px] w-full overflow-hidden rounded-[32px] border border-slate-200/80 bg-[#edf2fa] shadow-[0_24px_70px_-50px_rgba(15,23,42,0.35)] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
     />
   );
 }
@@ -270,29 +270,26 @@ function syncScenarioMarkers(
   calloutMarkersRef.current.forEach((marker) => marker.remove());
   calloutMarkersRef.current = [];
 
-  const sorted = [...highlights].sort((a, b) => b.anomalyScore - a.anomalyScore).slice(0, 5);
+  const sorted = [...highlights].sort((a, b) => b.anomalyScore - a.anomalyScore).slice(0, 3);
 
   sorted.forEach((highlight) => {
     const wrapper = document.createElement("div");
-    wrapper.className = "pointer-events-auto flex flex-col items-center gap-2";
+    wrapper.className = "pointer-events-auto flex flex-col items-center gap-1";
 
     const card = document.createElement("div");
     card.className =
-      "rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 shadow-[0_18px_50px_-24px_rgba(15,23,42,0.45)] backdrop-blur-md";
+      "rounded-xl border border-slate-200/80 bg-white/85 px-3 py-2 text-slate-700 shadow-[0_12px_32px_-22px_rgba(15,23,42,0.28)] backdrop-blur-sm";
 
     const title = document.createElement("p");
     title.className = "text-xs font-semibold text-slate-800";
-    title.textContent = `${highlight.sensorId} • ${highlight.sensorType}`;
+    title.textContent = `${highlight.sensorType}`;
     card.appendChild(title);
 
     const subtitle = document.createElement("p");
     subtitle.className = "mt-1 text-[11px] text-slate-500";
-    subtitle.textContent = [
-      highlight.layerLabel,
-      highlight.district ? `• ${highlight.district}` : null,
-    ]
+    subtitle.textContent = [highlight.sensorId, highlight.district, highlight.layerLabel]
       .filter(Boolean)
-      .join(" ");
+      .join(" · ");
     card.appendChild(subtitle);
 
     const metaRow = document.createElement("div");
@@ -300,14 +297,14 @@ function syncScenarioMarkers(
 
     const anomalyBadge = document.createElement("span");
     anomalyBadge.className =
-      "inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-700";
+      "inline-flex items-center rounded-full bg-sky-50 px-2 py-1 text-[10px] font-medium text-sky-700";
     anomalyBadge.textContent = `${Math.round(highlight.anomalyScore * 100)}% attention`;
     metaRow.appendChild(anomalyBadge);
 
     if (highlight.lastReadingMinutes !== null) {
       const latency = document.createElement("span");
       latency.className = "text-[10px] text-slate-400";
-      latency.textContent = `${highlight.lastReadingMinutes}m ago`;
+      latency.textContent = `${highlight.lastReadingMinutes}m`;
       metaRow.appendChild(latency);
     }
 
@@ -317,22 +314,22 @@ function syncScenarioMarkers(
     const healthTag = document.createElement("span");
     const baseClass =
       state === "Delayed"
-        ? "bg-rose-50 text-rose-600 border-rose-100"
+        ? "bg-rose-50 text-rose-600 border border-rose-100"
         : state === "Watch"
-          ? "bg-amber-50 text-amber-600 border-amber-100"
-          : "bg-emerald-50 text-emerald-600 border-emerald-100";
-    healthTag.className = `mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] font-semibold ${baseClass}`;
+          ? "bg-amber-50 text-amber-600 border border-amber-100"
+          : "bg-emerald-50 text-emerald-600 border border-emerald-100";
+    healthTag.className = `mt-2 inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${baseClass}`;
     healthTag.textContent = state;
     card.appendChild(healthTag);
 
     wrapper.appendChild(card);
 
     const stem = document.createElement("div");
-    stem.className = "h-4 w-px rounded-full bg-sky-400/70";
+    stem.className = "h-3 w-px rounded-full bg-sky-400/70";
     wrapper.appendChild(stem);
 
     const anchor = document.createElement("div");
-    anchor.className = "h-2 w-2 rounded-full border border-white bg-sky-500";
+    anchor.className = "h-1.5 w-1.5 rounded-full border border-white bg-sky-500";
     wrapper.appendChild(anchor);
 
     const marker = new maplibregl.Marker({ element: wrapper, anchor: "bottom" })
