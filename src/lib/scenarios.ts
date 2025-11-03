@@ -61,10 +61,10 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "sdg-localization": {
     key: "sdg-localization",
     name: "SDG Localization Twin",
-    tagline: "Track SDG progress district by district.",
+    tagline: "See SDG progress by district at a glance.",
     narrative:
-      "Live census, budget, and sensor feeds show how close each district sits to its SDG goals. The twin points to places that need help right now.",
-    command: "Back the districts slipping under target before the mayoral stand-up.",
+      "Live census and budget feeds show how close each district sits to its SDG goals so stewards can jump in before targets slip.",
+    command: "Support districts slipping under target before the daily stand-up.",
     liveSignals: [
       { label: "Targets on track", value: "68%", delta: "+5%", tone: "positive" },
       { label: "Data refreshed", value: "98%", delta: "+3%", tone: "positive" },
@@ -72,7 +72,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
     aiInsights: [
       {
         title: "Innovation Basin needs tutoring crews this week.",
-        detail: "Attendance dips are pulling SDG 4 behind target; mobile workshops close the gap within five days.",
+        detail: "Attendance dips are pulling SDG 4 behind target. Mobile workshops can close the gap within five days.",
         confidence: 0.82,
       },
     ],
@@ -111,10 +111,10 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "vlr-automation": {
     key: "vlr-automation",
     name: "VLR Automation Console",
-    tagline: "AI keeps the voluntary local review moving.",
+    tagline: "Keep the voluntary local review moving on schedule.",
     narrative:
-      "Evidence from finance, climate, and community systems syncs automatically. Drafts stay live until each steward signs off.",
-    command: "Close the executive summary before Friday.",
+      "Evidence from finance, climate, and community systems syncs in automatically so drafts stay live until each steward signs off.",
+    command: "Publish the executive summary before Friday.",
     liveSignals: [
       { label: "Sections ready", value: "7 / 9", delta: "+2", tone: "positive" },
       { label: "Evidence cleared", value: "92%", delta: "+6%", tone: "positive" },
@@ -122,7 +122,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
     aiInsights: [
       {
         title: "SDG 9 packet still needs invoice proof.",
-        detail: "Finance ledger lacks tags for two projects; automation can reconcile once the steward approves the fetch.",
+        detail: "Finance ledger is missing two project tags. Automation will reconcile once the steward approves the fetch.",
         confidence: 0.9,
       },
     ],
@@ -153,10 +153,10 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "city-profiling": {
     key: "city-profiling",
     name: "City Profiling Studio",
-    tagline: "See how funding choices shift wellbeing.",
+    tagline: "Check how funding choices shift wellbeing.",
     narrative:
-      "The twin blends demographics, capital plans, and sentiment to rank regeneration moves. Leaders get a clear view of where money changes outcomes.",
-    command: "Choose the next three districts for funding before the council vote.",
+      "The twin blends demographics, capital plans, and sentiment to rank regeneration moves so leaders see where investment moves the needle.",
+    command: "Pick the next three districts for funding before the council vote.",
     liveSignals: [
       { label: "Wellbeing score", value: "74 / 100", delta: "+4", tone: "positive" },
       { label: "Capital on track", value: "81%", delta: "-3%", tone: "warning" },
@@ -164,7 +164,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
     aiInsights: [
       {
         title: "Northern Commons still delivers the biggest lift.",
-        detail: "A $14M streetscape bundle moves the wellbeing score six points while keeping displacement risk low.",
+        detail: "A $14M streetscape bundle lifts the wellbeing score six points while keeping displacement risk low.",
         confidence: 0.88,
       },
     ],

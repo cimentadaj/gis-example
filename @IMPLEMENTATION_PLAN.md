@@ -11,10 +11,10 @@
    - Slimmed the HUD chips and marker callouts so spatial data stays unobstructed.
    - Tuned layer opacity and focus styling to keep choropleths, flows, and pins crisp on the light theme.
 
-2. **Scenario Module Simplification** _(Pending)_
-   - Rework the digital-twin sidebar sections to highlight only the most important KPIs, insights, and actions.
-   - Replace jargon-heavy copy with short, plain-language descriptions tailored to SDG localization, VLR automation, and city profiling.
-   - Remove redundant badges/cards so the experience stays calm and “Notion-like.”
+2. **Scenario Module Simplification** _(✅ Completed)_
+   - Centered the digital twin module on the map with slim signal, AI note, and next-step cards.
+   - Rewrote scenario taglines, commands, and AI copy in plain language tailored to SDG localization, VLR automation, and city profiling.
+   - Removed redundant spotlight and legend blocks to deliver a calmer Notion-like layout.
 
 3. **Analytics & Data Fabric Focus Pass** _(Pending)_
    - Curate the AI pipeline and data fabric tabs to a minimal set of charts/indicators that demonstrate value without clutter.
@@ -32,6 +32,7 @@
    - Log outcomes and prepare for demo handoff.
 
 ## Progress Log
+- **2025-11-03**: Simplified the Digital Twin scenario view around the GIS map, trimmed indicator cards, and rewrote scenario copy in plain language to hit the calm high-value brief.
 - **2025-11-03**: Restored the GIS canvas with brighter base tiles, lighter HUD chips, and simplified marker callouts so spatial layers stay visible against the refreshed light dashboard styling.
 - **2025-11-03**: Softened the digital twin map overlays, removed the capability grid, and centered the canvas layout so the GIS view loads cleanly with minimal visual clutter.
 - **2025-11-06**: Introduced a capability spotlight grid with scenario-specific AI, GIS, data fabric, and digital twin summaries so the digital twin module instantly communicates Nexus’ four solution pillars.

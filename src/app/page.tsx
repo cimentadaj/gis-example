@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Clock8,
   CircleDashed,
-  Crosshair,
   FileText,
   GaugeCircle,
   Layers,
@@ -20,10 +19,8 @@ import {
   Map as MapIcon,
   MapPinned,
   MoveRight,
-  Radar,
   ShieldCheck,
   Sparkles,
-  Waves,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
@@ -94,7 +91,6 @@ import {
   listScenarioInsights,
   listScenarioSummaries,
   type ScenarioDefinition,
-  type ScenarioLayer,
   type ScenarioKey,
 } from "@/lib/scenarios";
 import { CommandCenterMap, type SpatialHighlight } from "@/components/command-center/command-center-map";
@@ -834,9 +830,10 @@ type DigitalTwinPanelProps = {
 
 function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalTwinPanelProps) {
   const focusMinutes = Math.round((focus / 100) * 60);
-  const topSignals = insights.signals.slice(0, 3);
-  const topKpis = scenario.kpis.slice(0, 2);
+  const liveSignals = insights.signals.slice(0, 3);
+  const aiNotes = insights.aiInsights.slice(0, 2);
   const priorityActions = insights.actions.slice(0, 3);
+  const scenarioKpis = scenario.kpis.slice(0, 2);
   const spatialHighlights = useMemo<SpatialHighlight[]>(() => {
     const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
     const highlights: SpatialHighlight[] = [];
@@ -898,20 +895,17 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.4em] text-sky-600">Digital Twin Command</p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">{scenario.name}</h2>
-          <p className="mt-2 text-sm text-slate-600">{scenario.tagline}</p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.18)]">
-            <Radar className="h-4 w-4 text-sky-500" />
-            {scenario.command}
-          </div>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-500">Scenario view</p>
+          <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">{scenario.name}</h2>
+          <p className="text-sm text-slate-600">{scenario.tagline}</p>
+          <p className="text-sm text-slate-500">{scenario.command}</p>
         </div>
 
-        <div className="w-full rounded-3xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.2)] sm:w-auto">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-[11px] uppercase tracking-[0.35em] text-slate-500">Focus Horizon</span>
+        <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.18)] sm:min-w-[280px]">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[11px] font-medium uppercase tracking-[0.3em] text-slate-500">Focus window</span>
             <span className="text-base font-semibold text-slate-900">{focusMinutes} min</span>
           </div>
           <input
@@ -922,70 +916,76 @@ function DigitalTwinPanel({ scenario, focus, onFocusChange, insights }: DigitalT
             max={100}
             className="mt-3 h-2 w-full appearance-none rounded-full bg-slate-200 accent-sky-500"
           />
-          <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-slate-400">
+          <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-slate-400">
             <span>Now</span>
             <span>+60m</span>
           </div>
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-slate-200 bg-white px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.2)]">
-        <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
-          <ActivitySquare className="h-4 w-4" />
-          Operational Narrative
-        </p>
-        <p className="mt-3 text-slate-700">{scenario.narrative}</p>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[1.65fr_1fr]">
-        <div className="space-y-5">
-          <div className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_12px_32px_-20px_rgba(15,23,42,0.18)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+        <div className="space-y-4">
+          <div className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_12px_32px_-20px_rgba(15,23,42,0.16)]">
             <CommandCenterMap scenario={scenario} focus={focus} highlights={spatialHighlights} />
             <MapHud scenario={scenario} insights={insights} focus={focus} />
           </div>
 
-          <MapSpotlightList scenario={scenario} />
-
-          <LayerLegend layers={scenario.layers} focus={focus} />
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {topSignals.map((signal) => (
-              <SignalBadge key={signal.label} signal={signal} />
-            ))}
+          <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_16px_48px_-32px_rgba(15,23,42,0.18)]">
+            <p className="text-[11px] uppercase tracking-[0.35em] text-slate-500">Live indicators</p>
+            <div className="mt-4 space-y-4">
+              {liveSignals.map((signal) => (
+                <SignalBadge key={signal.label} signal={signal} />
+              ))}
+            </div>
+            {scenarioKpis.length ? (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {scenarioKpis.map((kpi) => (
+                  <div
+                    key={kpi.id}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                  >
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">{kpi.label}</p>
+                    <p className="mt-2 text-lg font-semibold text-slate-900">
+                      {kpi.value.toLocaleString()} <span className="text-sm text-slate-500">{kpi.unit}</span>
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {kpi.change.direction === "up" ? "Improved" : "Down"} {kpi.change.percentage}% vs last{" "}
+                      {kpi.change.period}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
 
-        <div className="space-y-5">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_-38px_rgba(15,23,42,0.18)]">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
-              <Sparkles className="h-4 w-4" />
-              AI Insight Pulse
-            </p>
-            <div className="mt-4 space-y-4">
-              {insights.aiInsights.map((insight, index) => (
-                <InsightCard key={insight.title} insight={insight} index={index} />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {topKpis.map((kpi) => (
-              <div
-                key={kpi.id}
-                className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_16px_48px_-32px_rgba(15,23,42,0.18)]"
-              >
-                <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{kpi.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">
-                  {kpi.value} <span className="text-sm text-slate-500">{kpi.unit}</span>
-                </p>
-                <p className="mt-1 text-[11px] text-sky-600">
-                  Δ {kpi.change.percentage}% {kpi.change.direction === "up" ? "improvement" : "reduction"}
-                </p>
+        <div className="space-y-4">
+          {aiNotes.length ? (
+            <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_16px_48px_-32px_rgba(15,23,42,0.18)]">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-slate-500">AI notes</p>
+              <div className="mt-4 space-y-3">
+                {aiNotes.map((insight, index) => (
+                  <InsightCard key={insight.title} insight={insight} index={index} />
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : null}
 
-          <ActionQueueCard actions={priorityActions} />
+          {priorityActions.length ? (
+            <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_16px_48px_-32px_rgba(15,23,42,0.18)]">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-slate-500">Next steps</p>
+              <ul className="mt-4 space-y-3">
+                {priorityActions.map((action, index) => (
+                  <li key={action} className="flex items-start gap-3 text-sm text-slate-600">
+                    <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-sky-600">
+                      {index + 1}
+                    </span>
+                    <span className="leading-6">{action}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
@@ -1008,227 +1008,63 @@ function MapHud({
 
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5">
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-slate-200/70 bg-white/75 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.22)] backdrop-blur-sm">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-600">
-            <Sparkles className="h-3.5 w-3.5" />
-          </span>
-          <div className="text-left">
-            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500">Scenario</p>
-            <p className="text-sm font-semibold text-slate-900">{scenario.name}</p>
-          </div>
+      <div className="flex flex-wrap gap-3">
+        <div className="pointer-events-auto rounded-full border border-slate-200/70 bg-white/85 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+          <p className="text-[10px] uppercase tracking-[0.26em] text-slate-500">Scenario</p>
+          <p className="mt-1 text-sm font-semibold text-slate-900">{scenario.name}</p>
         </div>
+        <div className="pointer-events-auto rounded-full border border-slate-200/70 bg-white/85 px-4 py-2 text-xs text-slate-600 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+          <p className="text-[10px] uppercase tracking-[0.26em] text-slate-500">Focus</p>
+          <p className="mt-1 text-sm font-semibold text-slate-900">{focusMinutes}m</p>
+        </div>
+      </div>
 
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         {primaryInsight ? (
-          <div className="pointer-events-auto max-w-xs rounded-2xl border border-sky-100 bg-white/80 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_40px_-26px_rgba(59,130,246,0.28)] backdrop-blur-sm">
-            <p className="text-[10px] uppercase tracking-[0.28em] text-sky-600">
-              AI Note{confidence !== null ? ` · ${confidence}%` : ""}
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200/70 bg-white/85 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_40px_-26px_rgba(15,23,42,0.22)] backdrop-blur-sm">
+            <p className="text-xs font-medium text-slate-500">
+              AI note{confidence !== null ? ` · ${confidence}% confidence` : ""}
             </p>
-            <p className="mt-2 font-medium leading-5 text-slate-900">{primaryInsight.title}</p>
+            <p className="mt-1 text-sm font-semibold leading-5 text-slate-900">{primaryInsight.title}</p>
             {primaryInsight.detail ? (
-              <p className="mt-1 text-[12px] leading-relaxed text-slate-500">{primaryInsight.detail}</p>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">{primaryInsight.detail}</p>
             ) : null}
           </div>
         ) : null}
-      </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-3">
         {primaryAction ? (
-          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200/70 bg-white/75 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.22)] backdrop-blur-sm">
-            <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">Next step</p>
-            <p className="mt-2 text-sm leading-5 text-slate-700">{primaryAction}</p>
+          <div className="pointer-events-auto max-w-sm rounded-2xl border border-slate-200/70 bg-white/85 px-4 py-3 text-sm text-slate-600 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.22)] backdrop-blur-sm">
+            <p className="text-xs font-medium text-slate-500">Next step</p>
+            <p className="mt-1 leading-5 text-slate-700">{primaryAction}</p>
           </div>
         ) : null}
-
-        <div className="flex gap-2">
-          <div className="pointer-events-auto rounded-full border border-slate-200/70 bg-white/75 px-4 py-2 text-[10px] uppercase tracking-[0.28em] text-slate-500 shadow-[0_12px_28px_-24px_rgba(15,23,42,0.2)] backdrop-blur-sm">
-            <p>Focus</p>
-            <p className="mt-1 text-lg font-semibold tracking-normal text-slate-900">{focusMinutes}m</p>
-          </div>
-        </div>
       </div>
     </div>
   );
-}
-
-function MapSpotlightList({ scenario }: { scenario: ScenarioDefinition }) {
-  const pointLayers = scenario.layers.filter((layer) => layer.visualization === "point");
-
-  const spotlightCandidates = pointLayers.flatMap((layer) => {
-    const dataset = layer.dataset as GeoJSONFeatureCollection;
-    return dataset.features
-      .filter((feature) => feature.geometry?.type === "Point")
-      .map((feature) => {
-        const properties = (feature.properties ?? {}) as Record<string, unknown>;
-        const progressIndex =
-          typeof properties.progressIndex === "number"
-            ? properties.progressIndex
-            : typeof properties.anomalyScore === "number"
-              ? 1 - Number(properties.anomalyScore)
-              : 0.5;
-        const attentionScore = Math.min(1, Math.max(0, 1 - progressIndex));
-        const status = typeof properties.status === "string" ? (properties.status as string) : null;
-        const indicator =
-          typeof properties.indicator === "string" ? (properties.indicator as string) : layer.label;
-        const sdgTarget = typeof properties.sdgTarget === "string" ? (properties.sdgTarget as string) : null;
-        const district = typeof properties.district === "string" ? properties.district : null;
-        const id = typeof properties.id === "string" ? properties.id : layer.id;
-
-        return {
-          id,
-          layerLabel: layer.label,
-          attentionScore,
-          progressIndex,
-          status,
-          district,
-          indicator,
-          sdgTarget,
-        };
-      });
-  });
-
-  if (!spotlightCandidates.length) {
-    return null;
-  }
-
-  const topSpots = [...spotlightCandidates]
-    .sort((a, b) => (b.attentionScore ?? 0) - (a.attentionScore ?? 0))
-    .slice(0, 3);
-
-  return (
-    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.18)]">
-      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
-        <Crosshair className="h-3.5 w-3.5" />
-        Spatial Spotlight
-      </p>
-      <div className="mt-4 space-y-3">
-        {topSpots.map((spot) => {
-          const statusClass =
-            spot.status === "Delayed"
-              ? "bg-rose-50 text-rose-600 border-rose-200"
-              : spot.status === "Watch"
-                ? "bg-amber-50 text-amber-600 border-amber-200"
-                : "bg-emerald-50 text-emerald-600 border-emerald-200";
-          const narrative =
-            spot.status === "Delayed"
-              ? "Immediate steward action recommended."
-              : spot.status === "Watch"
-                ? "Monitor steward notes; AI flags emerging variance."
-                : "Indicator performing on plan.";
-
-          return (
-            <div
-              key={`${spot.id}-${spot.layerLabel}`}
-              className="flex items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-            >
-              <div>
-                <p className="text-sm font-semibold text-slate-900">
-                  {spot.indicator}
-                  {spot.sdgTarget ? ` · ${spot.sdgTarget}` : ""}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {spot.layerLabel}
-                  {spot.district ? ` · ${spot.district}` : ""}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">{narrative}</p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <span className="text-xs font-semibold text-sky-600">
-                  {(spot.progressIndex * 100).toFixed(0)}% progress
-                </span>
-                <span className={cn("rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.3em]", statusClass)}>
-                  {spot.status ?? "On Track"}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function LayerLegend({ layers, focus }: { layers: ScenarioLayer[]; focus: number }) {
-  if (!layers.length) {
-    return null;
-  }
-
-  const focusFactor = 0.55 + (focus / 100) * 0.55;
-
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {layers.map((layer) => {
-        const { label, Icon } = getVisualizationMeta(layer.visualization);
-        const gradientBackground = layer.style.secondaryColor
-          ? `linear-gradient(135deg, ${layer.style.color} 0%, ${layer.style.secondaryColor} 100%)`
-          : `linear-gradient(135deg, ${layer.style.color} 0%, rgba(15, 23, 42, 0.65) 100%)`;
-        const amplified = Math.min(1.25, layer.style.intensity * focusFactor);
-        const focusBoost = Math.round((amplified / 1.25) * 100);
-
-        return (
-          <div
-            key={layer.id}
-            className="group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-[0_16px_50px_-36px_rgba(15,23,42,0.18)]"
-          >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-10 opacity-20 blur-3xl transition-opacity duration-500 group-hover:opacity-45"
-              style={{ background: gradientBackground }}
-            />
-
-            <div className="relative flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-sky-600">
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-slate-400">{label}</p>
-                  <p className="text-sm font-semibold text-slate-900">{layer.label}</p>
-                </div>
-              </div>
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
-                {focusBoost}% focus
-              </span>
-            </div>
-
-            <p className="relative mt-3 text-xs leading-relaxed text-slate-500">{layer.legend}</p>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function getVisualizationMeta(type: ScenarioLayer["visualization"]): { label: string; Icon: LucideIcon } {
-  switch (type) {
-    case "flow":
-      return { label: "Flow Field", Icon: Waves };
-    case "choropleth":
-      return { label: "Resilience Mesh", Icon: Layers };
-    case "point":
-    default:
-      return { label: "Sensor Pulse", Icon: Crosshair };
-  }
 }
 
 function SignalBadge({ signal }: { signal: ScenarioInsightsPayload["signals"][number] }) {
-  const tone =
+  const deltaTone =
     signal.tone === "positive"
       ? "border-emerald-200 bg-emerald-50 text-emerald-600"
       : signal.tone === "warning"
         ? "border-amber-200 bg-amber-50 text-amber-600"
-        : "border-slate-200 bg-white text-slate-600";
+        : "border-slate-200 bg-slate-100 text-slate-600";
 
   return (
-    <div
-      className={cn(
-        "rounded-[24px] border px-5 py-4 text-sm shadow-[0_14px_36px_-28px_rgba(15,23,42,0.18)]",
-        tone,
-      )}
-    >
-      <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">{signal.label}</p>
-      <p className="mt-2 text-lg font-semibold text-slate-900">{signal.value}</p>
-      <p className="text-[11px] text-slate-500">Δ {signal.delta}</p>
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">{signal.label}</p>
+        <p className="mt-1 text-lg font-semibold text-slate-900">{signal.value}</p>
+      </div>
+      <span
+        className={cn(
+          "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold",
+          deltaTone,
+        )}
+      >
+        {signal.delta}
+      </span>
     </div>
   );
 }
@@ -1241,33 +1077,12 @@ function InsightCard({
   index: number;
 }) {
   return (
-    <div className="rounded-[22px] border border-slate-200 bg-white px-4 py-3 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.18)]">
-      <p className="text-xs font-semibold text-slate-900">{insight.title}</p>
-      <p className="mt-2 text-sm text-slate-600">{insight.detail}</p>
-      <p className="mt-3 text-[10px] uppercase tracking-[0.35em] text-sky-600">
-        {Math.round(insight.confidence * 100)}% confidence · Insight #{index + 1}
+    <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3">
+      <p className="text-sm font-semibold text-slate-900">{insight.title}</p>
+      {insight.detail ? <p className="mt-2 text-sm leading-relaxed text-slate-600">{insight.detail}</p> : null}
+      <p className="mt-2 text-xs text-slate-500">
+        Insight #{index + 1} · {Math.round(insight.confidence * 100)}% model confidence
       </p>
-    </div>
-  );
-}
-
-function ActionQueueCard({ actions }: { actions: string[] }) {
-  return (
-    <div className="rounded-[26px] border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.18)]">
-      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-sky-600">
-        <Workflow className="h-4 w-4" />
-        Orchestration Queue
-      </p>
-      <ul className="mt-3 space-y-2">
-        {actions.map((action, index) => (
-          <li key={action} className="flex gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-left text-sm text-slate-600">
-            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-600">
-              {index + 1}
-            </span>
-            <span>{action}</span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
