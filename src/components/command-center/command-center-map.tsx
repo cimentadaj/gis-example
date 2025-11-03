@@ -205,7 +205,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
   return (
     <div
       ref={mapContainerRef}
-      className="h-[420px] w-full overflow-hidden rounded-[32px] border border-slate-200/80 bg-[#edf2fa] shadow-[0_24px_70px_-50px_rgba(15,23,42,0.35)] sm:h-[480px] lg:h-[560px] xl:h-[620px] 2xl:h-[680px]"
+      className="h-[320px] w-full overflow-hidden rounded-3xl bg-[#f8fafc] sm:h-[380px] lg:h-[440px] xl:h-[480px]"
     />
   );
 }

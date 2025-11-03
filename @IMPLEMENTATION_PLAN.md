@@ -6,30 +6,20 @@
 - Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
-1. **GIS Canvas Visibility Refresh** _(✅ Completed)_
-   - Brightened the base tiles and overlays so the city map reads clearly on first paint.
-   - Slimmed the HUD chips and marker callouts so spatial data stays unobstructed.
-   - Tuned layer opacity and focus styling to keep choropleths, flows, and pins crisp on the light theme.
+1. **Light-Theme GIS Canvas Refresh** _(✅ Completed)_
+   - Rebuilt the dashboard shell with a compact top bar, light Notion-inspired surface, and a single tab rail to keep navigation minimal.
+   - Restored the map canvas with generous height, gentle borders, and clean marker overlays so the spatial story reads instantly.
+   - Trimmed each module to focused cards and plain-language summaries, keeping the three core scenarios breathable and easy to scan.
 
-2. **Scenario Module Simplification** _(✅ Completed)_
-   - Centered the digital twin module on the map with slim signal, AI note, and next-step cards.
-   - Rewrote scenario taglines, commands, and AI copy in plain language tailored to SDG localization, VLR automation, and city profiling.
-   - Removed redundant spotlight and legend blocks to deliver a calmer Notion-like layout.
+2. **Scenario Content Simplification** _(⏳ Pending)_
+   - Rewrite module copy, KPIs, and controls in concise language focused on SDG localization, VLR automation, and city profiling.
+   - Curate a minimal, high-value set of charts and status cards for each tab with realistic AI/GIS storytelling.
+   - Refresh dataset stubs so map points, heatmaps, and AI insights reflect believable Nexus Consulting use cases.
 
-3. **Analytics & Data Fabric Focus Pass** _(✅ Completed)_
-   - Curated the AI pipeline tab to three focused panels covering forecasts, wellbeing, and evidence follow-ups in calm plain language.
-   - Rebuilt the Data Fabric module around connector health, automation runs, and quality alerts with clean, Notion-inspired styling.
-   - Rewrote playbooks and guardrail copy so every card describes practical AI-supported tasks city teams can action immediately.
-
-4. **Top Bar & Navigation Polish** _(✅ Completed)_
-   - Slimmed the intelligence bar with lighter padding, balanced typography, and a compact Nexus brand block.
-   - Introduced shared status-chip styling and a calmer scenario picker to keep the header breathable.
-   - Softened the module tab rail with simplified pills and icon treatment, confirming responsive behaviour across breakpoints.
-
-5. **Experience QA & Build** _(✅ Completed)_
-   - Reviewed the Digital Twin module and map composition to confirm layers, highlights, and companion cards stay visible on the light theme.
-   - Ran `npm run lint` with no findings and `npm run build` to validate a clean production bundle.
-   - Logged verification results so the demo handoff reflects the current state.
+3. **QA & Build Validation** _(⏳ Pending)_
+   - Cross-browser smoke test the simplified layout for responsive behaviour and map interactivity.
+   - Run `npm run lint` and `npm run build` to ensure the Next.js bundle succeeds with the refreshed UI.
+   - Capture demo notes highlighting the key workflows after the simplification pass.
 
 ## Progress Log
 - **2025-11-03**: Tuned the top chrome and navigation controls—reduced header height, unified status chips via a shared component, simplified module tabs, and spot-checked responsive behaviour to match the refined GIS brief.
@@ -37,6 +27,7 @@
 - **2025-11-03**: Simplified the Digital Twin scenario view around the GIS map, trimmed indicator cards, and rewrote scenario copy in plain language to hit the calm high-value brief.
 - **2025-11-03**: Restored the GIS canvas with brighter base tiles, lighter HUD chips, and simplified marker callouts so spatial layers stay visible against the refreshed light dashboard styling.
 - **2025-11-03**: Softened the digital twin map overlays, removed the capability grid, and centered the canvas layout so the GIS view loads cleanly with minimal visual clutter.
+- **2025-11-03**: Shifted the dashboard to a light, uncluttered layout—new top bar, tab rail, simplified Digital Twin canvas, streamlined VLR panel, and focused AI pipeline charts that keep the Nexus story tight and map-first.
 - **2025-11-06**: Introduced a capability spotlight grid with scenario-specific AI, GIS, data fabric, and digital twin summaries so the digital twin module instantly communicates Nexus’ four solution pillars.
 - **2025-11-05**: Reoriented the scenario registry, geo datasets, analytics copy, and copilot workspace around SDG localization, VLR automation, and city profiling; refreshed map highlights, data fabric content, and light-theme storytelling to match the latest spec.
 - **2025-11-04**: Reframed the Copilot module into a Data Fabric automation dashboard with connector health, automation cadence, and guardrail reporting backed by new integration datasets.

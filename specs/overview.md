@@ -43,3 +43,9 @@ MOST NEW UPDATE:
 fix the gis map, not visible.
 
 clean up clutter and over definition of kpi boxes and cluttered stuff. Keep the bare minimum to have a robust analysis in tht three scenarios. Remove all jargon in faovur of short/simple text. Less is more but the less is high quality.
+
+---
+
+Keep only the top bar for the nexus logo, remove everything else and make the height much smaller (we keep the menu on the left as it is right now).
+
+Make sure all maps and GIS are working as I can see the square of the map only grey nothing inside.
