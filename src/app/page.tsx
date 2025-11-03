@@ -2,7 +2,14 @@ import { AnchorButton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
-import { heroContent, platformPillars, signalBadges } from "@/data/content";
+import {
+  heroContent,
+  platformPillars,
+  signalBadges,
+  narrativeSections,
+  successStories,
+  credibilitySignals,
+} from "@/data/content";
 import {
   defaultScenarioKey,
   getScenarioConfig,
@@ -13,6 +20,9 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   ArrowUpRight,
+  BrainCircuit,
+  CheckCircle2,
+  Globe2,
   MapPinned,
   Radar,
 } from "lucide-react";
@@ -29,6 +39,9 @@ export default function Home() {
       <HeroSection hero={heroContent} scenario={defaultScenario} />
       <SignalsMarquee badges={signalBadges} />
       <PillarsSection pillars={platformPillars} />
+      <NarrativeFlowSection narrative={narrativeSections} />
+      <ImpactStoriesSection stories={successStories} />
+      <CredibilitySection credibility={credibilitySignals} />
     </div>
   );
 }
@@ -119,7 +132,7 @@ function SignalsMarquee({ badges }: { badges: string[] }) {
 
 function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
   return (
-    <Section id="ai-insights">
+    <Section id="platform-architecture">
       <Container className="grid gap-12 lg:grid-cols-[0.75fr_1fr] lg:gap-16">
         <div className="space-y-6">
           <p className="text-sm font-semibold uppercase tracking-[0.45em] text-primary-200">Platform Stack</p>
@@ -153,6 +166,214 @@ function PillarsSection({ pillars }: { pillars: typeof platformPillars }) {
               <p className="mt-2 text-sm leading-6 text-foreground/70">{description}</p>
             </div>
           ))}
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+type NarrativeBlock = (typeof narrativeSections)[number];
+
+function NarrativeFlowSection({ narrative }: { narrative: typeof narrativeSections }) {
+  return (
+    <Section id="ai-insights" className="pt-10">
+      <Container className="space-y-12">
+        <div className="max-w-2xl space-y-4">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary-400/40 bg-primary-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-primary-200">
+            <BrainCircuit className="h-3.5 w-3.5" />
+            AI Narrative Engine
+          </span>
+          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+            Explainable intelligence orchestrates every layer of the digital twin.
+          </h2>
+          <p className="text-base leading-7 text-foreground/70">
+            Our scenario playbooks walk operations, planners, and executives through the same shared source of
+            truth. Each storyline blends live telemetry, simulations, and policy guardrails so decisions stay
+            transparent and defensible.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          {narrative.map((block, index) => (
+            <NarrativeCard key={block.headline} block={block} step={index + 1} />
+          ))}
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+function NarrativeCard({ block, step }: { block: NarrativeBlock; step: number }) {
+  return (
+    <article className="group relative flex h-full flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-surface/80 p-6 text-sm text-foreground/80 shadow-[0_45px_120px_-60px_rgba(56,189,248,0.65)] transition duration-500 hover:-translate-y-1 hover:border-primary-400/40">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-400/10 via-transparent to-accent-500/15 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="relative flex items-center justify-between text-xs font-semibold uppercase tracking-[0.35em]">
+        <span className="inline-flex items-center gap-2 text-primary-200">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm text-white">
+            {String(step).padStart(2, "0")}
+          </span>
+          {block.eyebrow}
+        </span>
+        <span className="rounded-full bg-white/5 px-3 py-1 text-[10px] tracking-[0.35em] text-foreground/50">
+          Scenario Playbook
+        </span>
+      </div>
+      <div className="relative space-y-3">
+        <h3 className="text-lg font-semibold text-white">{block.headline}</h3>
+        <p className="leading-6 text-foreground/70">{block.body}</p>
+      </div>
+      <ul className="relative grid gap-2 text-sm leading-6">
+        {block.highlights.map((highlight) => (
+          <li key={highlight} className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-primary-300">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            </span>
+            <span className="text-foreground/70">{highlight}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
+type SuccessStory = (typeof successStories)[number];
+
+function ImpactStoriesSection({ stories }: { stories: typeof successStories }) {
+  const highlightPoints = [
+    "Deployable in under six weeks with turnkey data onboarding and governance baselines.",
+    "Scenario twins mix mobility, climate, and grid levers into one briefing-ready canvas.",
+    "AI co-pilots coach field teams with explainable actions and compliance safeguards.",
+  ];
+
+  return (
+    <Section id="use-cases" className="pt-10">
+      <Container className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <div className="space-y-6">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-accent-200">
+            <Globe2 className="h-3.5 w-3.5" />
+            City Impact Library
+          </span>
+          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+            Proven across waterfronts, innovation corridors, and resilient districts.
+          </h2>
+          <p className="text-base leading-7 text-foreground/70">
+            Every deployment blends live operations with predictive simulations so leadership can orchestrate
+            mobility, energy, and climate decisions in lockstep. Here is how urban innovators are already scaling
+            the playbooks.
+          </p>
+          <ul className="grid gap-3 text-sm text-foreground/70">
+            {highlightPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <span className="mt-0.5 h-2 w-2 rounded-full bg-accent-500" />
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          {stories.map((story, index) => (
+            <SuccessStoryCard key={story.city} story={story} accentIndex={index} />
+          ))}
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+function SuccessStoryCard({ story, accentIndex }: { story: SuccessStory; accentIndex: number }) {
+  const accentPalette = [
+    "from-primary-400/40 to-primary-500/10",
+    "from-emerald-400/35 to-teal-500/10",
+    "from-fuchsia-400/35 to-purple-500/10",
+  ];
+
+  return (
+    <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-surface/75 p-6 shadow-[0_45px_120px_-50px_rgba(168,85,247,0.45)] transition duration-500 hover:-translate-y-1 hover:border-accent-500/40">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/40" />
+      <div className={`absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-gradient-to-br ${accentPalette[accentIndex % accentPalette.length]}`} />
+      <div className="relative flex flex-col gap-4 text-sm text-foreground/75">
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/60">
+            {story.city}
+          </span>
+          <span className="text-xs uppercase tracking-[0.3em] text-primary-200">{story.metric}</span>
+        </div>
+        <p className="text-base font-semibold leading-6 text-white">{story.outcome}</p>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Impact Vector</p>
+          <p className="mt-2 text-sm font-medium text-foreground/80">{story.impact}</p>
+        </div>
+        <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Digital Twin in Action</p>
+        <p className="text-sm leading-6 text-foreground/70">
+          Coordinated AI copilots, map intelligence, and command room workflows to keep stakeholders aligned in
+          minutes.
+        </p>
+      </div>
+    </article>
+  );
+}
+
+type Credibility = typeof credibilitySignals;
+
+function CredibilitySection({ credibility }: { credibility: Credibility }) {
+  const { badges, partners } = credibility;
+
+  return (
+    <Section id="why-us" className="pt-10">
+      <Container className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="space-y-6">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/60">
+            Mission-Grade Assurance
+          </span>
+          <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
+            Built for civic trust, regulatory confidence, and operational resilience.
+          </h2>
+          <p className="text-base leading-7 text-foreground/70">
+            Every rollout is hardened with privacy-by-design, AI governance accelerators, and cybersecurity
+            playbooks so you can scale innovation without compromising compliance.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {badges.map((badge) => (
+              <div key={badge} className="glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-foreground/70">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500/15 text-primary-200">
+                  <CheckCircle2 className="h-4 w-4" />
+                </span>
+                <span>{badge}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-4 pt-2">
+            <AnchorButton href="#contact" variant="primary">
+              Engage the Taskforce
+            </AnchorButton>
+            <AnchorButton href="#demo" variant="secondary">
+              Download Capabilities Deck
+            </AnchorButton>
+          </div>
+        </div>
+
+        <div className="glass-panel relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[0_45px_120px_-50px_rgba(59,130,246,0.55)]">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-accent-500/15" />
+          <div className="relative space-y-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50">Strategic Alliances</p>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {partners.map(({ name, logo: Logo }) => (
+                <div key={name} className="flex flex-col items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4 text-center text-xs text-foreground/60 transition hover:border-primary-400/30 hover:bg-primary-400/10">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-primary-200">
+                    <Logo className="h-6 w-6" />
+                  </span>
+                  <span className="uppercase tracking-[0.25em]">{name}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm leading-6 text-foreground/70">
+              We collaborate with innovation labs, utilities, and global standards bodies to ensure every feature
+              aligns with smart city mandates and ethical AI frameworks.
+            </p>
+          </div>
         </div>
       </Container>
     </Section>
