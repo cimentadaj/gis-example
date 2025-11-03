@@ -6,51 +6,57 @@
 - Keep the stack frontend-only while grounding every module in realistic datasets, spatial layers, and analytical storytelling.
 
 ## Task Backlog (ordered by priority)
-1. **Spec Refresh – Command Bar & Tabs** _(✅ Completed)_
+1. **Data Fabric Integration Dashboard** _(✅ Completed)_
+   - Built integration datasets covering connectors, automation cadence, and data quality alerts.
+   - Repositioned the Copilot tab into a light Data Fabric workspace with concise scenario copy.
+   - Highlighted guardrails, connector status counts, and VLR readiness signals inline with the latest spec.
+
+2. **Spec Refresh – Command Bar & Tabs** _(✅ Completed)_
    - Tighten the intelligence top bar height, spacing, and typography to match the latest spec update.
    - Rebalance module switcher into crisp tab treatment with lighter, Notion/Apple-inspired surfaces.
    - Audit sidebar/footer spacing to preserve the airy, elegant hierarchy after the adjustments.
 
-2. **Spec Refresh – Spatial Storytelling** _(✅ Completed)_
+3. **Spec Refresh – Spatial Storytelling** _(✅ Completed)_
    - Brightened the digital twin canvas with Notion-inspired surfaces and clarified the scenario framing around the map.
    - Added AI hotspot callouts and inline narratives adjacent to the map to keep spatial insights contextual.
    - Tightened layer legends, spotlight copy, and KPI summaries to stay concise and grounded in real operational language.
 
-3. **Experience Polish & QA** _(✅ Completed)_
+4. **Experience Polish & QA** _(✅ Completed)_
    - Extended the light, Notion-inspired surfaces across VLR, analytics, and copilot modules with simplified spacing and updated typography.
    - Added targeted light-theme overrides plus component-level refinements so charts, cards, and copilot rails read cleanly on bright surfaces.
    - Verified layout responsiveness and re-ran lint/build checks to confirm the production bundle.
 
-4. **Dashboard Shell & Navigation** _(✅ Completed)_
+5. **Dashboard Shell & Navigation** _(✅ Completed)_
    - Replace the marketing layout with a Nexus-branded dashboard chrome: top intelligence bar, module navigation, and responsive grid system.
    - Surface global state (city, sync timestamp, alert badges) and quick AI status indicators.
    - Ensure the shell accommodates the command map, analytics stack, VLR pipelines, and copilot panes without overflow.
 
-5. **Digital Twin Operations Canvas** _(✅ Completed)_
+6. **Digital Twin Operations Canvas** _(✅ Completed)_
    - Embed the MapLibre command center into the new shell with adaptive sizing, layer legends, and focus controls.
    - Pair the map with live KPI badges, AI insight overlays, and timeline focus dial.
    - Optimize for 1440px desktop while staying functional on tablets.
 
-6. **VLR Automation Workbench** _(✅ Completed)_
+7. **VLR Automation Workbench** _(✅ Completed)_
    - Build a VLR pipeline board highlighting ingestion, classification, scoring, and AI narrative summaries.
    - Provide interactive step selection with progress signals, sample KPI deltas, and policy compliance badges.
    - Include PDF preview placeholder and export CTA for stakeholders.
 
-7. **AI Insight Modules** _(✅ Completed)_
+8. **AI Insight Modules** _(✅ Completed)_
    - Rebuilt forecast, resilience, anomaly, risk, and explainability widgets into a tabbed analytics studio synced to active scenarios.
    - Layered hover states, scoped filters, and AI lift callouts with gradients and clean Notion-like surfaces.
    - Wove scenario narratives, playbooks, and transparency queues directly into each module stream.
 
-8. **Copilot & Action Orchestration** _(✅ Completed)_
+9. **Copilot & Action Orchestration** _(✅ Completed)_
   - Integrate the AI copilot studio as a collapsible right-rail with mission threads, recommended actions, and audit trace.
   - Wire up sample prompts/responses and align to the city’s active scenario context.
 
-9. **Experience Polish & QA (Initial)** _(✅ Completed)_
+10. **Experience Polish & QA (Initial)** _(✅ Completed)_
    - Tightened dashboard chrome with a slimmer intelligence bar, refined sidebar pacing, and Notion-inspired surfaces.
    - Streamlined module layout into tabbed experiences, elevated spatial storytelling with sensor spotlights, and refreshed map context.
    - Ran lint/build checks to validate the production bundle and preserve the walkthrough narrative for sales teams.
 
 ## Progress Log
+- **2025-11-04**: Reframed the Copilot module into a Data Fabric automation dashboard with connector health, automation cadence, and guardrail reporting backed by new integration datasets.
 - **2025-11-03**: Slimmed the intelligence bar, refreshed the module tab rail, and re-balanced sidebar spacing for the Notion-inspired spec refresh.
 - **2025-11-03**: Replaced the marketing layout with a Nexus-branded dashboard shell featuring top intelligence bar, module sidebar, global KPI pulse strip, and reorganized sections for digital twin, VLR, analytics, and copilot experiences.
 - **2025-11-03**: Elevated the digital twin operations canvas with MapLibre overlays, dynamic layer legends, focus-driven telemetry, and expanded responsive breakpoints for large-format command displays.

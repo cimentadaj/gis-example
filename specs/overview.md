@@ -21,7 +21,7 @@ NEWER UPDATE:
 Make the top sidebar height smaller, make the map have actual points and con be seen in the contx of an analysis of some sort. Make the modules separate tabs and make the full aesthetics kinda like notion/apple in terms of visuals, colors, fonts, etc... also, remove modules to not make it cluttered. Avoid a super dashboard with too many things, strike a clear notion like balance between good design, good show of stuff and elegant design. Please think hard about the actual each module so that the Ai/ML/plots, kpi, etc.. make sense, the wording is simple, easy t use and has a REAL case scenarion not just fancy set of words or stuff, etc..
 
 --- 
-Most NEW update:
+Most NEW update (FOCUS ON THIS NOW):
 
 Override the current dark design for a more standard dashboard design for GIS. Limit the examples to avoid typical text book examples (grid, eletricity, traffic optimization, etc..) to use the actual examples defined here. Make sure your dashboard is simple, avoid over cluttering, at all steps make sure you're keeping the frontend clean and simple but extremely close to value added. Think hard about the plan to build Ai/ML soltuions for those specific problems (GIS, VLRs,  Sustainable Development Goals (SDGs) into local-level actions, city profiling, etc..) Dont add these modules blindly but think of real possible AI/ML applications that are not super cutting edge but using ML/ pipelines, etc.. making a simpledashboard for some of these exampls with the same colorsa as notion and traditional dashboard (no black or dark), ALWAYS avoiding clutter and perfect UI flow
 

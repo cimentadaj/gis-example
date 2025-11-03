@@ -56,6 +56,16 @@ import {
   type SystemKpi,
 } from "@/data/metrics";
 import {
+  dataAutomations,
+  dataConnectors,
+  dataFabricMetrics,
+  dataQualityAlerts,
+  type DataAutomationStatus,
+  type DataConnectorStatus,
+  type DataFabricMetric,
+  type DataQualityAlertSeverity,
+} from "@/data/integration";
+import {
   copilotAuditLog,
   copilotMissionDeck,
   copilotModuleIndex,
@@ -115,10 +125,10 @@ const moduleNavigation = [
   },
   {
     id: "copilot",
-    label: "Copilot Orchestration",
-    description: "Conversational mission control and coordinated action queues.",
-    icon: Bot,
-    accent: "from-rose-400/35 via-transparent to-rose-500/15",
+    label: "Data Fabric",
+    description: "Automation health across cross-department feeds and AI guardrails.",
+    icon: Layers,
+    accent: "from-slate-400/35 via-transparent to-slate-500/15",
   },
 ];
 
@@ -389,10 +399,6 @@ export default function Home() {
                   <CopilotPreviewPanel
                     scenario={scenario}
                     module={copilotModule}
-                    quickPrompts={copilotPrompts}
-                    recommendations={copilotRecommendationsForScenario}
-                    missions={copilotMissionsForScenario}
-                    auditLog={copilotAuditTrail}
                     onSummonDock={() => setCopilotOverlayOpen(true)}
                     onToggleRail={() => setCopilotDockOpen((prev) => !prev)}
                     isRailOpen={copilotDockOpen}
@@ -2255,66 +2261,112 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
 type CopilotPreviewPanelProps = {
   scenario: ScenarioDefinition;
   module?: CopilotModule;
-  quickPrompts: CopilotPrompt[];
-  recommendations: CopilotRecommendation[];
-  missions: CopilotMission[];
-  auditLog: CopilotAuditEntry[];
   onSummonDock: () => void;
   onToggleRail: () => void;
   isRailOpen: boolean;
 };
 
-function CopilotPreviewPanel({
-  scenario,
-  module,
-  quickPrompts,
-  recommendations,
-  missions,
-  auditLog,
-  onSummonDock,
-  onToggleRail,
-  isRailOpen,
-}: CopilotPreviewPanelProps) {
-  const activeMissions = missions.filter((mission) => mission.status === "active");
-  const queuedMissions = missions.filter((mission) => mission.status === "queued");
-  const completedMissions = missions.filter((mission) => mission.status === "complete");
+const connectorStatusStyles: Record<DataConnectorStatus, string> = {
+  healthy: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  syncing: "border-sky-200 bg-sky-50 text-sky-700",
+  issue: "border-amber-200 bg-amber-50 text-amber-700",
+};
 
-  const topRecommendations = recommendations.slice(0, 3);
-  const highlightedAudit = auditLog.slice(0, 3);
-  const topPrompts = quickPrompts.slice(0, 3);
+const connectorStatusLabels: Record<DataConnectorStatus, string> = {
+  healthy: "Healthy",
+  syncing: "Syncing",
+  issue: "Needs attention",
+};
 
-  const missionSummary = [
-    {
-      label: "Active Threads",
-      value: activeMissions.length,
-      detail: activeMissions[0]?.title ?? "No live threads",
-      accent: "from-sky-500/20 via-sky-400/10 to-sky-500/0",
-    },
-    {
-      label: "Queued Next",
-      value: queuedMissions.length,
-      detail: queuedMissions[0]?.title ?? "No queued missions",
-      accent: "from-violet-500/20 via-violet-400/10 to-violet-500/0",
-    },
-    {
-      label: "Logged & Complete",
-      value: completedMissions.length,
-      detail: completedMissions[0]?.title ?? "Awaiting closeout",
-      accent: "from-emerald-500/20 via-emerald-400/10 to-emerald-500/0",
-    },
-  ];
+const automationStatusStyles: Record<DataAutomationStatus, string> = {
+  "on-time": "border-emerald-200 bg-emerald-50 text-emerald-700",
+  attention: "border-amber-200 bg-amber-50 text-amber-700",
+  paused: "border-slate-200 bg-slate-50 text-slate-600",
+};
+
+const automationStatusLabels: Record<DataAutomationStatus, string> = {
+  "on-time": "On time",
+  attention: "Check status",
+  paused: "Paused",
+};
+
+const alertSeverityStyles: Record<DataQualityAlertSeverity, string> = {
+  low: "border-sky-200 bg-sky-50 text-sky-700",
+  moderate: "border-amber-200 bg-amber-50 text-amber-700",
+  high: "border-rose-200 bg-rose-50 text-rose-700",
+};
+
+const alertSeverityLabels: Record<DataQualityAlertSeverity, string> = {
+  low: "Low",
+  moderate: "Moderate",
+  high: "High",
+};
+
+const trendDescriptors: Record<DataFabricMetric["trend"], { label: string; tone: string }> = {
+  up: { label: "Up today", tone: "text-emerald-600" },
+  down: { label: "Faster today", tone: "text-emerald-600" },
+  steady: { label: "Holding steady", tone: "text-slate-500" },
+};
+
+const integrationPlaybooks: Record<ScenarioKey, string[]> = {
+  mobility: [
+    "Blend curb sensors, ticketing, and GTFS feeds into a single corridor view.",
+    "Flag gaps in live occupancy data before it hits demand forecasts.",
+    "Deliver a clean feed to fleet redispatch and VLR mobility indicators.",
+  ],
+  energy: [
+    "Align substation load, DER dispatch, and outage tickets every 30 minutes.",
+    "Alert operators when carbon readings drift past the allowed window.",
+    "Publish a trusted dataset for the grid resilience chapter of the VLR.",
+  ],
+  climate: [
+    "Merge tide gauges, weather radar, and shelter capacity for surge planning.",
+    "Highlight missing readings before adaptation scenarios are refreshed.",
+    "Push climate and equity inputs into the automated SDG summaries.",
+  ],
+  safety: [
+    "Fuse crowd density, incident logs, and social listening for situational awareness.",
+    "Escalate any outage in safety sensors within 10 minutes.",
+    "Stream verified metrics to the safety readiness section of the VLR.",
+  ],
+};
+
+function formatFreshness(minutes: number): string {
+  if (minutes < 1) {
+    return "<1 min";
+  }
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    if (remainder === 0) {
+      return `${hours}h`;
+    }
+    return `${hours}h ${remainder}m`;
+  }
+  return `${minutes} min`;
+}
+
+function CopilotPreviewPanel({ scenario, module, onSummonDock, onToggleRail, isRailOpen }: CopilotPreviewPanelProps) {
+  const healthyConnectors = dataConnectors.filter((connector) => connector.status === "healthy").length;
+  const syncingConnectors = dataConnectors.filter((connector) => connector.status === "syncing").length;
+  const issueConnectors = dataConnectors.filter((connector) => connector.status === "issue").length;
+
+  const guardrailSummary = module?.assurance ? `${module.assurance.label} score` : "Automation guardrails";
+  const guardrailDetail = module?.assurance ? module.assurance.detail : "Audit trail confirms every automation run.";
+
+  const playbook = integrationPlaybooks[scenario.key] ?? [];
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
       <div className="space-y-5">
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_-48px_rgba(59,130,246,0.25)] sm:p-6">
+        <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-50px_rgba(15,23,42,0.18)] sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.4em] text-slate-500">Nexus Copilot</p>
-              <h3 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">
-                Mission orchestration for {scenario.name}
-              </h3>
-              <p className="mt-2 text-sm text-foreground/65">{scenario.command}</p>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Data Fabric</p>
+              <h3 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">{scenario.name} data fabric</h3>
+              <p className="mt-2 text-sm text-foreground/65">
+                Clean, synced feeds keep the AI forecasts and VLR outputs for this scenario up to date.
+              </p>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -2323,8 +2375,8 @@ function CopilotPreviewPanel({
                 onClick={onToggleRail}
                 className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
               >
-                <Bot className="h-4 w-4 text-sky-600" />
-                {isRailOpen ? "Collapse Dock" : "Pin Dock"}
+                <Layers className="h-4 w-4 text-slate-500" />
+                {isRailOpen ? "Hide Copilot Rail" : "Pin Copilot Rail"}
               </button>
               <button
                 type="button"
@@ -2332,120 +2384,143 @@ function CopilotPreviewPanel({
                 className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
               >
                 <Bot className="h-4 w-4" />
-                Launch Copilot
+                Open Copilot
               </button>
             </div>
           </div>
 
-          <p className="mt-4 text-sm text-foreground/65">
-            {module?.description ??
-              "Conversational AI fuses telemetry, policy guardrails, and equity heuristics to choreograph the next best mission step for Nexus operators."}
-          </p>
-
-          {module ? (
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {module.metrics.slice(0, 3).map((metric) => (
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {dataFabricMetrics.map((metric) => {
+              const descriptor = trendDescriptors[metric.trend];
+              return (
                 <div
-                  key={metric.label}
+                  key={metric.id}
                   className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
                 >
                   <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
-                  <p className="mt-2 text-lg font-semibold text-slate-900">{metric.value}</p>
-                  <p className="text-[11px] text-foreground/55">
-                    {metric.delta} • {metric.detail}
-                  </p>
+                  <p className="mt-2 text-xl font-semibold text-slate-900">{metric.value}</p>
+                  <p className="mt-1 text-xs text-foreground/55">{metric.detail}</p>
+                  <span
+                    className={cn(
+                      "mt-3 inline-flex items-center text-[10px] font-semibold uppercase tracking-[0.35em]",
+                      descriptor.tone,
+                    )}
+                  >
+                    {descriptor.label}
+                  </span>
                 </div>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        {topPrompts.length ? (
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_-45px_rgba(124,58,237,0.3)]">
-            <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-              <Sparkles className="h-4 w-4" />
-              Quick prompts
-            </p>
-            <div className="mt-4 grid gap-3">
-              {topPrompts.map((prompt) => (
-                <div
-                  key={prompt.id}
-                  className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70 shadow-[0_18px_50px_-45px_rgba(59,130,246,0.3)]"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{prompt.label}</p>
-                  <p className="mt-2">{prompt.prompt}</p>
-                </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        ) : null}
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          {missionSummary.map((card) => (
-            <div
-              key={card.label}
-              className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white px-4 py-4 text-sm text-foreground/70"
-            >
-              <div
-                aria-hidden
-                className={cn(
-                  "pointer-events-none absolute inset-0 opacity-60 blur-[2px]",
-                  `bg-gradient-to-br ${card.accent}`,
-                )}
-              />
-              <div className="relative">
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{card.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-slate-900">{card.value}</p>
-                <p className="mt-2 text-xs text-foreground/60">{card.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-xs uppercase tracking-[0.3em] text-foreground/55">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            <span>
+              {guardrailSummary}: {module?.assurance?.score ?? "Active"}
+            </span>
+            <span className="normal-case tracking-normal text-foreground/60">{guardrailDetail}</span>
+          </div>
+        </section>
 
-      <div className="space-y-5">
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-48px_rgba(236,72,153,0.28)]">
+        <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <Bot className="h-4 w-4" />
-            Recommended actions
+            <GaugeCircle className="h-4 w-4 text-slate-500" />
+            Connector health
           </p>
           <ul className="mt-4 space-y-3">
-            {topRecommendations.map((recommendation) => (
+            {dataConnectors.map((connector) => (
               <li
-                key={recommendation.id}
-                className="rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-foreground/70"
+                key={connector.id}
+                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] uppercase tracking-[0.35em] text-foreground/50">
-                  <span>{recommendation.channel}</span>
-                  <span>{recommendation.impact}</span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{connector.name}</p>
+                    <p className="text-xs text-foreground/55">{connector.department}</p>
+                  </div>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      connectorStatusStyles[connector.status],
+                    )}
+                  >
+                    {connectorStatusLabels[connector.status]}
+                  </span>
                 </div>
-                <p className="mt-2 text-sm font-semibold text-slate-900">{recommendation.title}</p>
-                <p className="mt-2 text-xs text-foreground/60">{recommendation.detail}</p>
+                <p className="mt-3 text-xs leading-5 text-foreground/55">{connector.dataScope}</p>
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-foreground/60">
+                  <span>Freshness {formatFreshness(connector.freshnessMinutes)}</span>
+                  <span>{connector.coverage}</span>
+                  <span>Steward {connector.steward}</span>
+                </div>
               </li>
             ))}
           </ul>
+        </section>
 
-          <div className="mt-5 rounded-[22px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-xs uppercase tracking-[0.35em] text-foreground/50">
-            Peek inside the dock for full mission queue & playbook.
-          </div>
-        </div>
-
-        <div className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_80px_-48px_rgba(125,211,252,0.28)]">
+        <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
           <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <FileText className="h-4 w-4" />
-            Audit ledger
+            <Workflow className="h-4 w-4 text-slate-500" />
+            Automation runbook
           </p>
-          <div className="mt-4 space-y-3 border-l border-slate-200 pl-5">
-            {highlightedAudit.map((entry, index) => (
-              <div key={entry.id} className="relative">
-                <span className="absolute -left-[11px] top-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-200 bg-white text-[9px] text-slate-900">
-                  {index + 1}
-                </span>
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{entry.time}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">{entry.label}</p>
-                <p className="mt-1 text-xs text-foreground/60">{entry.description}</p>
-              </div>
+          <ul className="mt-4 space-y-3">
+            {dataAutomations.map((automation) => (
+              <li
+                key={automation.id}
+                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{automation.title}</p>
+                    <p className="text-xs text-foreground/55">{automation.owner}</p>
+                  </div>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      automationStatusStyles[automation.status],
+                    )}
+                  >
+                    {automationStatusLabels[automation.status]}
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-foreground/60">
+                  <span>{automation.cadence}</span>
+                  <span>Last {automation.lastRun}</span>
+                  <span>Next {automation.nextRun}</span>
+                </div>
+                <p className="mt-3 text-xs text-foreground/60">{automation.outcome}</p>
+              </li>
             ))}
+          </ul>
+        </section>
+      </div>
+
+      <div className="space-y-5">
+        <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
+            <Sparkles className="h-4 w-4 text-slate-500" />
+            Assurance & guardrails
+          </p>
+          <div className="mt-4 grid gap-4 rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 text-sm text-foreground/70">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{guardrailSummary}</p>
+              <p className="mt-2 text-3xl font-semibold text-slate-900">{module?.assurance?.score ?? "--"}%</p>
+              <p className="mt-1 text-xs text-foreground/60">{guardrailDetail}</p>
+            </div>
+            <div className="grid gap-2 text-xs text-foreground/60 sm:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-600">Healthy</p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">{healthyConnectors}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-sky-600">Syncing</p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">{syncingConnectors}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-amber-600">Attention</p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">{issueConnectors}</p>
+              </div>
+            </div>
           </div>
           <button
             type="button"
@@ -2453,9 +2528,59 @@ function CopilotPreviewPanel({
             className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900"
           >
             <MoveRight className="h-4 w-4" />
-            Review full ledger
+            View automation log
           </button>
-        </div>
+        </section>
+
+        <section className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
+            <BrainCircuit className="h-4 w-4 text-slate-500" />
+            Integration playbook
+          </p>
+          <ul className="mt-4 space-y-3">
+            {playbook.map((step) => (
+              <li
+                key={step}
+                className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3"
+              >
+                <CheckCircle2 className="mt-1 h-4 w-4 text-emerald-500" />
+                <span className="text-sm leading-6 text-foreground/70">{step}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            Data quality watch
+          </p>
+          <ul className="mt-4 space-y-3">
+            {dataQualityAlerts.map((alert) => (
+              <li
+                key={alert.id}
+                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{alert.topic}</p>
+                    <p className="text-xs text-foreground/55">{alert.impact}</p>
+                  </div>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      alertSeverityStyles[alert.severity],
+                    )}
+                  >
+                    {alertSeverityLabels[alert.severity]}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-foreground/65">{alert.detail}</p>
+                <p className="mt-3 text-xs text-foreground/60">{alert.eta}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </div>
   );
