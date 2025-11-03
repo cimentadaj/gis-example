@@ -18,24 +18,16 @@ import {
   Loader2,
   Map as MapIcon,
   MapPinned,
-  MoveRight,
   ShieldCheck,
   Sparkles,
   Workflow,
-  type LucideIcon,
 } from "lucide-react";
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Line as RechartsLine,
   LineChart as RechartsLineChart,
-  PolarAngleAxis,
-  PolarGrid,
-  Radar as RechartsRadar,
-  RadarChart as RechartsRadarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -59,7 +51,6 @@ import {
   dataQualityAlerts,
   type DataAutomationStatus,
   type DataConnectorStatus,
-  type DataFabricMetric,
   type DataQualityAlertSeverity,
 } from "@/data/integration";
 import {
@@ -128,52 +119,6 @@ const moduleNavigation = [
   },
 ];
 
-type AnalyticsViewId = "forecast" | "resilience" | "anomalies" | "risk" | "explainability";
-
-const analyticsViews: Array<{
-  id: AnalyticsViewId;
-  label: string;
-  description: string;
-  icon: LucideIcon;
-  accent: string;
-}> = [
-  {
-    id: "forecast",
-    label: "Indicator Momentum",
-    description: "Compare SDG forecasts against actuals.",
-    icon: LineChart,
-    accent: "from-sky-500/25 via-sky-400/10 to-sky-500/0",
-  },
-  {
-    id: "resilience",
-    label: "Wellbeing Outlook",
-    description: "Project service and capital outcomes.",
-    icon: ActivitySquare,
-    accent: "from-emerald-500/25 via-emerald-400/10 to-emerald-500/0",
-  },
-  {
-    id: "anomalies",
-    label: "Evidence Radar",
-    description: "Track open evidence issues.",
-    icon: AlertTriangle,
-    accent: "from-amber-500/25 via-amber-400/10 to-amber-500/0",
-  },
-  {
-    id: "risk",
-    label: "Readiness Quadrants",
-    description: "Spot SDG, VLR, equity, and capital gaps.",
-    icon: ShieldCheck,
-    accent: "from-indigo-500/25 via-indigo-400/10 to-indigo-500/0",
-  },
-  {
-    id: "explainability",
-    label: "Transparency Lab",
-    description: "Surface governance and explainability cues.",
-    icon: Sparkles,
-    accent: "from-rose-500/25 via-rose-400/10 to-rose-500/0",
-  },
-];
-
 const forecastScopeOptions = [
   { id: "metro", label: "Citywide Portfolio" },
   { id: "harbor", label: "Harbor Resilience Loop" },
@@ -196,21 +141,15 @@ const resilienceModes: Array<{ id: ResilienceMode; label: string }> = [
 ];
 
 const anomalySeverityBadgeTone: Record<AnomalyCluster["severity"], string> = {
-  low: "border-emerald-400/25 bg-emerald-400/10 text-emerald-200",
-  moderate: "border-amber-400/25 bg-amber-400/10 text-amber-100",
-  high: "border-rose-400/35 bg-rose-500/15 text-rose-100",
+  low: "border border-emerald-200 bg-emerald-50 text-emerald-700",
+  moderate: "border border-amber-200 bg-amber-50 text-amber-700",
+  high: "border border-rose-200 bg-rose-50 text-rose-700",
 };
 
 const anomalySeverityLabel: Record<AnomalyCluster["severity"], string> = {
   low: "Low",
   moderate: "Elevated",
   high: "Critical",
-};
-
-const anomalySeverityWeight: Record<AnomalyCluster["severity"], number> = {
-  low: 48,
-  moderate: 68,
-  high: 90,
 };
 
 type ScenarioInsightsPayload = {
@@ -220,26 +159,6 @@ type ScenarioInsightsPayload = {
   actions: ScenarioDefinition["actions"];
 };
 
-const resiliencePlaybooks: Record<ScenarioKey, string[]> = {
-  "sdg-localization": [
-    "Ping stewards for districts drifting under target.",
-    "Share SDG wins and needs in tomorrow's mayoral brief.",
-  ],
-  "vlr-automation": [
-    "Clear evidence packets waiting on finance.",
-    "Publish the executive draft once checks pass.",
-  ],
-  "city-profiling": [
-    "Compare wellbeing lift versus spend for top districts.",
-    "Log the decision trail for council review.",
-  ],
-};
-
-const explainabilityHeadline: Record<ScenarioKey, string> = {
-  "sdg-localization": "Every SDG insight links straight back to its source.",
-  "vlr-automation": "Stakeholders see why each VLR step is approved.",
-  "city-profiling": "Capital choices show the wellbeing lift and trade-offs.",
-};
 
 export default function Home() {
   const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>(defaultScenarioKey);
@@ -1406,14 +1325,8 @@ function alertSeverityTone(severity: (typeof vlrAlerts)[number]["severity"]) {
 }
 
 function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
-  const [activeView, setActiveView] = useState<AnalyticsViewId>("forecast");
   const [forecastScope, setForecastScope] = useState<ForecastScope>("metro");
   const [resilienceMode, setResilienceMode] = useState<ResilienceMode>("heat");
-
-  const activeViewConfig = useMemo(
-    () => analyticsViews.find((view) => view.id === activeView) ?? analyticsViews[0],
-    [activeView],
-  );
 
   const forecastSeries = useMemo(() => {
     const multiplier = forecastScopeMultiplier[forecastScope];
@@ -1434,10 +1347,12 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
   }, [forecastScope]);
 
   const latestForecast = forecastSeries.at(-1);
-  const forecastLift =
-    latestForecast && latestForecast.baseline > 0
-      ? ((latestForecast.ai - latestForecast.baseline) / latestForecast.baseline) * 100
-      : 0;
+  const aiPercent = latestForecast ? Math.round(latestForecast.ai * 100) : 0;
+  const baselinePercent = latestForecast ? Math.round(latestForecast.baseline * 100) : 0;
+  const forecastDelta = aiPercent - baselinePercent;
+
+  const scopeLabel =
+    forecastScopeOptions.find((option) => option.id === forecastScope)?.label ?? "Citywide portfolio";
 
   const resilienceSeries = useMemo(() => {
     const formatter = new Intl.DateTimeFormat("en", { month: "short", day: "numeric" });
@@ -1460,620 +1375,280 @@ function AnalyticsPreviewPanel({ scenario }: { scenario: ScenarioDefinition }) {
     });
   }, [resilienceMode]);
 
-  const resilienceLift =
-    resilienceSeries.length > 0
-      ? (resilienceSeries.at(-1)!.ai - resilienceSeries.at(-1)!.baseline).toFixed(1)
-      : "0.0";
-
-  const anomalyRadarSeries = useMemo(
-    () =>
-      anomalyClusters.map((cluster) => ({
-        cluster: cluster.cluster,
-        severity: anomalySeverityWeight[cluster.severity],
-        triage: Math.max(15, 100 - cluster.expectedResolutionMinutes),
-      })),
-    [],
-  );
-
-  const highestSeverityCluster = useMemo(() => {
-    if (anomalyClusters.length === 0) {
-      return null;
-    }
-
-    return anomalyClusters.reduce((prev, current) => {
-      const prevWeight = anomalySeverityWeight[prev.severity];
-      const currentWeight = anomalySeverityWeight[current.severity];
-      if (currentWeight === prevWeight) {
-        return current.affectedAssets > prev.affectedAssets ? current : prev;
-      }
-      return currentWeight > prevWeight ? current : prev;
-    }, anomalyClusters[0]);
-  }, []);
-
-  const riskQuadrantSeries = useMemo(() => {
-    const aggregate = new Map<
-      (typeof riskCells)[number]["quadrant"],
-      { quadrant: (typeof riskCells)[number]["quadrant"]; total: number; count: number }
-    >();
-
-    riskCells.forEach((cell) => {
-      const record = aggregate.get(cell.quadrant) ?? { quadrant: cell.quadrant, total: 0, count: 0 };
-      record.total += cell.score;
-      record.count += 1;
-      aggregate.set(cell.quadrant, record);
-    });
-
-    return Array.from(aggregate.values()).map((entry) => ({
-      quadrant: entry.quadrant,
-      score: Number((entry.total / entry.count).toFixed(2)),
-    }));
-  }, []);
-
-  const topRiskCells = useMemo(
-    () => [...riskCells].sort((a, b) => b.score - a.score).slice(0, 4),
-    [],
-  );
-  const explainabilityStories = explainabilitySnippets.slice(0, 4);
-
-  if (!activeViewConfig) {
-    return null;
-  }
-
-  const scopeLabel = forecastScopeOptions.find((option) => option.id === forecastScope)?.label ?? "Metro Network";
+  const lastResilience = resilienceSeries.at(-1);
   const resilienceModeLabel =
-    resilienceModes.find((mode) => mode.id === resilienceMode)?.label ?? "Heat Stress";
-  const explainHeadline = explainabilityHeadline[scenario.key];
+    resilienceModes.find((mode) => mode.id === resilienceMode)?.label ?? "Community Services";
+  const resilienceAi = lastResilience ? lastResilience.ai : 0;
+  const resilienceBaseline = lastResilience ? lastResilience.baseline : 0;
+  const resilienceDelta = (resilienceAi - resilienceBaseline).toFixed(1);
 
-  const renderActiveView = () => {
-    switch (activeView) {
-      case "forecast": {
-        const aiPercent = latestForecast ? Math.round(latestForecast.ai * 100) : 0;
-        const baselinePercent = latestForecast ? Math.round(latestForecast.baseline * 100) : 0;
-        const aiGradientId = `forecast-ai-${forecastScope}`;
-        const baselineGradientId = `forecast-baseline-${forecastScope}`;
-
-        return (
-          <div className="space-y-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-xl space-y-2">
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{activeViewConfig.label}</p>
-                <h3 className="text-lg font-semibold text-slate-900">Hyperlocal demand lift against baseline</h3>
-                <p className="text-sm text-foreground/65">
-                  Corridor orchestration keeps {scenario.name} on plan while AI exposes the interventions delivering{" "}
-                  {forecastLift >= 0 ? "+" : ""}
-                  {forecastLift.toFixed(1)}% throughput lift this hour.
-                </p>
-              </div>
-              <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1">
-                  {forecastScopeOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => setForecastScope(option.id)}
-                      className={cn(
-                        "rounded-full px-3 py-1.5 text-xs font-medium tracking-wide transition",
-                        forecastScope === option.id
-                          ? "bg-sky-50 text-sky-700 shadow-[0_16px_45px_-30px_rgba(59,130,246,0.35)]"
-                          : "text-foreground/60 hover:bg-slate-50 hover:text-slate-900",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-sky-600 shadow-[0_16px_50px_-38px_rgba(56,189,248,0.35)]">
-                  AI Lift
-                  <p className="mt-1 text-2xl font-semibold text-sky-700">
-                    {forecastLift >= 0 ? "+" : ""}
-                    {forecastLift.toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-[1.55fr_0.85fr]">
-              <div className="rounded-[26px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 sm:p-6">
-                <ResponsiveContainer width="100%" height={260}>
-                  <AreaChart data={forecastSeries}>
-                    <defs>
-                      <linearGradient id={aiGradientId} x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="5%" stopColor="rgba(14,165,233,0.9)" stopOpacity={0.9} />
-                        <stop offset="95%" stopColor="rgba(14,165,233,0)" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id={baselineGradientId} x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="5%" stopColor="rgba(148,163,184,0.75)" stopOpacity={0.7} />
-                        <stop offset="95%" stopColor="rgba(148,163,184,0)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="rgba(148,163,184,0.25)" vertical={false} strokeDasharray="3 6" />
-                    <XAxis dataKey="hour" stroke="rgba(71,85,105,0.6)" tickLine={false} />
-                    <YAxis
-                      stroke="rgba(71,85,105,0.6)"
-                      domain={[0.2, 1]}
-                      tickFormatter={(value) => `${Math.round((value as number) * 100)}%`}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      cursor={{ stroke: "rgba(14,165,233,0.35)", strokeDasharray: "4 4" }}
-                      contentStyle={{
-                        backgroundColor: "rgba(255,255,255,0.95)",
-                        borderRadius: "18px",
-                        border: "1px solid rgba(148,163,184,0.35)",
-                        color: "rgba(30,41,59,0.92)",
-                        padding: "0.75rem 1rem",
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="baseline"
-                      stroke="rgba(148,163,184,0.7)"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill={`url(#${baselineGradientId})`}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="ai"
-                      stroke="rgba(14,165,233,0.95)"
-                      strokeWidth={2.4}
-                      fillOpacity={1}
-                      fill={`url(#${aiGradientId})`}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="space-y-4 rounded-[26px] border border-slate-200 bg-white p-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scope</p>
-                  <p className="mt-1 text-lg font-semibold text-slate-900">{scopeLabel}</p>
-                  <p className="mt-2 text-sm text-foreground/65">
-                    Live indicator feeds, steward notes, and wellbeing sensors explain progress shifts before quarterly reviews.
-                  </p>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
-                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Active AI Lift</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">{aiPercent}%</p>
-                    <p className="text-xs text-sky-600">Localization autoplan · steward alignment</p>
-                  </div>
-                  <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
-                    <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">Manual Baseline</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">{baselinePercent}%</p>
-                    <p className="text-xs text-foreground/60">Human-led estimation</p>
-                  </div>
-                </div>
-
-                <div className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4 text-sm text-foreground/70">
-                  <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-sky-600">
-                    <Sparkles className="h-4 w-4" />
-                    Copilot Insight
-                  </p>
-                  <p className="mt-2">
-                    {scenario.aiInsights[0]?.detail ??
-                      "Localization stewards receive nudges the moment indicator confidence drifts below guardrails."}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      case "resilience": {
-        const aiGradientId = `resilience-ai-${resilienceMode}`;
-        const baselineGradientId = `resilience-baseline-${resilienceMode}`;
-
-        return (
-          <div className="space-y-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-xl space-y-2">
-                <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{activeViewConfig.label}</p>
-                <h3 className="text-lg font-semibold text-slate-900">{resilienceModeLabel} wellbeing outlook</h3>
-                <p className="text-sm text-foreground/65">{scenario.tagline}</p>
-              </div>
-              <div className="flex flex-1 flex-wrap items-center justify-end gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white p-1">
-                  {resilienceModes.map((mode) => (
-                    <button
-                      key={mode.id}
-                      type="button"
-                      onClick={() => setResilienceMode(mode.id)}
-                      className={cn(
-                        "rounded-full px-3 py-1.5 text-xs font-medium tracking-wide transition",
-                        resilienceMode === mode.id
-                          ? "bg-emerald-50 text-emerald-600 shadow-[0_16px_45px_-30px_rgba(52,211,153,0.35)]"
-                          : "text-foreground/60 hover:bg-slate-50 hover:text-slate-900",
-                      )}
-                    >
-                      {mode.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-right text-xs uppercase tracking-[0.28em] text-emerald-600 shadow-[0_16px_50px_-38px_rgba(34,197,94,0.35)]">
-                  Δ Lift
-                  <p className="mt-1 text-2xl font-semibold text-emerald-700">
-                    {resilienceLift} pts
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-[1.45fr_0.55fr]">
-              <div className="rounded-[26px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 sm:p-6">
-                <ResponsiveContainer width="100%" height={260}>
-                  <RechartsLineChart data={resilienceSeries}>
-                    <defs>
-                      <linearGradient id={aiGradientId} x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="15%" stopColor="rgba(52,211,153,0.9)" stopOpacity={0.85} />
-                        <stop offset="95%" stopColor="rgba(52,211,153,0)" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id={baselineGradientId} x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="15%" stopColor="rgba(148,163,184,0.75)" stopOpacity={0.75} />
-                        <stop offset="95%" stopColor="rgba(148,163,184,0)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="rgba(148,163,184,0.25)" strokeDasharray="3 6" />
-                    <XAxis dataKey="label" stroke="rgba(71,85,105,0.6)" tickLine={false} />
-                    <YAxis
-                      stroke="rgba(71,85,105,0.6)"
-                      tickLine={false}
-                      tickFormatter={(value) =>
-                        resilienceMode === "heat" ? `${Number(value).toFixed(0)}°C` : `${Math.round(Number(value))}`
-                      }
-                    />
-                    <Tooltip
-                      cursor={{ stroke: "rgba(52,211,153,0.35)", strokeDasharray: "4 4" }}
-                      contentStyle={{
-                        backgroundColor: "rgba(255,255,255,0.95)",
-                        borderRadius: "18px",
-                        border: "1px solid rgba(148,163,184,0.35)",
-                        color: "rgba(30,41,59,0.92)",
-                        padding: "0.75rem 1rem",
-                      }}
-                    />
-                    <RechartsLine
-                      type="monotone"
-                      dataKey="baseline"
-                      stroke="rgba(148,163,184,0.75)"
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                    />
-                    <RechartsLine
-                      type="monotone"
-                      dataKey="ai"
-                      stroke="rgba(52,211,153,0.9)"
-                      strokeWidth={2.4}
-                      dot={{ r: 3.5 }}
-                    />
-                  </RechartsLineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="space-y-4 rounded-[26px] border border-slate-200 bg-white p-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Scenario Playbooks</p>
-                  <ul className="mt-3 space-y-3 text-sm text-foreground/70">
-                    {(resiliencePlaybooks[scenario.key] ?? []).map((play, index) => (
-                      <li key={play} className="flex items-start gap-3">
-                        <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-[11px] font-semibold text-emerald-600">
-                          {index + 1}
-                        </span>
-                        {play}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {modelPerformanceStats.slice(0, 2).map((stat) => (
-                    <div key={stat.id} className="rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-4">
-                      <p className="text-[11px] uppercase tracking-[0.35em] text-foreground/50">{stat.metric}</p>
-                      <p className="mt-1 text-2xl font-semibold text-slate-900">{stat.value}</p>
-                      <p className="text-xs text-emerald-600">{stat.change}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      case "anomalies": {
-        return (
-          <div className="grid gap-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_70px_-45px_rgba(250,204,21,0.4)] lg:grid-cols-[1.05fr_0.95fr] lg:p-8">
-            <div className="rounded-[26px] border border-white/10 bg-black/30 p-4 sm:p-6">
-              <ResponsiveContainer width="100%" height={300}>
-                <RechartsRadarChart data={anomalyRadarSeries}>
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="cluster" tick={{ fill: "rgba(226,232,255,0.65)", fontSize: 11 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(255,255,255,0.95)",
-                      borderRadius: "18px",
-                      border: "1px solid rgba(148,163,184,0.35)",
-                      color: "rgba(30,41,59,0.92)",
-                      padding: "0.75rem 1rem",
-                    }}
-                  />
-                  <RechartsRadar
-                    name="Severity"
-                    dataKey="severity"
-                    stroke="rgba(245,158,11,0.8)"
-                    fill="rgba(245,158,11,0.45)"
-                    fillOpacity={0.7}
-                  />
-                  <RechartsRadar
-                    name="Triage Velocity"
-                    dataKey="triage"
-                    stroke="rgba(59,130,246,0.85)"
-                    fill="rgba(59,130,246,0.35)"
-                    fillOpacity={0.4}
-                  />
-                </RechartsRadarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-4">
-              <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Incident spotlight</p>
-                {highestSeverityCluster ? (
-                  <div className="mt-2 space-y-2">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium",
-                          anomalySeverityBadgeTone[highestSeverityCluster.severity],
-                        )}
-                      >
-                        {anomalySeverityLabel[highestSeverityCluster.severity]}
-                      </span>
-                      <span className="text-sm text-foreground/60">
-                        {highestSeverityCluster.expectedResolutionMinutes} min est. resolution
-                      </span>
-                    </div>
-                    <p className="text-sm font-semibold text-white">{highestSeverityCluster.cluster}</p>
-                    <p className="text-sm text-foreground/65">
-                      AI triage playbooks are sequencing {highestSeverityCluster.affectedAssets} assets and notifying field teams automatically.
-                    </p>
-                  </div>
-                ) : (
-                  <p className="mt-2 text-sm text-foreground/65">No active anomaly clusters.</p>
-                )}
-              </div>
-
-              <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Cluster queue</p>
-                <ul className="mt-3 space-y-3 text-sm text-foreground/70">
-                  {anomalyClusters.map((cluster) => (
-                    <li key={cluster.id} className="rounded-[20px] border border-white/10 bg-white/5 px-4 py-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-white">{cluster.cluster}</p>
-                        <span
-                          className={cn(
-                            "inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium",
-                            anomalySeverityBadgeTone[cluster.severity],
-                          )}
-                        >
-                          {anomalySeverityLabel[cluster.severity]}
-                        </span>
-                      </div>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-foreground/60">
-                        <span>{cluster.affectedAssets} assets</span>
-                        <span className="flex items-center gap-1">
-                          <Clock8 className="h-3.5 w-3.5 text-amber-300" />
-                          {cluster.expectedResolutionMinutes} min
-                        </span>
-                      </div>
-                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-amber-400 via-rose-400 to-rose-500"
-                          style={{ width: `${anomalySeverityWeight[cluster.severity]}%` }}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      case "risk": {
-        return (
-          <div className="grid gap-6 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_-60px_rgba(15,23,42,0.22)] lg:grid-cols-[1.2fr_0.8fr] lg:p-8">
-            <div className="rounded-[26px] border border-white/10 bg-black/30 p-4 sm:p-6">
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={riskQuadrantSeries}>
-                  <defs>
-                    <linearGradient id="riskScoreGradient" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="5%" stopColor="rgba(129,140,248,0.9)" stopOpacity={0.9} />
-                      <stop offset="95%" stopColor="rgba(129,140,248,0.1)" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="rgba(148,163,184,0.25)" vertical={false} />
-                  <XAxis dataKey="quadrant" stroke="rgba(71,85,105,0.6)" tickLine={false} />
-                  <YAxis
-                    stroke="rgba(71,85,105,0.6)"
-                    domain={[0.4, 1]}
-                    tickFormatter={(value) => `${Math.round((value as number) * 100)}%`}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    cursor={{ fill: "rgba(255,255,255,0.04)" }}
-                    contentStyle={{
-                      backgroundColor: "rgba(255,255,255,0.95)",
-                      borderRadius: "18px",
-                      border: "1px solid rgba(148,163,184,0.35)",
-                      color: "rgba(30,41,59,0.92)",
-                      padding: "0.75rem 1rem",
-                    }}
-                    formatter={(value: number | string) =>
-                      typeof value === "number"
-                        ? [`${Math.round(value * 100)}%`, "Risk Score"]
-                        : [value, "Risk Score"]
-                    }
-                  />
-                  <Bar dataKey="score" fill="url(#riskScoreGradient)" radius={[14, 14, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-4">
-              <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">High-signal districts</p>
-                <ul className="mt-3 space-y-3 text-sm text-foreground/70">
-                  {topRiskCells.map((cell) => (
-                    <li key={cell.id} className="rounded-[20px] border border-white/10 bg-black/30 px-4 py-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-white">{cell.district}</p>
-                        <span className="text-xs uppercase tracking-[0.35em] text-indigo-200">{cell.quadrant}</span>
-                      </div>
-                      <p className="mt-1 text-xs text-foreground/60">{cell.driver}</p>
-                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-sky-500 to-emerald-400"
-                          style={{ width: `${Math.round(cell.score * 100)}%` }}
-                        />
-                      </div>
-                      <div className="mt-2 flex items-center justify-between text-xs text-foreground/50">
-                        <span>Exposure</span>
-                        <span>{Math.round(cell.score * 100)}%</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4 text-sm text-foreground/70">
-                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-indigo-200">
-                  <ShieldCheck className="h-4 w-4" />
-                  Governance cue
-                </p>
-                <p className="mt-2">
-                  Mitigation briefs trigger automatically when risk passes 70% and route to {scenario.name} owners.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      case "explainability": {
-        return (
-          <div className="grid gap-6 rounded-[30px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_25px_70px_-45px_rgba(244,114,182,0.45)] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
-            <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4 sm:p-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Mission narrative</p>
-              <h4 className="mt-2 text-lg font-semibold text-white">{explainHeadline}</h4>
-              <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-                {scenario.aiInsights.map((insight) => (
-                  <li key={insight.title} className="rounded-[20px] border border-white/10 bg-white/5 px-4 py-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs uppercase tracking-[0.35em] text-primary-200">Confidence</span>
-                      <span className="text-xs text-foreground/60">{Math.round(insight.confidence * 100)}%</span>
-                    </div>
-                    <p className="mt-2 font-semibold text-white">{insight.title}</p>
-                    <p className="mt-1 text-sm text-foreground/65">{insight.detail}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 sm:p-6">
-                <p className="text-xs uppercase tracking-[0.35em] text-foreground/50">Transparency queue</p>
-                <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-                  {explainabilityStories.map((snippet, index) => (
-                    <li key={snippet.id} className="rounded-[20px] border border-white/10 bg-black/30 px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-rose-400/40 bg-rose-500/10 text-sm font-semibold text-rose-100">
-                          {index + 1}
-                        </span>
-                        <div>
-                          <p className="font-semibold text-white">{snippet.title}</p>
-                          <p className="text-xs text-foreground/60">{snippet.detail}</p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {modelPerformanceStats.map((stat) => (
-                  <div key={stat.id} className="rounded-[20px] border border-white/10 bg-black/30 px-3 py-3 text-center">
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{stat.metric}</p>
-                    <p className="mt-2 text-xl font-semibold text-white">{stat.value}</p>
-                    <p className="text-xs text-foreground/60">{stat.change}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="rounded-[24px] border border-white/10 bg-black/30 px-4 py-4 text-sm text-foreground/70">
-                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.35em] text-primary-200">
-                  <FileText className="h-4 w-4" />
-                  Audit trail
-                </p>
-                <p className="mt-2">
-                  Export-ready VLR chapters assemble with provenance for the Nexus team.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      }
-      default:
-        return null;
-    }
-  };
+  const topAnomalies = useMemo(() => anomalyClusters.slice(0, 3), []);
+  const riskFocus = useMemo(
+    () => [...riskCells].sort((a, b) => b.score - a.score).slice(0, 3),
+    [],
+  );
+  const explainabilityStories = useMemo(() => explainabilitySnippets.slice(0, 3), []);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="text-[11px] uppercase tracking-[0.4em] text-foreground/50">AI Analytics</p>
-        <h2 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">Model telemetry and explainable lifts</h2>
-        <p className="mt-3 text-sm text-foreground/70">
-          Forecasts, resilience outlooks, anomaly triage, and governance cues stay aligned to the {scenario.name} mission.
+    <div className="space-y-7">
+      <header className="max-w-3xl space-y-2">
+        <p className="text-sm font-medium text-slate-500">AI pipeline view</p>
+        <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Runway checks for {scenario.name}</h2>
+        <p className="text-sm text-slate-600">
+          Forecasts, wellbeing trends, and evidence cues stay grounded in live city data so teams can act without juggling dashboards.
         </p>
-      </div>
+      </header>
 
-      <div className="flex flex-wrap gap-2 rounded-[28px] border border-slate-200 bg-white p-2">
-        {analyticsViews.map((view) => {
-          const isActive = view.id === activeView;
-          return (
-            <button
-              key={view.id}
-              type="button"
-              onClick={() => setActiveView(view.id)}
-              className={cn(
-                "group flex-1 min-w-[220px] rounded-[24px] px-4 py-3 text-left transition",
-                isActive
-                  ? "bg-sky-50 text-sky-700 shadow-[0_18px_50px_-35px_rgba(59,130,246,0.25)]"
-                  : "bg-transparent text-foreground/65 hover:bg-slate-50 hover:text-slate-900",
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <span
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.18)]">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-slate-900">24-hour service forecast</h3>
+              <p className="text-sm text-slate-600">Focus: {scopeLabel}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">AI vs. baseline</p>
+              <p className="text-2xl font-semibold text-slate-900">{aiPercent}%</p>
+              <p className="text-xs text-slate-500">Baseline {baselinePercent}%</p>
+              <span
+                className={cn(
+                  "mt-1 inline-flex items-center gap-1 text-sm font-medium",
+                  forecastDelta >= 0 ? "text-emerald-600" : "text-rose-600",
+                )}
+              >
+                {forecastDelta >= 0 ? "+" : ""}
+                {forecastDelta} pts
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {forecastScopeOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setForecastScope(option.id)}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-xs font-medium transition",
+                  forecastScope === option.id
+                    ? "bg-sky-100 text-sky-700 shadow-[0_16px_45px_-30px_rgba(59,130,246,0.25)]"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                )}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={forecastSeries}>
+                <defs>
+                  <linearGradient id="aiForecastGradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="rgba(14,165,233,0.6)" />
+                    <stop offset="95%" stopColor="rgba(14,165,233,0)" />
+                  </linearGradient>
+                  <linearGradient id="baselineForecastGradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="rgba(148,163,184,0.45)" />
+                    <stop offset="95%" stopColor="rgba(148,163,184,0)" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="rgba(148,163,184,0.35)" strokeDasharray="3 6" vertical={false} />
+                <XAxis dataKey="hour" stroke="rgba(100,116,139,0.75)" tickLine={false} />
+                <YAxis
+                  stroke="rgba(100,116,139,0.75)"
+                  tickLine={false}
+                  tickFormatter={(value) => `${Math.round((value as number) * 100)}%`}
+                />
+                <Tooltip
+                  cursor={{ stroke: "rgba(14,165,233,0.25)", strokeWidth: 2 }}
+                  contentStyle={{
+                    borderRadius: "18px",
+                    border: "1px solid rgba(148,163,184,0.35)",
+                    backgroundColor: "rgba(255,255,255,0.95)",
+                    color: "rgba(30,41,59,0.92)",
+                    padding: "0.75rem 1rem",
+                  }}
+                  formatter={(value: number | string, name) =>
+                    typeof value === "number" ? [`${Math.round(value * 100)}%`, name] : [value, name]
+                  }
+                />
+                <Area
+                  type="monotone"
+                  dataKey="ai"
+                  stroke="#0284c7"
+                  strokeWidth={2.5}
+                  fill="url(#aiForecastGradient)"
+                  name="AI"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="baseline"
+                  stroke="#94a3b8"
+                  strokeWidth={2}
+                  fill="url(#baselineForecastGradient)"
+                  name="Baseline"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <div className="space-y-4">
+          <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Wellbeing outlook</h3>
+                <p className="text-sm text-slate-600">{resilienceModeLabel}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-slate-500">AI reading</p>
+                <p className="text-lg font-semibold text-slate-900">{resilienceAi.toFixed(1)}</p>
+                <p className="text-xs text-slate-500">Gap {resilienceDelta} pts</p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {resilienceModes.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setResilienceMode(mode.id)}
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] text-slate-600 transition",
-                    isActive ? "border-sky-200 bg-white text-sky-600" : "",
+                    "rounded-full px-3 py-1.5 text-xs font-medium transition",
+                    resilienceMode === mode.id
+                      ? "bg-emerald-100 text-emerald-700 shadow-[0_16px_45px_-30px_rgba(16,185,129,0.25)]"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
                   )}
                 >
-                  <view.icon className={cn("h-4 w-4", isActive ? "text-sky-600" : "text-foreground/60")} />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold">{view.label}</p>
-                  <p className="text-xs text-foreground/55">{view.description}</p>
-                </div>
-              </div>
-            </button>
-          );
-        })}
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-5 h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart data={resilienceSeries}>
+                  <CartesianGrid stroke="rgba(148,163,184,0.3)" strokeDasharray="3 6" />
+                  <XAxis dataKey="label" stroke="rgba(100,116,139,0.75)" tickLine={false} />
+                  <YAxis stroke="rgba(100,116,139,0.75)" tickLine={false} />
+                  <Tooltip
+                    cursor={{ strokeDasharray: "3 3" }}
+                    contentStyle={{
+                      borderRadius: "18px",
+                      border: "1px solid rgba(148,163,184,0.35)",
+                      backgroundColor: "rgba(255,255,255,0.95)",
+                      color: "rgba(30,41,59,0.92)",
+                      padding: "0.75rem 1rem",
+                    }}
+                    formatter={(value: number | string, name) =>
+                      typeof value === "number" ? [`${Number(value).toFixed(1)}`, name] : [value, name]
+                    }
+                  />
+                  <RechartsLine type="monotone" dataKey="ai" stroke="#10b981" strokeWidth={2.5} dot={false} name="AI" />
+                  <RechartsLine
+                    type="monotone"
+                    dataKey="baseline"
+                    stroke="#94a3b8"
+                    strokeWidth={2}
+                    strokeDasharray="4 6"
+                    dot={false}
+                    name="Baseline"
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+
+          <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+            <h3 className="text-lg font-semibold text-slate-900">Model checks</h3>
+            <ul className="mt-4 space-y-3">
+              {modelPerformanceStats.map((stat) => (
+                <li
+                  key={stat.id}
+                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">{stat.metric}</p>
+                    <p className="text-xs text-slate-500">vs last run</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-slate-900">{stat.value}</p>
+                    <span
+                      className={cn(
+                        "text-xs font-medium",
+                        stat.tone === "up" ? "text-emerald-600" : stat.tone === "down" ? "text-emerald-600" : "text-slate-500",
+                      )}
+                    >
+                      {stat.change}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
 
-      {renderActiveView()}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">Evidence follow-ups</h3>
+          <ul className="mt-4 space-y-3">
+            {topAnomalies.map((cluster) => (
+              <li key={cluster.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-slate-900">{cluster.cluster}</p>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium",
+                      anomalySeverityBadgeTone[cluster.severity],
+                    )}
+                  >
+                    {anomalySeverityLabel[cluster.severity]}
+                  </span>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                  <span>{cluster.affectedAssets} items</span>
+                  <span>{cluster.expectedResolutionMinutes} min target</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">District focus</h3>
+          <ul className="mt-4 space-y-3">
+            {riskFocus.map((cell) => (
+              <li key={cell.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-sm font-medium text-slate-900">{cell.district}</p>
+                <p className="mt-1 text-xs text-slate-500">{cell.driver}</p>
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+                  <span>Score</span>
+                  <span>{Math.round(cell.score * 100)}%</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-full rounded-full bg-sky-400" style={{ width: `${Math.round(cell.score * 100)}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">Explainable AI notes</h3>
+          <ul className="mt-4 space-y-3">
+            {explainabilityStories.map((story) => (
+              <li key={story.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-sm font-medium text-slate-900">{story.title}</p>
+                <p className="mt-1 text-sm text-slate-600">{story.detail}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }
+
 
 type CopilotPreviewPanelProps = {
   scenario: ScenarioDefinition;
@@ -2119,154 +1694,125 @@ const alertSeverityLabels: Record<DataQualityAlertSeverity, string> = {
   high: "High",
 };
 
-const trendDescriptors: Record<DataFabricMetric["trend"], { label: string; tone: string }> = {
-  up: { label: "Up today", tone: "text-emerald-600" },
-  down: { label: "Faster today", tone: "text-emerald-600" },
-  steady: { label: "Holding steady", tone: "text-slate-500" },
-};
-
 const integrationPlaybooks: Record<ScenarioKey, string[]> = {
   "sdg-localization": [
-    "Unify census refreshes, community studios, and IoT feeds into indicator story packs.",
-    "Notify localization stewards when equity coverage dips under 0.8 in any district.",
-    "Publish SDG-ready datasets with provenance for the weekly council packet.",
+    "Refresh census, IoT, and steward notes each morning.",
+    "Alert district leads when SDG coverage drops below 80%.",
+    "Publish a clean SDG packet every Friday with sources.",
   ],
   "vlr-automation": [
-    "Reconcile finance ledgers, climate disclosures, and policy notes every cycle.",
-    "Auto-assign assurance review whenever evidence lacks narrative context.",
-    "Seal compliance-ready exports with citation manifests and governance sign-offs.",
+    "Match finance, climate, and policy data before drafting.",
+    "Ask reviewers to explain any evidence gaps the AI flags.",
+    "Export the VLR packet with citations once checks pass.",
   ],
   "city-profiling": [
-    "Blend wellbeing, budget pacing, and sentiment signals into a single investment view.",
-    "Flag neighborhoods where impact trajectories lag the capital roadmap.",
-    "Serve synchronized datasets to budget, design, and equity teams simultaneously.",
+    "Blend wellbeing, budget, and sentiment feeds into one view.",
+    "Highlight districts where impact lags planned investment.",
+    "Share the twin snapshot with budget, design, and equity teams.",
   ],
 };
 
-function formatFreshness(minutes: number): string {
-  if (minutes < 1) {
-    return "<1 min";
-  }
-  if (minutes >= 60) {
-    const hours = Math.floor(minutes / 60);
-    const remainder = minutes % 60;
-    if (remainder === 0) {
-      return `${hours}h`;
-    }
-    return `${hours}h ${remainder}m`;
-  }
-  return `${minutes} min`;
-}
+
+
+
+
+
+
+
 
 function CopilotPreviewPanel({ scenario, module, onSummonDock, onToggleRail, isRailOpen }: CopilotPreviewPanelProps) {
   const healthyConnectors = dataConnectors.filter((connector) => connector.status === "healthy").length;
   const syncingConnectors = dataConnectors.filter((connector) => connector.status === "syncing").length;
   const issueConnectors = dataConnectors.filter((connector) => connector.status === "issue").length;
 
-  const guardrailSummary = module?.assurance ? `${module.assurance.label} score` : "Automation guardrails";
-  const guardrailDetail = module?.assurance ? module.assurance.detail : "Audit trail confirms every automation run.";
-
-  const playbook = integrationPlaybooks[scenario.key] ?? [];
   const metricCards = dataFabricMetrics.slice(0, 3);
   const connectorSummaries = dataConnectors.slice(0, 4);
   const automationShowcase = dataAutomations.slice(0, 3);
   const qualityAlerts = dataQualityAlerts.slice(0, 3);
+  const playbook = integrationPlaybooks[scenario.key] ?? [];
+
+  const assuranceLabel = module?.assurance?.label ?? "Guardrail score";
+  const assuranceScore = module?.assurance?.score ?? "On track";
+  const assuranceDetail = module?.assurance?.detail ?? "Audit trail confirms every run.";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <div className="space-y-5">
-        <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-50px_rgba(15,23,42,0.18)] sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="space-y-7">
+      <header className="space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">Data fabric for {scenario.name}</h2>
+            <p className="text-sm text-slate-600">
+              Connectors and automations keep the AI dashboards current without manual prep.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={onToggleRail}
+              className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
+            >
+              <Layers className="h-4 w-4 text-slate-500" />
+              {isRailOpen ? "Hide Copilot rail" : "Pin Copilot rail"}
+            </button>
+            <button
+              type="button"
+              onClick={onSummonDock}
+              className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3.5 py-2 text-xs font-medium text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
+            >
+              <Bot className="h-4 w-4" />
+              Open Copilot
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <span className="font-medium text-slate-900">{assuranceLabel}</span>
+          <span>· {assuranceScore}</span>
+          <span className="text-slate-500">{assuranceDetail}</span>
+        </div>
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.18)]">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.35em] text-slate-500">Data Fabric</p>
-              <h3 className="mt-2 text-2xl font-semibold text-slate-900 sm:text-3xl">{scenario.name} data fabric</h3>
-              <p className="mt-2 text-sm text-foreground/65">
-                Clean, synced feeds keep the AI forecasts and VLR outputs for this scenario up to date.
-              </p>
+              <h3 className="text-lg font-semibold text-slate-900">Connectors</h3>
+              <p className="text-sm text-slate-600">Feeds refresh every 15 minutes with steward sign-off.</p>
             </div>
-
-            <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={onToggleRail}
-                className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900 xl:inline-flex"
-              >
-                <Layers className="h-4 w-4 text-slate-500" />
-                {isRailOpen ? "Hide Copilot Rail" : "Pin Copilot Rail"}
-              </button>
-              <button
-                type="button"
-                onClick={onSummonDock}
-                className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-sky-600 transition hover:border-sky-300 hover:bg-sky-100 xl:hidden"
-              >
-                <Bot className="h-4 w-4" />
-                Open Copilot
-              </button>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+                {healthyConnectors} healthy
+              </span>
+              <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-700">
+                {syncingConnectors} syncing
+              </span>
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-700">
+                {issueConnectors} needs attention
+              </span>
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {metricCards.map((metric) => {
-              const descriptor = trendDescriptors[metric.trend];
-              return (
-                <div
-                  key={metric.id}
-                  className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{metric.label}</p>
-                  <p className="mt-2 text-xl font-semibold text-slate-900">{metric.value}</p>
-                  <p className="mt-1 text-xs text-foreground/55">{metric.detail}</p>
-                  <span
-                    className={cn(
-                      "mt-3 inline-flex items-center text-[10px] font-semibold uppercase tracking-[0.35em]",
-                      descriptor.tone,
-                    )}
-                  >
-                    {descriptor.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-xs uppercase tracking-[0.3em] text-foreground/55">
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            <span>
-              {guardrailSummary}: {module?.assurance?.score ?? "Active"}
-            </span>
-            <span className="normal-case tracking-normal text-foreground/60">{guardrailDetail}</span>
-          </div>
-        </section>
-
-        <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <GaugeCircle className="h-4 w-4 text-slate-500" />
-            Connector health
-          </p>
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-5 space-y-3">
             {connectorSummaries.map((connector) => (
-              <li
-                key={connector.id}
-                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+              <li key={connector.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{connector.name}</p>
-                    <p className="text-xs text-foreground/55">{connector.department}</p>
+                    <p className="text-sm font-medium text-slate-900">{connector.name}</p>
+                    <p className="text-xs text-slate-500">{connector.dataScope}</p>
                   </div>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
                       connectorStatusStyles[connector.status],
                     )}
                   >
                     {connectorStatusLabels[connector.status]}
                   </span>
                 </div>
-                <p className="mt-3 text-xs leading-5 text-foreground/55">{connector.dataScope}</p>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-foreground/60">
-                  <span>Freshness {formatFreshness(connector.freshnessMinutes)}</span>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                  <span>{connector.department}</span>
                   <span>{connector.coverage}</span>
+                  <span>Refresh {connector.freshnessMinutes} min</span>
                   <span>Steward {connector.steward}</span>
                 </div>
               </li>
@@ -2274,130 +1820,107 @@ function CopilotPreviewPanel({ scenario, module, onSummonDock, onToggleRail, isR
           </ul>
         </section>
 
-        <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <Workflow className="h-4 w-4 text-slate-500" />
-            Automation runbook
-          </p>
-          <ul className="mt-4 space-y-3">
+        <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.18)]">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Automation runs</h3>
+              <p className="text-sm text-slate-600">Pipelines keep SDG and VLR packets current.</p>
+            </div>
+          </div>
+          <ul className="mt-5 space-y-3">
             {automationShowcase.map((automation) => (
-              <li
-                key={automation.id}
-                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3 text-sm text-foreground/70"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+              <li key={automation.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{automation.title}</p>
-                    <p className="text-xs text-foreground/55">{automation.owner}</p>
+                    <p className="text-sm font-medium text-slate-900">{automation.title}</p>
+                    <p className="text-xs text-slate-500">{automation.cadence} · Owner {automation.owner}</p>
                   </div>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
                       automationStatusStyles[automation.status],
                     )}
                   >
                     {automationStatusLabels[automation.status]}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-foreground/60">
-                  <span>{automation.cadence}</span>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                   <span>Last {automation.lastRun}</span>
                   <span>Next {automation.nextRun}</span>
                 </div>
-                <p className="mt-3 text-xs text-foreground/60">{automation.outcome}</p>
+                <p className="mt-2 text-sm text-slate-600">{automation.outcome}</p>
               </li>
             ))}
           </ul>
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <p>The copilot keeps a narrative log so stewards can review each automation change.</p>
+          </div>
         </section>
       </div>
 
-      <div className="space-y-5">
-        <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <Sparkles className="h-4 w-4 text-slate-500" />
-            Assurance & guardrails
-          </p>
-          <div className="mt-4 grid gap-4 rounded-[24px] border border-slate-200 bg-[rgb(var(--surface-soft))] p-4 text-sm text-foreground/70">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.35em] text-foreground/50">{guardrailSummary}</p>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">{module?.assurance?.score ?? "--"}%</p>
-              <p className="mt-1 text-xs text-foreground/60">{guardrailDetail}</p>
-            </div>
-            <div className="grid gap-2 text-xs text-foreground/60 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-600">Healthy</p>
-                <p className="mt-1 text-lg font-semibold text-slate-900">{healthyConnectors}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-sky-600">Syncing</p>
-                <p className="mt-1 text-lg font-semibold text-slate-900">{syncingConnectors}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-amber-600">Attention</p>
-                <p className="mt-1 text-lg font-semibold text-slate-900">{issueConnectors}</p>
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onSummonDock}
-            className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 transition hover:border-sky-200 hover:text-slate-900"
-          >
-            <MoveRight className="h-4 w-4" />
-            View automation log
-          </button>
-        </section>
-
-        <section className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <BrainCircuit className="h-4 w-4 text-slate-500" />
-            Integration playbook
-          </p>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">Pipeline metrics</h3>
           <ul className="mt-4 space-y-3">
-            {playbook.map((step) => (
-              <li
-                key={step}
-                className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3"
-              >
-                <CheckCircle2 className="mt-1 h-4 w-4 text-emerald-500" />
-                <span className="text-sm leading-6 text-foreground/70">{step}</span>
+            {metricCards.map((metric) => (
+              <li key={metric.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-slate-900">{metric.label}</p>
+                  <span className="text-sm font-semibold text-slate-900">{metric.value}</span>
+                </div>
+                <p className="mt-1 text-xs text-slate-500">{metric.detail}</p>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="rounded-[30px] border border-slate-200 bg-white p-5 text-sm text-foreground/70 shadow-[0_25px_70px_-48px_rgba(15,23,42,0.16)]">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-slate-500">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            Data quality watch
-          </p>
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">Quality alerts</h3>
           <ul className="mt-4 space-y-3">
             {qualityAlerts.map((alert) => (
-              <li
-                key={alert.id}
-                className="rounded-2xl border border-slate-200 bg-[rgb(var(--surface-soft))] px-4 py-3"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{alert.topic}</p>
-                    <p className="text-xs text-foreground/55">{alert.impact}</p>
-                  </div>
+              <li key={alert.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-medium text-slate-900">{alert.topic}</p>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.3em]",
+                      "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
                       alertSeverityStyles[alert.severity],
                     )}
                   >
                     {alertSeverityLabels[alert.severity]}
                   </span>
                 </div>
-                <p className="mt-3 text-sm text-foreground/65">{alert.detail}</p>
-                <p className="mt-3 text-xs text-foreground/60">{alert.eta}</p>
+                <p className="mt-1 text-sm text-slate-600">{alert.detail}</p>
+                <p className="mt-1 text-xs text-slate-500">{alert.impact}</p>
+                <p className="mt-2 text-xs text-slate-500">{alert.eta}</p>
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_22px_65px_-50px_rgba(15,23,42,0.18)]">
+          <h3 className="text-lg font-semibold text-slate-900">Playbook actions</h3>
+          <ul className="mt-4 space-y-3">
+            {playbook.map((item) => (
+              <li key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                {item}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={onSummonDock}
+            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 transition hover:border-sky-200 hover:text-slate-900"
+          >
+            <Bot className="h-4 w-4 text-sky-500" />
+            Ask Copilot to brief the team
+          </button>
         </section>
       </div>
     </div>
   );
 }
+
+
+
+

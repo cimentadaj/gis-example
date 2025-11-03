@@ -16,10 +16,10 @@
    - Rewrote scenario taglines, commands, and AI copy in plain language tailored to SDG localization, VLR automation, and city profiling.
    - Removed redundant spotlight and legend blocks to deliver a calmer Notion-like layout.
 
-3. **Analytics & Data Fabric Focus Pass** _(Pending)_
-   - Curate the AI pipeline and data fabric tabs to a minimal set of charts/indicators that demonstrate value without clutter.
-   - Harmonize typography, spacing, and accent colors with the updated light dashboard aesthetic.
-   - Make sure each module speaks to real applied AI/GIS outcomes rather than abstract buzzwords.
+3. **Analytics & Data Fabric Focus Pass** _(✅ Completed)_
+   - Curated the AI pipeline tab to three focused panels covering forecasts, wellbeing, and evidence follow-ups in calm plain language.
+   - Rebuilt the Data Fabric module around connector health, automation runs, and quality alerts with clean, Notion-inspired styling.
+   - Rewrote playbooks and guardrail copy so every card describes practical AI-supported tasks city teams can action immediately.
 
 4. **Top Bar & Navigation Polish** _(Pending)_
    - Reduce the top intelligence bar height, adjust spacing, and align typography for a refined dashboard shell.
@@ -32,6 +32,7 @@
    - Log outcomes and prepare for demo handoff.
 
 ## Progress Log
+- **2025-11-03**: Curated the AI Pipelines and Data Fabric modules into concise, plain-language cards with refreshed charts, connector summaries, and simplified automation playbooks aligned to the latest light-theme spec.
 - **2025-11-03**: Simplified the Digital Twin scenario view around the GIS map, trimmed indicator cards, and rewrote scenario copy in plain language to hit the calm high-value brief.
 - **2025-11-03**: Restored the GIS canvas with brighter base tiles, lighter HUD chips, and simplified marker callouts so spatial layers stay visible against the refreshed light dashboard styling.
 - **2025-11-03**: Softened the digital twin map overlays, removed the capability grid, and centered the canvas layout so the GIS view loads cleanly with minimal visual clutter.
