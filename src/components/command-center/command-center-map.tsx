@@ -113,11 +113,15 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
       });
       mapWithEffects.setLight?.({ color: "#38bdf8", intensity: 0.55 });
       syncScenarioLayers(map, scenario, activeLayersRef);
+      map.resize();
     });
 
     mapRef.current = map;
+    const handleResize = () => map.resize();
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       calloutMarkersRef.current.forEach((marker) => marker.remove());
       calloutMarkersRef.current = [];
       map.remove();
@@ -205,7 +209,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
   return (
     <div
       ref={mapContainerRef}
-      className="h-[320px] w-full overflow-hidden rounded-3xl bg-[#f8fafc] sm:h-[380px] lg:h-[440px] xl:h-[480px]"
+      className="relative h-[320px] w-full overflow-hidden rounded-3xl bg-[#f8fafc] sm:h-[380px] lg:h-[440px] xl:h-[480px]"
     />
   );
 }

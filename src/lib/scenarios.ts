@@ -61,18 +61,18 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
   "sdg-localization": {
     key: "sdg-localization",
     name: "SDG Localization Twin",
-    tagline: "See SDG progress by district at a glance.",
+    tagline: "District SDG scorecards update in real time.",
     narrative:
-      "Live census and budget feeds show how close each district sits to its SDG goals so stewards can jump in before targets slip.",
-    command: "Support districts slipping under target before the daily stand-up.",
+      "Census, budget, and survey feeds flag which districts fall behind so crews can move before targets slip.",
+    command: "Resolve the two districts slipping before the daily stand-up.",
     liveSignals: [
-      { label: "Targets on track", value: "68%", delta: "+5%", tone: "positive" },
-      { label: "Data refreshed", value: "98%", delta: "+3%", tone: "positive" },
+      { label: "Districts on track", value: "12 of 18", delta: "+1 today", tone: "positive" },
+      { label: "Data refresh", value: "98%", delta: "Live", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "Innovation Basin needs tutoring crews this week.",
-        detail: "Attendance dips are pulling SDG 4 behind target. Mobile workshops can close the gap within five days.",
+        title: "Send the tutoring crew back to Innovation Basin.",
+        detail: "Attendance dipped in two schools; a mobile team lifts SDG 4 back on track within five days.",
         confidence: 0.82,
       },
     ],
@@ -104,25 +104,25 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       },
     ],
     actions: [
-      "Send tutoring teams to Innovation Basin schools.",
-      "Share Harbor Loop climate win in tomorrow's VLR brief.",
+      "Deploy the mobile tutoring team to Innovation Basin.",
+      "Add Harbor Loop’s climate win to tomorrow’s VLR brief.",
     ],
   },
   "vlr-automation": {
     key: "vlr-automation",
     name: "VLR Automation Console",
-    tagline: "Keep the voluntary local review moving on schedule.",
+    tagline: "AI keeps the voluntary local review on schedule.",
     narrative:
-      "Evidence from finance, climate, and community systems syncs in automatically so drafts stay live until each steward signs off.",
-    command: "Publish the executive summary before Friday.",
+      "Evidence from finance, climate, and community teams syncs automatically so drafts stay ready for sign-off.",
+    command: "Publish the executive summary by Friday.",
     liveSignals: [
-      { label: "Sections ready", value: "7 / 9", delta: "+2", tone: "positive" },
+      { label: "Sections ready", value: "7 / 9", delta: "+2 today", tone: "positive" },
       { label: "Evidence cleared", value: "92%", delta: "+6%", tone: "positive" },
     ],
     aiInsights: [
       {
-        title: "SDG 9 packet still needs invoice proof.",
-        detail: "Finance ledger is missing two project tags. Automation will reconcile once the steward approves the fetch.",
+        title: "SDG 9 packet still waits on invoice tags.",
+        detail: "Finance is missing two project codes; approve the fetch and the automation will reconcile them.",
         confidence: 0.9,
       },
     ],
@@ -146,25 +146,25 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       },
     ],
     actions: [
-      "Ping finance to clear the SDG 9 invoice evidence.",
-      "Publish the SDG 11 public space story once quotes land.",
+      "Nudge finance to clear the SDG 9 invoices.",
+      "Publish the SDG 11 public space story after quotes land.",
     ],
   },
   "city-profiling": {
     key: "city-profiling",
     name: "City Profiling Studio",
-    tagline: "Check how funding choices shift wellbeing.",
+    tagline: "Compare wellbeing lift by district.",
     narrative:
-      "The twin blends demographics, capital plans, and sentiment to rank regeneration moves so leaders see where investment moves the needle.",
-    command: "Pick the next three districts for funding before the council vote.",
+      "The twin blends demographics, capital plans, and sentiment to show which projects move wellbeing fastest.",
+    command: "Select the next three districts for council funding.",
     liveSignals: [
-      { label: "Wellbeing score", value: "74 / 100", delta: "+4", tone: "positive" },
-      { label: "Capital on track", value: "81%", delta: "-3%", tone: "warning" },
+      { label: "Wellbeing score", value: "74 index", delta: "+4 pts", tone: "positive" },
+      { label: "Capital on track", value: "81% funded", delta: "-3%", tone: "warning" },
     ],
     aiInsights: [
       {
         title: "Northern Commons still delivers the biggest lift.",
-        detail: "A $14M streetscape bundle lifts the wellbeing score six points while keeping displacement risk low.",
+        detail: "A $14M streetscape bundle lifts wellbeing six points without raising displacement risk.",
         confidence: 0.88,
       },
     ],
@@ -196,7 +196,7 @@ const scenarioRegistry: Record<ScenarioKey, ScenarioDefinition> = {
       },
     ],
     actions: [
-      "Advance Northern Commons bundle to the council pipeline.",
+      "Advance the Northern Commons package to the council agenda.",
       "Share Harbor Loop shoreline options with the budget office.",
     ],
   },

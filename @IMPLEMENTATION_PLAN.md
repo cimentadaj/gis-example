@@ -11,10 +11,10 @@
    - Restored the map canvas with generous height, gentle borders, and clean marker overlays so the spatial story reads instantly.
    - Trimmed each module to focused cards and plain-language summaries, keeping the three core scenarios breathable and easy to scan.
 
-2. **Scenario Content Simplification** _(⏳ Pending)_
-   - Rewrite module copy, KPIs, and controls in concise language focused on SDG localization, VLR automation, and city profiling.
-   - Curate a minimal, high-value set of charts and status cards for each tab with realistic AI/GIS storytelling.
-   - Refresh dataset stubs so map points, heatmaps, and AI insights reflect believable Nexus Consulting use cases.
+2. **Scenario Content Simplification** _(✅ Completed)_
+   - Rewrote module copy, signal chips, and actions in plain language centered on SDG localization, VLR automation, and city profiling.
+   - Renamed charts and pared back controls so each tab spotlights the highest-value analytics without clutter.
+   - Tuned the compact top bar and MapLibre canvas (resize handling, clarity pass) so the GIS layers load cleanly in the light theme.
 
 3. **QA & Build Validation** _(⏳ Pending)_
    - Cross-browser smoke test the simplified layout for responsive behaviour and map interactivity.
@@ -22,6 +22,7 @@
    - Capture demo notes highlighting the key workflows after the simplification pass.
 
 ## Progress Log
+- **2025-11-08**: Simplified the three scenario tabs with plain-language copy, friendlier KPI labels, a compact logo-only top bar, and MapLibre resize handling so the light-theme GIS canvas renders markers and layers reliably.
 - **2025-11-03**: Tuned the top chrome and navigation controls—reduced header height, unified status chips via a shared component, simplified module tabs, and spot-checked responsive behaviour to match the refined GIS brief.
 - **2025-11-03**: Curated the AI Pipelines and Data Fabric modules into concise, plain-language cards with refreshed charts, connector summaries, and simplified automation playbooks aligned to the latest light-theme spec.
 - **2025-11-03**: Simplified the Digital Twin scenario view around the GIS map, trimmed indicator cards, and rewrote scenario copy in plain language to hit the calm high-value brief.

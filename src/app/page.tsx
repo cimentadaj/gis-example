@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { FeatureCollection as GeoJSONFeatureCollection } from "geojson";
-import { Clock8, LineChart, Map as MapIcon, Sparkles, Workflow } from "lucide-react";
+import { LineChart, Map as MapIcon, Sparkles, Workflow } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -30,19 +30,19 @@ const moduleNavigation = [
   {
     id: "digital-twin",
     label: "Digital Twin",
-    description: "See SDG progress on the city map.",
+    description: "Map SDG progress by district.",
     icon: MapIcon,
   },
   {
     id: "vlr",
     label: "VLR Automation",
-    description: "Track how the AI keeps the review moving.",
+    description: "Follow the review workflow status.",
     icon: Workflow,
   },
   {
     id: "pipelines",
     label: "AI Pipelines",
-    description: "Preview forecasts and model health.",
+    description: "Check forecasts and model health.",
     icon: LineChart,
   },
 ] as const;
@@ -101,16 +101,9 @@ export default function Home() {
 
   const mapHighlights = useMemo(() => getSpatialHighlights(scenario), [scenario]);
 
-  const syncTimestamp = new Intl.DateTimeFormat("en", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZoneName: "short",
-  }).format(new Date());
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <TopBar timestamp={syncTimestamp} />
+      <TopBar />
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
         <OverviewStrip />
@@ -135,24 +128,14 @@ export default function Home() {
   );
 }
 
-function TopBar({ timestamp }: { timestamp: string }) {
+function TopBar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
-            <Sparkles className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-xs font-semibold text-slate-600">Nexus Consulting</p>
-            <p className="text-sm text-slate-500">Smart City Operations</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-500">
-          <Clock8 className="h-4 w-4 text-slate-400" />
-          <span>Synced {timestamp}</span>
-        </div>
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-2 sm:px-6">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+          <Sparkles className="h-4 w-4" />
+        </span>
+        <span className="text-sm font-semibold text-slate-700">Nexus Consulting</span>
       </div>
     </header>
   );
@@ -265,8 +248,8 @@ function DigitalTwinView({ scenario, insights, focus, onFocusChange, highlights 
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">Focus window</p>
-              <p className="text-xs text-slate-400">Adjust to explore the next hour on the twin.</p>
+              <p className="text-sm font-medium text-slate-600">Forecast window</p>
+              <p className="text-xs text-slate-400">Slide to preview the next hour on the map.</p>
             </div>
             <div className="flex w-full items-center gap-3 sm:w-auto">
               <span className="text-sm text-slate-500">{Math.round((focus / 100) * 60)} min</span>
@@ -343,9 +326,7 @@ function VlrAutomationView({ scenario }: { scenario: ScenarioDefinition }) {
         <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">VLR automation</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              AI keeps the voluntary local review up to date and ready to publish.
-            </p>
+            <p className="mt-1 text-sm text-slate-500">AI keeps the voluntary local review on schedule.</p>
           </div>
           <span className="text-xs uppercase tracking-wide text-slate-400">Scenario · {scenario.name}</span>
         </header>
@@ -469,7 +450,7 @@ function PipelinesView() {
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
           <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Demand outlook</h2>
+              <h2 className="text-xl font-semibold text-slate-900">SDG lift forecast</h2>
               <p className="text-sm text-slate-500">{demandForecast.horizon}</p>
             </div>
             <span className="text-xs text-slate-400">Scenario · {demandForecast.metric}</span>
@@ -506,7 +487,7 @@ function PipelinesView() {
 
         <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
           <header>
-            <h2 className="text-xl font-semibold text-slate-900">Resilience trend</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Wellbeing outlook</h2>
             <p className="text-sm text-slate-500">{resilienceForecast.horizon}</p>
           </header>
 
@@ -546,7 +527,7 @@ function PipelinesView() {
       </div>
 
       <article className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Hotspots to watch</h2>
+        <h2 className="text-xl font-semibold text-slate-900">AI hotspots</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-3">
           {hotspots.map((cluster) => (
             <li

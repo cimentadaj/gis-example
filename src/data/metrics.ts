@@ -65,7 +65,7 @@ export const citywideKpis: SystemKpi[] = [
 
 export const demandForecast: ForecastSeries = {
   scenario: "sdg-localization",
-  metric: "sdg-impact",
+  metric: "SDG impact uplift",
   horizon: "Next 24 Hours",
   points: [
     { timestamp: "2025-11-03T08:00:00Z", value: 0.46 },
