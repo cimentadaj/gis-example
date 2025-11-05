@@ -1,7 +1,12 @@
 self.__BUILD_MANIFEST = {
   "__rewrites": {
     "afterFiles": [],
-    "beforeFiles": [],
+    "beforeFiles": [
+      {
+        "source": "/gis-example//_next/:path+",
+        "destination": "/gis-example/_next/:path+"
+      }
+    ],
     "fallback": []
   },
   "sortedPages": [
