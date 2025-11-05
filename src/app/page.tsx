@@ -285,6 +285,7 @@ type DigitalTwinViewProps = {
   scenario: ScenarioDefinition;
   insights: ScenarioInsightsPayload;
   focus: number;
+  onFocusChange: (nextFocus: number) => void;
   highlights: SpatialHighlight[];
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ComponentProps } from "react";
 import DeckGL from "@deck.gl/react";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import { AmbientLight, LightingEffect, _SunLight as SunLight } from "@deck.gl/core";
@@ -27,6 +28,8 @@ type CommandCenterMapProps = {
   highlights?: SpatialHighlight[];
 };
 
+type DeckGLTooltipHandler = NonNullable<ComponentProps<typeof DeckGL>["getTooltip"]>;
+
 const INITIAL_VIEW_STATE = {
   longitude: -73.9777,
   latitude: 40.7527,
@@ -49,12 +52,14 @@ const sunLight = new SunLight({
   color: [253, 186, 116],
   intensity: 1.1,
   direction: [-0.7, -0.6, -0.5],
-});
+} as unknown as ConstructorParameters<typeof SunLight>[0]);
 
-const lightingEffect = new LightingEffect({
-  ambientLight,
-  directionalLights: [sunLight],
-});
+const lightingEffect = new LightingEffect(
+  {
+    ambientLight,
+    directionalLights: [sunLight],
+  } as unknown as ConstructorParameters<typeof LightingEffect>[0],
+);
 
 export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCenterMapProps) {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -78,14 +83,20 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
           if (!tile || !tile.bbox || !data) {
             return null;
           }
-          const {
-            bbox: { west, south, east, north },
-          } = tile;
-          return new BitmapLayer(subLayerProps, {
-            data: null,
-            image: data,
-            bounds: [west, south, east, north],
-          });
+          const { west, south, east, north } = tile.bbox as {
+            west: number;
+            south: number;
+            east: number;
+            north: number;
+          };
+          return new BitmapLayer(
+            subLayerProps as any,
+            {
+              data: null,
+              image: data,
+              bounds: [west, south, east, north],
+            } as any,
+          ) as unknown as Layer;
         },
       }),
     [],
@@ -93,7 +104,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
 
   const scenarioLayers = useMemo(() => {
     return scenario.layers
-      .flatMap<Layer | null>((layer, index) => buildScenarioLayers(layer, intensityFactor, index))
+      .flatMap<Layer | null>((layer) => buildScenarioLayers(layer, intensityFactor))
       .filter((layer): layer is Layer => Boolean(layer));
   }, [scenario.layers, intensityFactor]);
 
@@ -106,7 +117,7 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
       id: "scenario-highlights",
       data: highlights.slice(0, 6),
       pickable: true,
-      parameters: { depthTest: false },
+      parameters: { depthTest: false } as never,
       getPosition: (highlight) => highlight.coordinates,
       radiusUnits: "pixels",
       getRadius: () => radius,
@@ -140,15 +151,10 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
     return composed;
   }, [baseTiles, scenarioLayers, highlightLayer]);
 
-  const tooltip = useMemo(() => {
-    return ({
-      object,
-      layer,
-    }: {
-      object: Record<string, unknown> | SpatialHighlight | null;
-      layer: Layer;
-    }) => {
-      if (!object) {
+  const tooltip = useMemo<DeckGLTooltipHandler>(
+    () => (info) => {
+      const { object, layer } = info;
+      if (!object || !layer) {
         return null;
       }
 
@@ -170,7 +176,9 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
       }
 
       const properties =
-        ("properties" in object ? (object.properties as Record<string, unknown> | undefined) : null) ?? undefined;
+        ("properties" in (object as Record<string, unknown>)
+          ? ((object as { properties?: Record<string, unknown> | null }).properties ?? undefined)
+          : undefined);
       if (!properties) {
         return null;
       }
@@ -208,8 +216,9 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
         ].join(""),
         style: tooltipStyle,
       };
-    };
-  }, []);
+    },
+    [],
+  );
 
   const handleZoom = useCallback(
     (delta: number) => {
@@ -217,6 +226,26 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
         ...current,
         zoom: clamp(current.zoom + delta, current.minZoom ?? 4, current.maxZoom ?? 18),
       }));
+    },
+    [],
+  );
+
+  const handleViewStateChange = useCallback<NonNullable<ComponentProps<typeof DeckGL>["onViewStateChange"]>>(
+    (params) => {
+      const next = params?.viewState;
+      if (next && typeof next === "object" && "longitude" in next && "latitude" in next && "zoom" in next) {
+        setViewState((current) => ({
+          ...current,
+          longitude: Number(next.longitude) || current.longitude,
+          latitude: Number(next.latitude) || current.latitude,
+          zoom: Number(next.zoom) || current.zoom,
+          minZoom: "minZoom" in next && typeof next.minZoom === "number" ? next.minZoom : current.minZoom,
+          maxZoom: "maxZoom" in next && typeof next.maxZoom === "number" ? next.maxZoom : current.maxZoom,
+          pitch: "pitch" in next && typeof next.pitch === "number" ? next.pitch : current.pitch,
+          bearing: "bearing" in next && typeof next.bearing === "number" ? next.bearing : current.bearing,
+        }));
+      }
+      return undefined;
     },
     [],
   );
@@ -233,13 +262,13 @@ export function CommandCenterMap({ scenario, focus, highlights = [] }: CommandCe
             doubleClickZoom: true,
             touchZoom: true,
           }}
-          onViewStateChange={({ viewState: next }) => setViewState(next)}
+          onViewStateChange={handleViewStateChange}
           layers={layers}
           effects={[lightingEffect]}
           getTooltip={tooltip}
           parameters={{
             clearColor: [0.94, 0.97, 0.99, 1],
-          }}
+          } as unknown as ComponentProps<typeof DeckGL>["parameters"]}
         />
       ) : renderSupport === "unsupported" ? (
         <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200/90 to-slate-100 text-sm font-medium text-slate-500">
@@ -297,7 +326,7 @@ function buildScenarioLayers(layer: ScenarioLayer, intensityFactor: number): Lay
           id: `scenario-${layer.id}-points`,
           data: layer.dataset.features,
           pickable: true,
-          parameters: { depthTest: false },
+          parameters: { depthTest: false } as never,
           getPosition: (feature: { geometry: { coordinates: [number, number] } }) =>
             feature.geometry.coordinates,
           radiusUnits: "pixels",
