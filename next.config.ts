@@ -1,16 +1,18 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
-const isProd = process.env.NODE_ENV === "production";
 const repoName = "gis-example";
 
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  images: {
-    unoptimized: true,
-  },
-  assetPrefix: isProd ? `/${repoName}/` : "",
-  basePath: isProd ? `/${repoName}` : "",
-  output: "export",
-};
+export default function getNextConfig(phase: string): NextConfig {
+  const isDev = phase === PHASE_DEVELOPMENT_SERVER;
 
-export default nextConfig;
+  return {
+    reactStrictMode: true,
+    images: {
+      unoptimized: true,
+    },
+    assetPrefix: isDev ? "" : `/${repoName}/`,
+    basePath: isDev ? "" : `/${repoName}`,
+    output: "export",
+  };
+}
