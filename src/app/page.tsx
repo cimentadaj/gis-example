@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { FeatureCollection as GeoJSONFeatureCollection } from "geojson";
-import { LineChart, Map as MapIcon, Sparkles, Workflow } from "lucide-react";
+import { Gavel, LineChart, Map as MapIcon, Workflow } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -16,6 +16,7 @@ import {
 } from "recharts";
 
 import { CommandCenterMap, type SpatialHighlight } from "@/components/command-center/command-center-map";
+import { PolicyInsightsExperience } from "@/components/policy-insights/policy-insights-experience";
 import {
   anomalyClusters,
   citywideKpis,
@@ -34,6 +35,7 @@ import {
   type ScenarioKey,
 } from "@/lib/scenarios";
 import { cn } from "@/lib/utils";
+import { TopBar } from "@/components/layout/top-bar";
 
 const moduleNavigation = [
   {
@@ -54,11 +56,17 @@ const moduleNavigation = [
     description: "See forecasts and model health.",
     icon: LineChart,
   },
+  {
+    id: "policy-insights",
+    label: "Policy Insights",
+    description: "Executive-ready directives.",
+    icon: Gavel,
+  },
 ] as const;
 
 type ModuleId = (typeof moduleNavigation)[number]["id"];
 
-const moduleScenarioMap: Record<ModuleId, ScenarioKey> = {
+const moduleScenarioMap: Partial<Record<ModuleId, ScenarioKey>> = {
   "digital-twin": "sdg-localization",
   vlr: "vlr-automation",
   pipelines: "city-profiling",
@@ -97,18 +105,21 @@ export default function Home() {
   const [focus, setFocus] = useState(55);
 
   const scenarioKey = moduleScenarioMap[activeModule];
-  const scenario = getScenarioConfig(scenarioKey);
+  const scenario = scenarioKey ? getScenarioConfig(scenarioKey) : null;
 
-  if (!scenario) {
+  if (scenarioKey && !scenario) {
     throw new Error(`Scenario not found for key ${scenarioKey}`);
   }
 
-  const rawInsights = listScenarioInsights(scenarioKey);
-  const insights: ScenarioInsightsPayload = Array.isArray(rawInsights)
-    ? { signals: [], aiInsights: [], kpis: [], actions: [] }
-    : rawInsights;
+  const insights: ScenarioInsightsPayload = useMemo(() => {
+    if (!scenarioKey) {
+      return { signals: [], aiInsights: [], kpis: [], actions: [] };
+    }
+    const raw = listScenarioInsights(scenarioKey);
+    return Array.isArray(raw) ? { signals: [], aiInsights: [], kpis: [], actions: [] } : raw;
+  }, [scenarioKey]);
 
-  const mapHighlights = useMemo(() => getSpatialHighlights(scenario), [scenario]);
+  const mapHighlights = useMemo(() => (scenario ? getSpatialHighlights(scenario) : []), [scenario]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -119,11 +130,11 @@ export default function Home() {
           <ModuleRail activeModule={activeModule} onSelect={setActiveModule} />
 
           <div className="flex-1 space-y-8">
-            <OverviewStrip />
+            {activeModule !== "policy-insights" ? <OverviewStrip /> : null}
 
             <ModuleTabs activeModule={activeModule} onSelect={setActiveModule} className="lg:hidden" />
 
-            {activeModule === "digital-twin" ? (
+            {activeModule === "digital-twin" && scenario ? (
               <DigitalTwinView
                 scenario={scenario}
                 insights={insights}
@@ -133,28 +144,15 @@ export default function Home() {
               />
             ) : null}
 
-            {activeModule === "vlr" ? <VlrAutomationView scenario={scenario} /> : null}
+            {activeModule === "vlr" && scenario ? <VlrAutomationView scenario={scenario} /> : null}
 
             {activeModule === "pipelines" ? <PipelinesView /> : null}
+
+            {activeModule === "policy-insights" ? <PolicyInsightsExperience variant="embedded" /> : null}
           </div>
         </div>
       </main>
     </div>
-  );
-}
-
-function TopBar() {
-  return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-4 sm:px-6">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-600 shadow-sm">
-          <Sparkles className="h-6 w-6" />
-        </span>
-        <span className="text-xl font-semibold tracking-tight text-slate-700 sm:text-[1.6rem]">
-          Nexus Consulting
-        </span>
-      </div>
-    </header>
   );
 }
 
