@@ -3,11 +3,12 @@ import "./globals.css";
 import { LayoutShell } from "@/components/layout/layout-shell";
 
 export const metadata: Metadata = {
-  title: "Nexus Consulting | GIS City Analysis Command",
+  title: "SDG/VLR Dashboard",
   description:
-    "Explore Nexus Consulting’s AI-driven smart city dashboard: GIS City Analysis, automated VLR workflows, and mission-ready analytics presented in a single command environment.",
+    "AI-driven smart city dashboard: GIS City Analysis, automated VLR workflows, and mission-ready analytics.",
   keywords: [
-    "Nexus Consulting",
+    "SDG",
+    "VLR",
     "Smart City",
     "GIS City Analysis",
     "GIS Dashboard",
@@ -16,9 +17,9 @@ export const metadata: Metadata = {
     "Urban Operations",
   ],
   openGraph: {
-    title: "Nexus Consulting | GIS City Analysis Command",
+    title: "SDG/VLR Dashboard",
     description:
-      "A world-class GIS dashboard showcasing how Nexus Consulting fuses AI, data science, and GIS City Analysis to orchestrate modern cities.",
+      "A GIS dashboard showcasing AI, data science, and GIS City Analysis for modern cities.",
   },
 };
 
