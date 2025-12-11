@@ -3,7 +3,7 @@
 3:I[86420,["/gis-example/_next/static/chunks/0bb401622101fb7a.js","/gis-example/_next/static/chunks/335ff38d789e9042.js"],"default"]
 6:I[97367,["/gis-example/_next/static/chunks/ff1a16fafef87110.js","/gis-example/_next/static/chunks/1a476e30dee46234.js"],"OutletBoundary"]
 7:"$Sreact.suspense"
-0:{"buildId":"vcLjvKrkMI6YpSVAknqcn","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/gis-example/_next/static/chunks/0bb401622101fb7a.js","async":true}],["$","script","script-1",{"src":"/gis-example/_next/static/chunks/335ff38d789e9042.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+0:{"buildId":"LWLonwMkf8-TqNVJ__Yo1","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/gis-example/_next/static/chunks/0bb401622101fb7a.js","async":true}],["$","script","script-1",{"src":"/gis-example/_next/static/chunks/335ff38d789e9042.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
 4:{}
 5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
 8:null
