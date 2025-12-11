@@ -6,7 +6,7 @@ type TopBarProps = {
   showCreateVlr?: boolean;
 };
 
-export function TopBar({ title = "Nexus Consulting", showCreateVlr = true }: TopBarProps) {
+export function TopBar({ title = "SDG/VLR Dashboard", showCreateVlr = true }: TopBarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">

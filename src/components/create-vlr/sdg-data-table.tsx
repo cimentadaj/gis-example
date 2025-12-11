@@ -1,23 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { SdgDataRow } from "@/data/create-vlr";
-
-export type ColumnKey =
-  | "sdgGoal"
-  | "indicatorName"
-  | "district"
-  | "year"
-  | "value"
-  | "target"
-  | "progress"
-  | "dataSource"
-  | "confidence";
 
 type SdgDataTableProps = {
   data: SdgDataRow[];
   visibleRows?: number;
-  markedColumns?: ColumnKey[];
 };
 
 const confidenceColors: Record<string, string> = {
@@ -26,52 +14,9 @@ const confidenceColors: Record<string, string> = {
   Low: "bg-rose-100 text-rose-700",
 };
 
-const columns: Array<{
-  key: ColumnKey;
-  label: string;
-  align: "left" | "right" | "center";
-}> = [
-  { key: "sdgGoal", label: "SDG Goal", align: "left" },
-  { key: "indicatorName", label: "Indicator Name", align: "left" },
-  { key: "district", label: "District", align: "left" },
-  { key: "year", label: "Year", align: "left" },
-  { key: "value", label: "Value", align: "right" },
-  { key: "target", label: "Target", align: "right" },
-  { key: "progress", label: "Progress", align: "right" },
-  { key: "dataSource", label: "Data Source", align: "left" },
-  { key: "confidence", label: "Confidence", align: "center" },
-];
-
-export function SdgDataTable({
-  data,
-  visibleRows = 10,
-  markedColumns = [],
-}: SdgDataTableProps) {
+export function SdgDataTable({ data, visibleRows = 10 }: SdgDataTableProps) {
   const visibleData = data.slice(0, visibleRows);
-  const hiddenCount = data.length - visibleRows;
-
-  const isMarked = (key: ColumnKey) => markedColumns.includes(key);
-
-  const getHeaderClass = (col: (typeof columns)[0]) => {
-    const baseClass = `px-4 py-3 text-xs font-semibold uppercase tracking-wider transition-colors duration-300`;
-    const alignClass =
-      col.align === "right"
-        ? "text-right"
-        : col.align === "center"
-        ? "text-center"
-        : "text-left";
-    const markedClass = isMarked(col.key)
-      ? "bg-red-50 text-red-400 line-through"
-      : "text-slate-500";
-    return `${baseClass} ${alignClass} ${markedClass}`;
-  };
-
-  const getCellClass = (key: ColumnKey, baseClass: string) => {
-    if (isMarked(key)) {
-      return `${baseClass} bg-red-50/50 text-red-300 transition-colors duration-300`;
-    }
-    return `${baseClass} transition-colors duration-300`;
-  };
+  const hiddenCount = Math.max(0, data.length - visibleRows);
 
   return (
     <motion.div
@@ -85,23 +30,9 @@ export function SdgDataTable({
           <h3 className="text-sm font-semibold text-slate-700">
             Unified SDG Database
           </h3>
-          <div className="flex items-center gap-3">
-            <AnimatePresence>
-              {markedColumns.length > 0 && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-600"
-                >
-                  {markedColumns.length} column{markedColumns.length > 1 ? "s" : ""} marked for removal
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-700">
-              {data.length} records
-            </span>
-          </div>
+          <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-700">
+            {data.length} records
+          </span>
         </div>
       </div>
 
@@ -109,11 +40,33 @@ export function SdgDataTable({
         <table className="w-full min-w-[900px]">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/30">
-              {columns.map((col) => (
-                <th key={col.key} className={getHeaderClass(col)}>
-                  {col.label}
-                </th>
-              ))}
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                SDG Goal
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Indicator Name
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                District
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Year
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Value
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Target
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Progress
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Data Source
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Confidence
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -125,111 +78,46 @@ export function SdgDataTable({
                 transition={{ delay: index * 0.03 }}
                 className="transition-colors hover:bg-slate-50/50"
               >
-                <td
-                  className={getCellClass(
-                    "sdgGoal",
-                    "whitespace-nowrap px-4 py-3"
-                  )}
-                >
-                  <span
-                    className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-semibold ${
-                      isMarked("sdgGoal")
-                        ? "bg-red-50 text-red-300"
-                        : "bg-sky-50 text-sky-700"
-                    }`}
-                  >
+                <td className="whitespace-nowrap px-4 py-3">
+                  <span className="inline-flex items-center rounded-md bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700">
                     {row.sdgGoal}
                   </span>
                 </td>
-                <td
-                  className={getCellClass(
-                    "indicatorName",
-                    `px-4 py-3 text-sm ${isMarked("indicatorName") ? "text-red-300" : "text-slate-700"}`
-                  )}
-                >
+                <td className="px-4 py-3 text-sm text-slate-700">
                   {row.indicatorName}
                 </td>
-                <td
-                  className={getCellClass(
-                    "district",
-                    `whitespace-nowrap px-4 py-3 text-sm ${isMarked("district") ? "text-red-300" : "text-slate-600"}`
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600">
                   {row.district}
                 </td>
-                <td
-                  className={getCellClass(
-                    "year",
-                    `whitespace-nowrap px-4 py-3 text-sm ${isMarked("year") ? "text-red-300" : "text-slate-600"}`
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600">
                   {row.year}
                 </td>
-                <td
-                  className={getCellClass(
-                    "value",
-                    `whitespace-nowrap px-4 py-3 text-right text-sm font-medium ${isMarked("value") ? "text-red-300" : "text-slate-700"}`
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-slate-700">
                   {row.value.toLocaleString()}
                 </td>
-                <td
-                  className={getCellClass(
-                    "target",
-                    `whitespace-nowrap px-4 py-3 text-right text-sm ${isMarked("target") ? "text-red-300" : "text-slate-500"}`
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-slate-500">
                   {row.target.toLocaleString()}
                 </td>
-                <td
-                  className={getCellClass(
-                    "progress",
-                    "whitespace-nowrap px-4 py-3 text-right"
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <div
-                      className={`h-1.5 w-16 overflow-hidden rounded-full ${
-                        isMarked("progress") ? "bg-red-100" : "bg-slate-100"
-                      }`}
-                    >
+                    <div className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-100">
                       <div
-                        className={`h-full rounded-full ${
-                          isMarked("progress") ? "bg-red-300" : "bg-sky-500"
-                        }`}
-                        style={{
-                          width: `${Math.min(row.progressPercent, 100)}%`,
-                        }}
+                        className="h-full rounded-full bg-sky-500"
+                        style={{ width: `${Math.min(row.progressPercent, 100)}%` }}
                       />
                     </div>
-                    <span
-                      className={`text-xs font-medium ${
-                        isMarked("progress") ? "text-red-300" : "text-slate-600"
-                      }`}
-                    >
+                    <span className="text-xs font-medium text-slate-600">
                       {row.progressPercent}%
                     </span>
                   </div>
                 </td>
-                <td
-                  className={getCellClass(
-                    "dataSource",
-                    `max-w-[150px] truncate px-4 py-3 text-xs ${isMarked("dataSource") ? "text-red-300" : "text-slate-500"}`
-                  )}
-                >
+                <td className="max-w-[150px] truncate px-4 py-3 text-xs text-slate-500">
                   {row.dataSource}
                 </td>
-                <td
-                  className={getCellClass(
-                    "confidence",
-                    "whitespace-nowrap px-4 py-3 text-center"
-                  )}
-                >
+                <td className="whitespace-nowrap px-4 py-3 text-center">
                   <span
                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                      isMarked("confidence")
-                        ? "bg-red-50 text-red-300"
-                        : confidenceColors[row.confidence]
+                      confidenceColors[row.confidence]
                     }`}
                   >
                     {row.confidence}

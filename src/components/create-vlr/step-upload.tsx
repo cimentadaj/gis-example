@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Database, Sparkles } from "lucide-react";
+import { ArrowRight, Database, Sparkles, Filter } from "lucide-react";
 import { FileDropzone } from "./file-dropzone";
-import { SdgDataTable, type ColumnKey } from "./sdg-data-table";
+import { SdgDataTable } from "./sdg-data-table";
 import { VlrChatBox } from "./vlr-chat-box";
 import { LoadingOverlay } from "./loading-overlay";
 import {
@@ -17,31 +17,35 @@ type StepUploadProps = {
   onNext: () => void;
 };
 
-// Column name mappings for detection
-const columnKeywords: Record<string, ColumnKey> = {
-  "sdg": "sdgGoal",
-  "goal": "sdgGoal",
-  "indicator": "indicatorName",
-  "district": "district",
-  "year": "year",
-  "value": "value",
-  "target": "target",
-  "progress": "progress",
-  "source": "dataSource",
-  "data source": "dataSource",
-  "confidence": "confidence",
-};
+// Available districts in the data
+const availableDistricts = [
+  "Central District",
+  "Northern Zone",
+  "Metro Area",
+  "Eastern Borough",
+  "Western District",
+  "Southern Region",
+  "Industrial Zone",
+  "Rural District",
+  "Tech Park",
+];
 
-const columnDisplayNames: Record<ColumnKey, string> = {
-  sdgGoal: "SDG Goal",
-  indicatorName: "Indicator Name",
-  district: "District",
-  year: "Year",
-  value: "Value",
-  target: "Target",
-  progress: "Progress",
-  dataSource: "Data Source",
-  confidence: "Confidence",
+// Keywords to detect district filtering intent
+const districtKeywords: Record<string, string> = {
+  central: "Central District",
+  northern: "Northern Zone",
+  north: "Northern Zone",
+  metro: "Metro Area",
+  eastern: "Eastern Borough",
+  east: "Eastern Borough",
+  western: "Western District",
+  west: "Western District",
+  southern: "Southern Region",
+  south: "Southern Region",
+  industrial: "Industrial Zone",
+  rural: "Rural District",
+  tech: "Tech Park",
+  "tech park": "Tech Park",
 };
 
 export function StepUpload({ onNext }: StepUploadProps) {
@@ -49,7 +53,7 @@ export function StepUpload({ onNext }: StepUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showData, setShowData] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [markedColumns, setMarkedColumns] = useState<ColumnKey[]>([]);
+  const [filteredDistrict, setFilteredDistrict] = useState<string | null>(null);
 
   const handleFilesSelected = useCallback((files: File[]) => {
     setSelectedFiles(files);
@@ -69,6 +73,17 @@ export function StepUpload({ onNext }: StepUploadProps) {
     setShowData(true);
   }, []);
 
+  const handleClearFilter = useCallback(() => {
+    setFilteredDistrict(null);
+    const systemMessage: ChatMessage = {
+      id: `assistant-${Date.now()}`,
+      role: "assistant",
+      content: "Filter cleared. Now showing all districts.",
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    setChatMessages((prev) => [...prev, systemMessage]);
+  }, []);
+
   const handleSendMessage = useCallback(
     (content: string) => {
       const userMessage: ChatMessage = {
@@ -82,35 +97,48 @@ export function StepUpload({ onNext }: StepUploadProps) {
 
       setTimeout(() => {
         const lowerContent = content.toLowerCase();
-        const isRemoveRequest =
-          lowerContent.includes("remove") || lowerContent.includes("delete");
+        const isFilterRequest =
+          lowerContent.includes("filter") ||
+          lowerContent.includes("show") ||
+          lowerContent.includes("only") ||
+          lowerContent.includes("focus");
 
-        // Detect which column is being referenced
-        let detectedColumn: ColumnKey | null = null;
-        for (const [keyword, columnKey] of Object.entries(columnKeywords)) {
+        const isClearRequest =
+          lowerContent.includes("clear") ||
+          lowerContent.includes("reset") ||
+          lowerContent.includes("all districts") ||
+          lowerContent.includes("remove filter");
+
+        // Detect which district is being referenced
+        let detectedDistrict: string | null = null;
+        for (const [keyword, district] of Object.entries(districtKeywords)) {
           if (lowerContent.includes(keyword)) {
-            detectedColumn = columnKey;
+            detectedDistrict = district;
             break;
           }
         }
 
         let responseText: string;
 
-        if (isRemoveRequest && detectedColumn) {
-          // Mark the column for removal
-          setMarkedColumns((prev) => {
-            if (!prev.includes(detectedColumn!)) {
-              return [...prev, detectedColumn!];
-            }
-            return prev;
-          });
-          responseText = `Got it! I've marked the "${columnDisplayNames[detectedColumn]}" column for removal. It will be excluded from the final VLR analysis.`;
-        } else if (detectedColumn) {
-          responseText = `I understand you want to modify the "${columnDisplayNames[detectedColumn]}" column. Could you specify what changes you'd like to make?`;
-        } else if (isRemoveRequest) {
-          responseText = "Which column would you like me to remove? You can mention columns like District, Year, Target, Confidence, or Data Source.";
+        if (isClearRequest) {
+          setFilteredDistrict(null);
+          responseText = "Done! I've cleared the filter. Now showing data from all districts.";
+        } else if (isFilterRequest && detectedDistrict) {
+          setFilteredDistrict(detectedDistrict);
+          const matchingRows = sdgUnifiedData.filter(
+            (row) => row.district === detectedDistrict
+          ).length;
+          responseText = `Got it! I've filtered the data to show only "${detectedDistrict}". Found ${matchingRows} records for this district.`;
+        } else if (detectedDistrict) {
+          setFilteredDistrict(detectedDistrict);
+          const matchingRows = sdgUnifiedData.filter(
+            (row) => row.district === detectedDistrict
+          ).length;
+          responseText = `Filtering data to "${detectedDistrict}". Showing ${matchingRows} records.`;
+        } else if (isFilterRequest) {
+          responseText = `Which district would you like to filter by? Available districts: ${availableDistricts.join(", ")}.`;
         } else {
-          responseText = "Got it, I'll make that adjustment to the unified data. The changes will be reflected in the VLR analysis.";
+          responseText = "Got it, I'll make that adjustment to the data view. You can ask me to filter by a specific district like 'Show only Central District' or 'Filter by Metro Area'.";
         }
 
         const assistantMessage: ChatMessage = {
@@ -125,6 +153,11 @@ export function StepUpload({ onNext }: StepUploadProps) {
     },
     []
   );
+
+  // Filter data based on selected district
+  const displayData = filteredDistrict
+    ? sdgUnifiedData.filter((row) => row.district === filteredDistrict)
+    : sdgUnifiedData;
 
   return (
     <div className="space-y-6">
@@ -185,47 +218,63 @@ export function StepUpload({ onNext }: StepUploadProps) {
             </h2>
             <p className="mt-2 text-slate-500">
               Your data has been cleaned and unified. Review the results and
-              make any adjustments using the assistant.
+              filter by district using the assistant.
             </p>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5">
             <div className="grid grid-cols-6 items-center">
-              <h3 className="text-sm font-medium text-slate-700">
-                Data Summary
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium text-slate-700">
+                  Data Summary
+                </h3>
+                {filteredDistrict && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={handleClearFilter}
+                    className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-700 hover:bg-sky-200"
+                  >
+                    <Filter className="h-3 w-3" />
+                    {filteredDistrict}
+                    <span className="ml-1">×</span>
+                  </motion.button>
+                )}
+              </div>
               <div className="text-center">
                 <span className="text-2xl font-semibold text-slate-700">
-                  {sdgUnifiedData.length}
+                  {displayData.length}
                 </span>
                 <p className="text-xs text-slate-500">Records</p>
               </div>
               <div className="text-center">
                 <span className="text-2xl font-semibold text-slate-700">
-                  {new Set(sdgUnifiedData.map((r) => r.sdgGoal)).size}
+                  {new Set(displayData.map((r) => r.sdgGoal)).size}
                 </span>
                 <p className="text-xs text-slate-500">SDG Goals</p>
               </div>
               <div className="text-center">
                 <span className="text-2xl font-semibold text-slate-700">
-                  {new Set(sdgUnifiedData.map((r) => r.district)).size}
+                  {new Set(displayData.map((r) => r.district)).size}
                 </span>
                 <p className="text-xs text-slate-500">Districts</p>
               </div>
               <div className="text-center">
                 <span className="text-2xl font-semibold text-slate-700">
-                  {new Set(sdgUnifiedData.map((r) => r.dataSource)).size}
+                  {new Set(displayData.map((r) => r.dataSource)).size}
                 </span>
                 <p className="text-xs text-slate-500">Sources</p>
               </div>
               <div className="text-center">
                 <span className="text-2xl font-semibold text-emerald-600">
-                  {Math.round(
-                    sdgUnifiedData.reduce(
-                      (acc, r) => acc + r.progressPercent,
-                      0
-                    ) / sdgUnifiedData.length
-                  )}
+                  {displayData.length > 0
+                    ? Math.round(
+                        displayData.reduce(
+                          (acc, r) => acc + r.progressPercent,
+                          0
+                        ) / displayData.length
+                      )
+                    : 0}
                   %
                 </span>
                 <p className="text-xs text-slate-500">Avg. Progress</p>
@@ -235,11 +284,7 @@ export function StepUpload({ onNext }: StepUploadProps) {
 
           <div className="flex gap-6">
             <div className="flex-1">
-              <SdgDataTable
-                data={sdgUnifiedData}
-                visibleRows={10}
-                markedColumns={markedColumns}
-              />
+              <SdgDataTable data={displayData} visibleRows={10} />
             </div>
 
             <div className="w-80 shrink-0">
@@ -254,7 +299,7 @@ export function StepUpload({ onNext }: StepUploadProps) {
                   <VlrChatBox
                     messages={chatMessages}
                     onSendMessage={handleSendMessage}
-                    placeholder="Request changes to the data..."
+                    placeholder="Filter by district..."
                     compact
                   />
                 </div>

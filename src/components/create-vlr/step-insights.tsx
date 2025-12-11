@@ -237,12 +237,19 @@ export function StepInsights({ onNext }: StepInsightsProps) {
 
       setChatMessages((prev) => [...prev, userMessage]);
 
+      // Check if this is an executive summary request
+      const isExecutiveRequest =
+        content.toLowerCase().includes("executive") ||
+        content.toLowerCase().includes("summary") ||
+        content.toLowerCase().includes("summarize");
+
       // Check if this is a refine request
       const isRefineRequest =
         content.toLowerCase().includes("refine") ||
         content.toLowerCase().includes("update") ||
         content.toLowerCase().includes("shorten") ||
-        content.toLowerCase().includes("rewrite");
+        content.toLowerCase().includes("rewrite") ||
+        isExecutiveRequest;
 
       // Start refining animation if it's a refine request
       if (isRefineRequest) {
@@ -256,7 +263,9 @@ export function StepInsights({ onNext }: StepInsightsProps) {
 
         let responseText: string;
         if (isRefineRequest) {
-          responseText = "I'm refining the narrative text now. This will make it more concise while preserving the key insights...";
+          responseText = isExecutiveRequest
+            ? "Creating an executive summary. Condensing to key metrics and action items..."
+            : "I'm refining the narrative text now. This will make it more concise while preserving the key insights...";
         } else {
           responseText = responses[responseIndex] || "Noted. I'll incorporate your feedback into the report.";
         }
@@ -294,7 +303,9 @@ export function StepInsights({ onNext }: StepInsightsProps) {
             const completionMessage: ChatMessage = {
               id: `assistant-complete-${Date.now()}`,
               role: "assistant",
-              content: "Done! The narrative has been refined and shortened. The updated text is now displayed.",
+              content: isExecutiveRequest
+                ? "Done! Executive summary generated with key metrics and required actions."
+                : "Done! The narrative has been refined and shortened. The updated text is now displayed.",
               timestamp: new Date().toLocaleTimeString(),
             };
             setChatMessages((prev) => [...prev, completionMessage]);
