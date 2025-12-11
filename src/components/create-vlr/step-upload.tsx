@@ -299,7 +299,7 @@ export function StepUpload({ onNext }: StepUploadProps) {
                   <VlrChatBox
                     messages={chatMessages}
                     onSendMessage={handleSendMessage}
-                    placeholder="Filter by district..."
+                    placeholder="Ask anything..."
                     compact
                   />
                 </div>
